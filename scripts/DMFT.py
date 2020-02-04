@@ -1,15 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 import sys, subprocess, os
 import numpy as np
 import shutil
 from shutil import copyfile
-import VASP3
+import VASP
 import Struct
 from INPUT import *
 import argparse
 from argparse import RawTextHelpFormatter
-import pychemia
 import re
 
 
@@ -53,8 +52,15 @@ class Initialize():
 		else:
 			self.para_com=""
 
+		if os.path.exists('para_com_dft.dat'):
+			fid = open('para_com_dft.dat')
+			self.para_com_dft = str(fid.readline())[:-1]
+			fid.close()
+		else:
+			self.para_com_dft = self.para_com 
+
 		#import the VASP class. This can be used for other DFT codes as well.
-		self.DFT = VASP3.VASP_class()
+		self.DFT = VASP.VASP_class()
 
 		#dft running directory (current directory)
 		self.dir = os.getcwd()
@@ -78,10 +84,12 @@ class Initialize():
 			self.gen_win()	
 			self.gen_sig()
 			if args.relax:
+				import pychemia
 				self.vasp_convergence()
 
 		###################### Siesta  ######################################################		
 		if args.dft == 'siesta':		
+			import pychemia
 			self.dft = 'siesta'
 
 			#siesta executable
@@ -168,7 +176,7 @@ class Initialize():
 
 		#initial VASP run
 		print("Running VASP in %s"%dir)
-		cmd = 'cd '+dir+ ' && '+ self.para_com+' '+self.vasp_exec #+ " > dft.out 2> dft.error"
+		cmd = 'cd '+dir+ ' && '+ self.para_com_dft+' '+self.vasp_exec #+ " > dft.out 2> dft.error"
 		out, err = subprocess.Popen(cmd, shell=True, stdout = subprocess.PIPE, stderr = subprocess.PIPE).communicate()
 		if err:
 			print('DFT calculation failed! Check dft.error for details.\n')
@@ -307,6 +315,9 @@ class Initialize():
 
 			self.DFT.Update_win(self.DFT.NBANDS,self.DFT.EFERMI+p['ewin'][0],self.DFT.EFERMI+p['ewin'][1])
 			shutil.copy('wannier90.win',self.structurename+'.win')
+
+			#Updating DFT_mu.out
+			np.savetxt('DFT_mu.out',[self.DFT.EFERMI])
 
 	def run_wan90_pp(self):
 		"""
