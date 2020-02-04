@@ -1,0 +1,56 @@
+# Please set environment variable WIEN_DMFT_ROOT (in ~/.bashrc) to the same path as DESTDIR in this Makefile
+DESTDIR = $(WIEN_DMFT_ROOT)
+
+F90 = ifort 
+F77 = ifort
+preproc = fpp
+
+WFOPT  = -ansi-alias -O2 -FR -override-limits -prec-div -openmp #-O3 -FR -override-limits -openmp -mp1 -w -prec_div -pc80 -pad -DINTEL_VML -mavx 
+FFLAGS = -ansi-alias -O2 -fPIC -prec-div -openmp #-O3 -fPIC -O3 -openmp -mavx -no-prec-div
+F2PL =
+
+C++ = icpc # C++ compiler
+OFLAGS = -O3 -fopenmp # optimization
+GFLAGS = -g -C -fopenmp # debugging
+
+F2PY_LAPACK = --link-lapack_opt
+
+##-------------------- PARALLEL VERSION
+#PF90 = /opt/mpich2/intel/11.1/bin/mpif90 #   /opt/mpich2-intel-10.1/bin/mpif90
+#WLDFLAGS = -i-static $(FOPT) -L/opt/intel/Compiler/11.1/072/mkl/lib/em64t/ -L/usr/lib64 -pthread 
+#WLIBS = -L/opt/intel/Compiler/11.1/072/mkl/lib/em64t/ -lmkl_lapack -lmkl_intel_lp64 -lmkl_intel_thread -lguide -lmkl_core -lpthread # -lmkl_lapack -lmkl -lguide -L/usr/lib64 -pthread
+
+PF90 = mpiifort #mpif90 #   /opt/mpich2-intel-10.1/bin/mpif90
+WLDFLAGS = -mkl $(FOPT)  -L/usr/lib64 -pthread 
+WLIBS = -mkl
+
+Fmpi_define = -DMPI
+CMP = f2py --fcompiler=intelem # fortran to python converter
+CMPLIBS = --opt='-fast' --link-lapack_opt
+CMPLIBS2 = --f90flags='-openmp ' --opt='-fast' --link-lapack_opt
+#PFLAGS = -D_MPI -DMPICH_IGNORE_CXX_SEEK -restrict -ipo -no-prec-div -O2
+GSL_INC=/home/uthpala/gsl/include/
+PFLAGS = -D_MPI -DMPICH_IGNORE_CXX_SEEK -O3 -I$(GSL_INC) -I$(GSL_INC)/gsl
+#
+#
+# PC++ = /opt/mpich2/intel/11.1/bin/mpicxx -xHOST -O3 -ipo -no-prec-div  # mpicxx # parallel compilers
+PC++ = mpicxx
+pcc = mpicc # mpicc # parallel compilers
+#
+#PLIBS = -mkl -L/usr/lib64 -pthread -L/home/uthpala/gsl/lib/ -lgsl -lgslcblas
+PLIBS = -mkl -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -L/usr/lib64 -pthread -L/home/uthpala/gsl/lib/ -lgsl -lgslcblas
+LLIBS = -L$(MKLROOT)/lib/intel64 -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -lpthread -L/usr/lib64 -pthread
+
+
+#-------------------- SINGLE PROCESSOR VERSION
+#PF90 = ifort
+#Fmpi_define = 
+#CMP = f2py --fcompiler=intel # fortran to python converter
+#WLDFLAGS = $(FOPT) -L/opt/intel/mkl/10.0.011/lib/32 
+#WLIBS = -lmkl_lapack -lmkl -lguide -pthread
+#
+#PC++ = mpicxx # g++ # parallel compilers
+#pcc = gcc # parallel compilers
+#
+#PLIBS = -L/opt/intel/mkl/10.0.1.014/lib/32 -lmkl_lapack -lmkl -lguide -lgsl -pthread
+#LLIBS = -L/opt/intel/mkl/10.0.1.014/lib/32 -lmkl_lapack -lmkl -lguide -pthread

@@ -1,0 +1,12 @@
+*.pyc
+.DS_Store
+examples/
+*.so
+ctqmc
+skrams
+vaspDMFT
+libdmft.a
+*.o
+
+#sphinx
+_build/

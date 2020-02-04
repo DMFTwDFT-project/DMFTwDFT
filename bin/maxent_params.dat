@@ -1,0 +1,17 @@
+params={'statistics': 'fermi', # fermi/bose
+        'Ntau'      : 300,     # Number of time points
+        'L'         : 20.0,    # high-energy cutoff frequency on real axis
+        'x0'        : 0.005,   # low energy cut-off
+        'Nw'        : 1000,     # number of frequency points on real axis
+        'gwidth'    : 2*15.0,  # width of gaussian
+        'idg'       : 1,       # error scheme: idg=1 -> sigma=deltag ; idg=0 -> sigma=deltag*G(tau)
+        'deltag'    : 0.01,   # error
+        'Asteps'    : 4000,    # anealing steps
+        'alpha0'    : 1000,    # starting alpha
+        'min_ratio' : 0.001,    # condition to finish, what should be the ratio
+        'iflat'     : 1,       # iflat=0 : constant model, iflat=1 : gaussian of width gwidth, iflat=2 : input using file model.dat
+        'Nitt'      : 1000,    # maximum number of outside iterations
+        'Nr'        : 0,       # number of smoothing runs
+        'bwdth'     : 0.004,    # smoothing width
+        'Nf'        : 40,      # to perform inverse Fourier, high frequency limit is computed from the last Nf points
+        }
