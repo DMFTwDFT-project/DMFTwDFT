@@ -1,0 +1,333 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tutorials &mdash; DMFTwDFT 2.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Contributors" href="contributors.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> DMFTwDFT
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#dmft-calculation">DMFT calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dmft-post-processing">DMFT Post-processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">DMFTwDFT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>Tutorials</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/tutorials.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tutorials">
+<h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
+<p>The following set of tutorials explain usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo.
+To perform a DFT+DMFT calculation, the following files should be present.</p>
+<ul class="simple">
+<li><p>INPUT.py : contains the input parameters that govern the DMFT calculation.</p></li>
+<li><p>DFT_mu.out : This is a guess for the DFT Fermi energy.</p></li>
+<li><p>para_com.dat : The number of processors used for the DMFT calculation. E.g. mpirun -np 32</p></li>
+<li><p>para_com_dft.dat : The number of processors used for the DFT calculation. If not specified it will use the same as para_com.dat.</p></li>
+<li><p>DFT files: VASP = {POSCAR, KPOINTS, POTCAR, INCAR}, Siesta = {.fdf, .psf}</p></li>
+</ul>
+<p>Before you start remember to add the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory path in <code class="docutils literal notranslate"><span class="pre">INPUT.py</span></code> as the value for the key <code class="docutils literal notranslate"><span class="pre">path_bin</span></code>.
+Eg.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;path_bin&quot;</span><span class="p">:</span><span class="s2">&quot;~/Dropbox/Research/Projects/DMFTwDFT/bin/&quot;</span>
+</pre></div>
+</div>
+<div class="section" id="dmft-calculation">
+<h2>DMFT calculation<a class="headerlink" href="#dmft-calculation" title="Permalink to this headline">¶</a></h2>
+<p>This performs the DFT + DMFT calculations through the script <code class="docutils literal notranslate"><span class="pre">DMFT.py</span></code>.
+To get a description of the options, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DMFT</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>This script has the following options.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>-dft:</dt><dd><p>The choice of DFT code. Currently, VASP and Siesta are supported.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>-relax:</dt><dd><p>This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  <code class="docutils literal notranslate"><span class="pre">DFT_relax</span></code> directory.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>-structurename:</dt><dd><p>DFT codes such as Siesta uses input files that contain the name of the system e.g. <span class="math notranslate nohighlight">\(SrVO_3.fdf\)</span>. Therefore when performing DFT+DMFT calculations with Siesta this flag is required.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>-dmft:</dt><dd><p>This flag performs the DMFT calculation using the results from the DFT calculation if a previous DMFT calculation in the same directory is incomplete.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>-hf:</dt><dd><p>This flag performs the Hartree-Fock (HF) calculation to the correlated orbitals specified in INPUT.py if a previous HF calculation in the same directory is incomplete.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>-force:</dt><dd><p>This flag forces a DMFT or HF calculation even if a previous calculation has been completed. The option to check for completeness is helpful when running many DMFT/HF jobs on a cluster.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>-kmeshtol:</dt><dd><p>This controls the tolerance of two k-points belonging to the the same shell in the wannier90 calculation.</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The calculations are performed in an automatically generated <code class="docutils literal notranslate"><span class="pre">DMFT</span></code> or <code class="docutils literal notranslate"><span class="pre">HF</span></code> directory where the script was run from.</p>
+<p>E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$DMFT.py -dft vasp -relax -dmft
+$DMFT.py -dft siesta -structurename SrVO3 -dmft
+</pre></div>
+</div>
+</div>
+<div class="section" id="dmft-post-processing">
+<h2>DMFT Post-processing<a class="headerlink" href="#dmft-post-processing" title="Permalink to this headline">¶</a></h2>
+<p>DMFT post-processing is performed with the script <code class="docutils literal notranslate"><span class="pre">postDMFT.py</span></code>.
+To get a description of the options, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">postDMFT</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+</div>
+<p>This script performs anaytical continuation, density of states and band structure calculations on the DMFT/HF data. Once the DMFT/HF calculations are complete, this script should be initiated within the <code class="docutils literal notranslate"><span class="pre">DMFT</span></code> or <code class="docutils literal notranslate"><span class="pre">HF</span></code> directories. This script has the following options.</p>
+<ul class="simple">
+<li><dl class="simple">
+<dt>ac:</dt><dd><p>This function performs the Analytic Continuation to obtain the Self Energies on the real axis. It has the option <code class="docutils literal notranslate"><span class="pre">-siglistindx</span></code> to specify the last number of Self Energy files (sig.inp) to average for the calculation.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>dos:</dt><dd><p>This function performs the partial density of states of the correlated orbitals. It has the following options:</p>
+<ul>
+<li><p>-emin : Minimum energy value for interpolation</p></li>
+<li><p>-emax : Maximum energy value for interpolation</p></li>
+<li><p>-rom : Number of Matsubara Frequencey (<span class="math notranslate nohighlight">\(\omega\)</span>) points</p></li>
+<li><p>-broaden : Broadening of the dos</p></li>
+<li><p>-show : Display the density of states</p></li>
+<li><p>-elim : The energy range to plot</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>bands:</dt><dd><p>This function performs the DMFT band structure calculations. It has the following options:</p>
+<ul>
+<li><p>-emin : Minimum energy value for interpolation</p></li>
+<li><p>-emax : Maximum energy value for interpolation</p></li>
+<li><p>-rom : Number of Matsubara Frequencey ($omega$) points</p></li>
+<li><p>-kpband : Number of k-points for band structure calculation</p></li>
+<li><p>-kn : A list of labels for k-points</p></li>
+<li><p>-kp : A list of k-points corresponding to the the k-point labels</p></li>
+<li><p>-plotplain : Flag to plot a plain band structure</p></li>
+<li><p>-plotpartial : Flag to plot a projected band structure</p></li>
+<li><p>-wo : List of Wannier orbitals to project onto the band structure</p></li>
+<li><p>-vlim : Spectral intensity range</p></li>
+<li><p>-show : Display the bands</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+<p>The projected bands are especially helpful in determining the contribution to bands from different orbitals.
+The calculations are stored in directories ac, dos and bands, respectively.
+The following are some example commands to perform post-processing.</p>
+<p>E.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$postDMFT.py ac -siglistindx 4
+$postDMFT.py dos -show
+$postDMFT.py bands -plotplain
+$postDMFT.py bands -plotpartial -wo 4 5 6
+</pre></div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="contributors.html" class="btn btn-neutral float-right" title="Contributors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Uthpala Herath
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

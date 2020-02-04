@@ -20,21 +20,12 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'2.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -45,7 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Contributors" href="contributors.html" />
+    <link rel="next" title="Tutorials" href="tutorials.html" />
     <link rel="prev" title="DMFTwDFT documentation" href="index.html" /> 
 </head>
 
@@ -91,7 +82,16 @@
             
             
               <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-library-mode">Compiling library mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-dmft-x">Compiling dmft.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-dmft-dos-x">Compiling dmft_dos.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-atomd">Compiling atomd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-ctqmc">Compiling ctqmc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-post-tools">Compiling post-tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
@@ -160,17 +160,85 @@
             
   <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<p>DMFTwDFT is currently supported by Python 2.x.</p>
-<dl class="docutils">
-<dt>Please install the following dependencies prior to installing DMFTwDFT.</dt>
-<dd><ul class="first last simple">
-<li>matplotlib</li>
-<li>numpy</li>
-<li>scipy</li>
-<li>weave</li>
+<p>DMFTwDFT is currently supported by Python 2.x. Eventually, we will move on to Python 3.x.
+Please install the following dependencies prior to installing DMFTwDFT.</p>
+<ul class="simple">
+<li><p>matplotlib</p></li>
+<li><p>numpy</p></li>
+<li><p>scipy</p></li>
+<li><p>weave</p></li>
+<li><p>pychemia</p></li>
+<li><p>mpi4py</p></li>
 </ul>
-</dd>
-</dl>
+<p>The structure of the directories is as follows.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>DMFTwDFT
+        ├── bin
+        ├── docs
+        ├── examples
+        ├── scripts
+        ├── sphinx
+        └── sources
+                ├── src
+                ├── src_atomd
+                ├── src_ctqmc
+                └── src_post-tools
+                        ├── ksum
+                        ├── maxent_source
+                        └── skrams
+</pre></div>
+</div>
+<p>The following section describes the procesdure to compile the different componenets required to run DMFTwDFT. Once the executables and libraries have been compiled, they should be copied into the <code class="docutils literal notranslate"><span class="pre">/bin</span></code> directory.</p>
+<div class="section" id="compiling-library-mode">
+<h2>Compiling library mode<a class="headerlink" href="#compiling-library-mode" title="Permalink to this headline">¶</a></h2>
+<p>Compiling the Fortran file <code class="docutils literal notranslate"><span class="pre">dmft_lib.F90</span></code> available in the <code class="docutils literal notranslate"><span class="pre">/sources/src/</span></code> directory generates <code class="docutils literal notranslate"><span class="pre">libdmft.a</span></code> which can be used to link to DFT codes. In the case of VASP, add the location of this file to <code class="docutils literal notranslate"><span class="pre">LLIBS</span></code> in makefile.include. To compile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">lib</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compiling-dmft-x">
+<h2>Compiling dmft.x<a class="headerlink" href="#compiling-dmft-x" title="Permalink to this headline">¶</a></h2>
+<p>This module is for achieving DMFT self-consistency.
+More details can found in the following article (Appendix B):</p>
+<p><a class="reference external" href="https://journals.aps.org/prb/pdf/10.1103/PhysRevB.90.235103">https://journals.aps.org/prb/pdf/10.1103/PhysRevB.90.235103</a></p>
+<p>It performs the <span class="math notranslate nohighlight">\(k\)</span>-point sum and and computes the local Green’s function (G_loc.out) and hybridization function (Delta.inp). <code class="docutils literal notranslate"><span class="pre">atomd.py</span></code> computes local atomic interactions and generates inputs required for the <code class="docutils literal notranslate"><span class="pre">ctqmc</span></code> run. These parts are developed by Kristjan Haule at Rutgers University.
+The sources to compile dmft.x is located in <code class="docutils literal notranslate"><span class="pre">/sources/</span></code>. To compile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compiling-dmft-dos-x">
+<h2>Compiling dmft_dos.x<a class="headerlink" href="#compiling-dmft-dos-x" title="Permalink to this headline">¶</a></h2>
+<p>This module is used for calculating DMFT partial density of states for the correlated orbitals. The sources are located in <code class="docutils literal notranslate"><span class="pre">/source/</span></code>. To compile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="n">dos</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compiling-atomd">
+<h2>Compiling atomd<a class="headerlink" href="#compiling-atomd" title="Permalink to this headline">¶</a></h2>
+<p>This module computes local atomic interactions and generates inputs required for the ctqmc impurity solver. The sources are located in <code class="docutils literal notranslate"><span class="pre">/sources/src_atomd/</span></code>. To compile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="nb">all</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="compiling-ctqmc">
+<h2>Compiling ctqmc<a class="headerlink" href="#compiling-ctqmc" title="Permalink to this headline">¶</a></h2>
+<p>This is the continuous time quantum monte carlo code to solve the impurity problem. The sources are located in <code class="docutils literal notranslate"><span class="pre">/sources/src_ctqmc</span></code>. To compile:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="nb">all</span>
+</pre></div>
+</div>
+<p>This will generate the Fortran libraries <code class="docutils literal notranslate"><span class="pre">gaunt.so</span></code> and <code class="docutils literal notranslate"><span class="pre">gutils.so</span></code>.</p>
+</div>
+<div class="section" id="compiling-post-tools">
+<h2>Compiling post-tools<a class="headerlink" href="#compiling-post-tools" title="Permalink to this headline">¶</a></h2>
+<p>This is a set of modules to perform DMFT post-processing with the <code class="docutils literal notranslate"><span class="pre">postDMFT.py</span></code> script.
+The sources are located under the directory <code class="docutils literal notranslate"><span class="pre">/src_post-tools/</span></code>, namely <code class="docutils literal notranslate"><span class="pre">ksum</span></code>, <code class="docutils literal notranslate"><span class="pre">maxent_source</span></code> and <code class="docutils literal notranslate"><span class="pre">skrams</span></code>. To compile, cd into each directory and do:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">make</span> <span class="nb">all</span>
+</pre></div>
+</div>
+<p>Once the above executables and libraries are compiled, don’t forget to copy them into the <code class="docutils literal notranslate"><span class="pre">/bin</span></code> directory.</p>
+<p>DMFTwDFT requires <code class="docutils literal notranslate"><span class="pre">wannier90.x</span></code> to be in the <code class="docutils literal notranslate"><span class="pre">/bin</span></code> directory as well. You can get it from <a class="reference external" href="http://www.wannier.org/">http://www.wannier.org/</a>.</p>
+<p>Finally, the location of the <code class="docutils literal notranslate"><span class="pre">/bin</span></code> directory should be added to the <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code> environmental variables in your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>.</p>
+</div>
 </div>
 
 
@@ -181,7 +249,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contributors.html" class="btn btn-neutral float-right" title="Contributors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="index.html" class="btn btn-neutral float-left" title="DMFTwDFT documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

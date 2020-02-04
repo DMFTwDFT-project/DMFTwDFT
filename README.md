@@ -28,6 +28,7 @@ Chris Marianetti <br />
 Uthpala Herath <br />
 Vijay Singh <br />
 Benny Wah <br />
+Xingyu Liao <br />
 
 Support packages
 ----------------
@@ -46,6 +47,8 @@ Changes
 v1.0 July 31, 2018 - Initial release (Command line version)
 
 v2.0 July 10, 2019 - DMFTwDFT library version
+
+v3.0 November 25, 2019 - Added DMFT.py and postDMFT.py scripts
 
 
 

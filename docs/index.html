@@ -20,21 +20,12 @@
   <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
   
     
-      <script type="text/javascript">
-          var DOCUMENTATION_OPTIONS = {
-              URL_ROOT:'./',
-              VERSION:'2.0',
-              LANGUAGE:'None',
-              COLLAPSE_INDEX:false,
-              FILE_SUFFIX:'.html',
-              HAS_SOURCE:  true,
-              SOURCELINK_SUFFIX: '.txt'
-          };
-      </script>
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
         <script type="text/javascript" src="_static/jquery.js"></script>
         <script type="text/javascript" src="_static/underscore.js"></script>
         <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script async="async" type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -91,6 +82,7 @@
             
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
@@ -159,21 +151,45 @@
             
   <div class="section" id="dmftwdft-documentation">
 <h1>DMFTwDFT documentation<a class="headerlink" href="#dmftwdft-documentation" title="Permalink to this headline">¶</a></h1>
-<p>DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes.</p>
+<p>DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently VASP and Siesta are supported.</p>
+<p>DMFTwDFT consists of two main segments.</p>
+<ol class="arabic simple">
+<li><p>DMFT.py     - Performs the DFT and DMFT calculations.</p></li>
+<li><p>postDMFT.py - Performs post-processing including analytic contiuation, density of states and band structures.</p></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">/scripts</span></code> directory contains several utility scripts.</p>
+<div class="section" id="library-mode">
+<h2>Library mode<a class="headerlink" href="#library-mode" title="Permalink to this headline">¶</a></h2>
+<p>DMFTwDFT consists of a library mode that can be used to interface other DFT codes to the framework. This calls Fortran subroutines to obtain information to update charge density within the DFT+DMFT loop. Specifically, one can pass the <span class="math notranslate nohighlight">\(k\)</span>-points information within DFT to the subroutine <code class="docutils literal notranslate"><span class="pre">Compute_DMFT()</span></code> and can obtain DMFT weight and Unitary matrix at each <span class="math notranslate nohighlight">\(k\)</span>-point for computing the charge density <span class="math notranslate nohighlight">\(\rho(r)\)</span>. The example of using this library can be found in library-mode-test directory. Instructions on how to compile this mode is provided in the installation section.</p>
+<p>For a detailed explanation of DMFTwDFT please refer to:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-library-mode">Compiling library mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-dmft-x">Compiling dmft.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-dmft-dos-x">Compiling dmft_dos.x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-atomd">Compiling atomd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-ctqmc">Compiling ctqmc</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-post-tools">Compiling post-tools</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#dmft-calculation">DMFT calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#dmft-post-processing">DMFT Post-processing</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 </div>
 </div>
+</div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
 </ul>
 </div>
 
