@@ -133,6 +133,8 @@ class Initialize():
 		print((TB.TB_orbs))
 		if list(pV.keys()).count('NBANDS='):
 			self.DFT.NBANDS = pV['NBANDS='][0]
+		else:
+			self.DFT.NBANDS = 10
 		self.DFT.Create_win(TB,p['atomnames'],p['orbs'],p['L_rot'],self.DFT.NBANDS,self.DFT.EFERMI+p['ewin'][0],self.DFT.EFERMI+p['ewin'][1],self.kmeshtol)
 
 		if self.dft =='siesta':

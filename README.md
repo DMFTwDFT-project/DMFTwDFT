@@ -17,7 +17,7 @@ Installation and usage
 
 Please refer to the documentation.
 
-https://romerogroup.github.io/DMFTwDFT/ 
+https://dmftwdft-project.github.io/DMFTwDFT/
 
 Contributors
 ------------
