@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 """ This script takes self-energy of DFT+DMFT code,
 and performs max-entropy on auxiliary Green's function of the form
 Gc(iom) = 1/(iom-Sigma+s_oo)
@@ -36,7 +36,7 @@ print 'nb=',nb, 'nz=',nz
 
 
 # path to skrams executable
-#exepath = os.environ.get('WIEN_DMFT_ROOT')
+exepath = os.environ.get('WIEN_DMFT_ROOT')
 # need 'maxent_params.dat'
 execfile('maxent_params.dat')
 
@@ -70,7 +70,7 @@ for b in range(nb):
     savetxt('dosn', vstack((omega_n,Aw_n)).transpose())
     
     # Performs Kramars-Kronig
-    cmd = 'skrams -cn 2 -s -pi dosn > Gc'
+    cmd = exepath + '/skrams -cn 2 -s -pi dosn > Gc'
     print cmd
     print os.popen(cmd).read()
     Gdata = loadtxt('Gc').transpose()

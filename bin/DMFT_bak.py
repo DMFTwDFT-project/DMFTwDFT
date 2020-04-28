@@ -537,7 +537,7 @@ class Initialize:
                     # forcing DMFT calculation
                     print("-force flag enabled. Restarting " + self.type + "...")
                     self.run_dft()
-                    print("Running " + self.type + " ...\n")
+                    print("Running " + self.type + " ...")
 
                     if self.dft != None and self.structurename != None:
                         if self.type == "HF":
@@ -567,28 +567,27 @@ class Initialize:
                         else:
                             cmd = "cd " + self.type + " && " + "RUNDMFT.py "
 
-                    subprocess.Popen(cmd, shell=True,).communicate()
-                    #     out, err = subprocess.Popen(
-                    #     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-                    # ).communicate()
-                    # if err:
-                    #     print(
-                    #         self.type
-                    #         + " calculation failed! Check "
-                    #         + self.type
-                    #         + ".error for details.\n"
-                    #     )
-                    #     errdir = self.type + os.sep + self.type + ".error"
-                    #     f = open(errdir, "wb")
-                    #     f.write(err)
-                    #     f.close()
-                    #     sys.exit()
-                    # else:
-                    #     print(self.type + " calculation complete.\n")
-                    #     outdir = self.type + os.sep + self.type + ".out"
-                    #     f = open(outdir, "wb")
-                    #     f.write(out)
-                    #     f.close()
+                    out, err = subprocess.Popen(
+                        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                    ).communicate()
+                    if err:
+                        print(
+                            self.type
+                            + " calculation failed! Check "
+                            + self.type
+                            + ".error for details.\n"
+                        )
+                        errdir = self.type + os.sep + self.type + ".error"
+                        f = open(errdir, "wb")
+                        f.write(err)
+                        f.close()
+                        sys.exit()
+                    else:
+                        print(self.type + " calculation complete.\n")
+                        outdir = self.type + os.sep + self.type + ".out"
+                        f = open(outdir, "wb")
+                        f.write(out)
+                        f.close()
 
                 else:
                     # exit when exiting DMFT calculation is complete.
@@ -599,7 +598,7 @@ class Initialize:
                 # Incomplete DMFT calculation.
                 print(self.type + " calculation incomplete.")
                 self.run_dft()
-                print("Running " + self.type + "...\n")
+                print("Running " + self.type + "...")
                 if self.dft != None and self.structurename != None:
                     if self.type == "HF":
                         cmd = (
@@ -627,35 +626,32 @@ class Initialize:
                         cmd = "cd " + self.type + " && " + "RUNDMFT.py -hf"
                     else:
                         cmd = "cd " + self.type + " && " + "RUNDMFT.py "
-
-                subprocess.Popen(cmd, shell=True).communicate()
-
-                # out, err = subprocess.Popen(
-                #     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-                # ).communicate()
-                # if err:
-                #     print(
-                #         self.type
-                #         + " calculation failed! Check "
-                #         + self.type
-                #         + ".error for details.\n"
-                #     )
-                #     errdir = self.type + os.sep + self.type + ".error"
-                #     f = open(errdir, "wb")
-                #     f.write(err)
-                #     f.close()
-                #     sys.exit()
-                # else:
-                #     print(self.type + " calculation complete.\n")
-                #     outdir = self.type + os.sep + self.type + ".out"
-                #     f = open(outdir, "wb")
-                #     f.write(out)
-                #     f.close()
+                out, err = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ).communicate()
+                if err:
+                    print(
+                        self.type
+                        + " calculation failed! Check "
+                        + self.type
+                        + ".error for details.\n"
+                    )
+                    errdir = self.type + os.sep + self.type + ".error"
+                    f = open(errdir, "wb")
+                    f.write(err)
+                    f.close()
+                    sys.exit()
+                else:
+                    print(self.type + " calculation complete.\n")
+                    outdir = self.type + os.sep + self.type + ".out"
+                    f = open(outdir, "wb")
+                    f.write(out)
+                    f.close()
 
         else:
             # no DMFT/INFO_TIME found
             self.run_dft()
-            print("Running " + self.type + "...\n")
+            print("Running " + self.type + "...")
             if self.dft != None and self.structurename != None:
                 if self.type == "HF":
                     cmd = (
@@ -683,29 +679,27 @@ class Initialize:
                     cmd = "cd " + self.type + " && " + "RUNDMFT.py -hf"
                 else:
                     cmd = "cd " + self.type + " && " + "RUNDMFT.py "
-            subprocess.Popen(cmd, shell=True).communicate()
-
-            # out, err = subprocess.Popen(
-            #     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            # ).communicate()
-            # if err:
-            #     print(
-            #         self.type
-            #         + " calculation failed! Check "
-            #         + self.type
-            #         + ".error for details.\n"
-            #     )
-            #     errdir = self.type + os.sep + self.type + ".error"
-            #     f = open(errdir, "wb")
-            #     f.write(err)
-            #     f.close()
-            #     sys.exit()
-            # else:
-            #     print(self.type + " calculation complete.\n")
-            #     outdir = self.type + os.sep + self.type + ".out"
-            #     f = open(outdir, "wb")
-            #     f.write(out)
-            #     f.close()
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+            if err:
+                print(
+                    self.type
+                    + " calculation failed! Check "
+                    + self.type
+                    + ".error for details.\n"
+                )
+                errdir = self.type + os.sep + self.type + ".error"
+                f = open(errdir, "wb")
+                f.write(err)
+                f.close()
+                sys.exit()
+            else:
+                print(self.type + " calculation complete.\n")
+                outdir = self.type + os.sep + self.type + ".out"
+                f = open(outdir, "wb")
+                f.write(out)
+                f.close()
 
 
 if __name__ == "__main__":

@@ -248,11 +248,12 @@ if __name__ == "__main__":
 
             if it == 0:
                 DMFT.EKIN0 = 0
+                print ("Running XHF0")
                 cmd = (
                     para_com
                     + " "
                     + p["path_bin"]
-                    + "XHF0.py > ksum_output 2> ksum_error"
+                    + "XHF0.py > ksum_output_XHF0 2> ksum_error_XHF0"
                 )
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -264,26 +265,28 @@ if __name__ == "__main__":
 
             if TB.LHF == ".FALSE.":
                 # cmd = para_com+" "+p['path_bin']+"dmft_ksum_sp > ksum_output 2> ksum_error"
+                print ("Running dmft.x")
                 cmd = (
                     para_com
                     + " "
                     + p["path_bin"]
-                    + "dmft.x > ksum_output 2> ksum_error"
+                    + "dmft.x > ksum_output_dmft.x 2> ksum_error_dmft.x"
                 )
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
             else:
+                print ("Running XHF")
                 cmd = (
                     para_com
                     + " "
                     + p["path_bin"]
-                    + "XHF.py > ksum_output 2> ksum_error"
+                    + "dmft.x > ksum_output_XHF 2> ksum_error_XHF"  # should it be XHF.py?
                 )
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
-            print out  # , err
+            print out, err
 
             fi = open("DMFT_mu.out", "r")
             DMFT.mu = float(fi.readline())
@@ -297,8 +300,7 @@ if __name__ == "__main__":
             main_out.flush()
 
             Ed_loc = array(loadtxt("Ed.out"))
-            print "Ed.out:"
-            print shape(Ed_loc)
+            print "\nEd.out:", Ed_loc
             Ed = []
             om_loc, Delta = Fileio.Read_complex_multilines("Delta.out")
             loc_idx = -1
@@ -310,8 +312,7 @@ if __name__ == "__main__":
                 for ispin in range(p["nspin"]):
                     for j, orbs in enumerate(cor_orb[i]):
                         loc_idx += 1
-                        print "---i:", i, " ---loc_idx:", loc_idx
-                        print ""
+                        print "---i:", i, " ", cor_at[i], " ---loc_idx:", loc_idx
                         Ed[i].append(Ed_loc[loc_idx])
                         Delta_loc[j + ispin * len(cor_orb[i]), :] = deepcopy(
                             Delta[loc_idx, :]
@@ -417,5 +418,6 @@ if __name__ == "__main__":
             print out  # , err
 
     main_out.write("Caculation Ends" + now())
+    print ("\nCalculation complete.")
     main_out.write("\n")
     main_out.flush()

@@ -520,7 +520,7 @@ class PostProcess:
 		This method performs the band structure calculations.
 		"""
         dest_dir = "bands"
-        dummy_broaden = 0.5
+        dummy_broaden = 1.0
 
         # spin polarized calculation?
         sp = args.sp

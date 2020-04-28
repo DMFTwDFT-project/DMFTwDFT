@@ -137,10 +137,10 @@ def RUN_CTQMC(p, pC, pD, it, itt, para_com, mu, ed, vdc, hf):
             pD["J="] = float(J[i])
 
             if hf:
-                print ("Running Hartree-Fock")
+                print ("Running Hartree-Fock\n")
                 pD["Eimp="] = array(ed[i]) - ed[i][0] - array([0, 100.0])
             else:
-                print ("Running DMFT")
+                print ("Running DMFT\n")
                 pD["Eimp="] = array(ed[i]) - ed[i][0]
 
             # changed ed[0] to ed[i] in sp version.
