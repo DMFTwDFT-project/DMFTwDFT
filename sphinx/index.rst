@@ -30,7 +30,7 @@ For a detailed explanation of DMFTwDFT please refer to:
  
    installation 
    tutorials
-   contributors
+   developers
    cite
 
 
