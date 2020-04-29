@@ -65,7 +65,7 @@ Coming soon...
 
 Changes
 -------
-
+v1.0 April 23, 2020 - Cleaned repository. Defaulted to Python 2.x version. <br />
 v0.3 November 25, 2019 - Added DMFT.py and postDMFT.py scripts <br />
 v0.2 July 10, 2019 - DMFTwDFT library version <br />
 v0.1 July 31, 2018 - Initial release (Command line version)
