@@ -1,7 +1,7 @@
 Installation
 ============
 
-DMFTwDFT is currently supports Python 2.x. It will be transitioned to Python 3.x in the future. 
+DMFTwDFT is currently supported by Python 2.x. It will be transitioned to Python 3.x in the future. 
 The Python 2.x version does not support ionic relaxation, therefore use an already relaxed structure as input. 
 
 Please install the following dependencies prior to installing DMFTwDFT. 
