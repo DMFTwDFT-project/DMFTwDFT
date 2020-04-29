@@ -1,7 +1,8 @@
 #!/usr/bin/perl -w
 
+# Copied from Wannier90.
 
-$numargs = $#ARGV+1; 
+$numargs = $#ARGV+1;
 
 if (($numargs<3)||($numargs>4)) {
     print  "usage: n1 n2 n3 [wan]\n";
@@ -10,7 +11,7 @@ if (($numargs<3)||($numargs>4)) {
     print  "       n3  - divisions along 3rd recip vector\n";
     print  "       wan - omit the kpoint weight (optional)\n";
     exit;
-} 
+}
 
 if ($ARGV[0]<=0) {
     print "n1 must be >0\n";

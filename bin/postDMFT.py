@@ -29,12 +29,12 @@ from splash import welcome
 
 
 class PostProcess:
-    """DMFTwDFT PostProcess
+    """DMFTwDFT post processing tool.
 
 	This class contains methods to perform post processing of the DMFT calculations.
 	Run inside the DMFT or HF directories.
 
-	Run with:
+        Usage:
 	postDMFT.py <options>
 
 	-h for help.
@@ -1048,141 +1048,148 @@ class PostProcess:
 
 
 if __name__ == "__main__":
+    args = sys.argv[1:]
+    if args:
 
-    # top level parser
-    # print(
-    #    "\n----------------------------------------------- \n| Welcome to the DMFTwDFT post-processing tool |\n-----------------------------------------------\n"
-    # )
-    welcome()
-    des = "This script performs Analytic Contiunation, Density of States and Band structure calculations from DMFTwDFT outputs."
-    parser = argparse.ArgumentParser(
-        description=des, formatter_class=RawTextHelpFormatter
-    )
-    subparsers = parser.add_subparsers(help="sub-command help")
+        welcome()
+        des = "This script performs Analytic Contiunation, Density of States and Band structure calculations from DMFTwDFT outputs.\nRun inside DMFT or HF directory."
+        parser = argparse.ArgumentParser(
+            description=des, formatter_class=RawTextHelpFormatter
+        )
+        subparsers = parser.add_subparsers(help="sub-command help")
 
-    # parser for ac
-    parser_ac = subparsers.add_parser("ac", help="Analytic Continuation")
-    parser_ac.add_argument(
-        "-siglistindx",
-        default=2,
-        type=int,
-        help="How many last self energy files to average?",
-    )
-    parser_ac.set_defaults(func=PostProcess().anal_cont)
+        # parser for ac
+        parser_ac = subparsers.add_parser("ac", help="Analytic Continuation")
+        parser_ac.add_argument(
+            "-siglistindx",
+            default=2,
+            type=int,
+            help="How many last self energy files to average?",
+        )
+        parser_ac.set_defaults(func=PostProcess().anal_cont)
 
-    # parser for dos
-    parser_dos = subparsers.add_parser("dos", help="DMFT Density of States")
-    parser_dos.add_argument(
-        "-emin", default=-5.0, type=float, help="Minimum value for interpolation"
-    )
-    parser_dos.add_argument(
-        "-emax", default=5.0, type=float, help="Maximum value for interpolation"
-    )
-    parser_dos.add_argument(
-        "-sp", action="store_true", help="Flag to plot spin-polarized DOS"
-    )
-    parser_dos.add_argument(
-        "-rom", default=1000, type=int, help="Matsubara Frequency (omega) points"
-    )
-    parser_dos.add_argument("-broaden", default=0.03, type=float, help="Broadening")
-    parser_dos.add_argument(
-        "-show", action="store_true", help="Display the density of states"
-    )
-    parser_dos.add_argument("-elim", type=float, nargs=2, help="Energy range to plot")
-    parser_dos.set_defaults(func=PostProcess().dos)
+        # parser for dos
+        parser_dos = subparsers.add_parser("dos", help="DMFT Density of States")
+        parser_dos.add_argument(
+            "-emin", default=-5.0, type=float, help="Minimum value for interpolation"
+        )
+        parser_dos.add_argument(
+            "-emax", default=5.0, type=float, help="Maximum value for interpolation"
+        )
+        parser_dos.add_argument(
+            "-sp", action="store_true", help="Flag to plot spin-polarized DOS"
+        )
+        parser_dos.add_argument(
+            "-rom", default=1000, type=int, help="Matsubara Frequency (omega) points"
+        )
+        parser_dos.add_argument("-broaden", default=0.03, type=float, help="Broadening")
+        parser_dos.add_argument(
+            "-show", action="store_true", help="Display the density of states"
+        )
+        parser_dos.add_argument(
+            "-elim", type=float, nargs=2, help="Energy range to plot"
+        )
+        parser_dos.set_defaults(func=PostProcess().dos)
 
-    # parser for bands
-    parser_bands = subparsers.add_parser("bands", help="DMFT Bandstructure")
-    parser_bands.add_argument(
-        "-emin", default=-5.0, type=float, help="Minimum value for interpolation"
-    )
-    parser_bands.add_argument(
-        "-emax", default=5.0, type=float, help="Maximum value for interpolation"
-    )
-    parser_bands.add_argument(
-        "-rom", default=1000, type=int, help="Matsubara Frequency (omega) points"
-    )
-    parser_bands.add_argument(
-        "-kpband",
-        default=500,
-        type=int,
-        help="Number of k-points for band structure calculation",
-    )
-    parser_bands.add_argument(
-        "-kn",
-        "--knames",
-        default=["$\Gamma$", "X", "M", "$\Gamma$", "R"],
-        type=str,
-        nargs="+",
-        help="Names of the k-points",
-    )
-    parser_bands.add_argument(
-        "-kp",
-        "--kplist",
-        default=[[0, 0, 0], [0.5, 0, 0], [0.5, 0.5, 0], [0, 0, 0], [0.5, 0.5, 0.5]],
-        type=int,
-        nargs="+",
-        action="append",
-        help="List of k-points as an array",
-    )
-    parser_bands.add_argument(
-        "-plotplain", action="store_true", help="Flag to plot plain band structure"
-    )
-    parser_bands.add_argument(
-        "-sp", action="store_true", help="Flag to plot spin-polarized band structure"
-    )
-    parser_bands.add_argument(
-        "-plotpartial",
-        action="store_true",
-        help="Flag to plot projected band structure",
-    )
-    parser_bands.add_argument(
-        "-wo",
-        "--wanorbs",
-        default=[4, 5, 6, 7, 8],
-        type=int,
-        nargs="+",
-        help="List of Wannier orbitals to project",
-    )
-    parser_bands.add_argument(
-        "-vlim", type=float, nargs=2, help="Spectral intensity range"
-    )
-    parser_bands.add_argument("-show", action="store_true", help="Display the bands")
-    parser_bands.set_defaults(func=PostProcess().bands)
+        # parser for bands
+        parser_bands = subparsers.add_parser("bands", help="DMFT Bandstructure")
+        parser_bands.add_argument(
+            "-emin", default=-5.0, type=float, help="Minimum value for interpolation"
+        )
+        parser_bands.add_argument(
+            "-emax", default=5.0, type=float, help="Maximum value for interpolation"
+        )
+        parser_bands.add_argument(
+            "-rom", default=1000, type=int, help="Matsubara Frequency (omega) points"
+        )
+        parser_bands.add_argument(
+            "-kpband",
+            default=500,
+            type=int,
+            help="Number of k-points for band structure calculation",
+        )
+        parser_bands.add_argument(
+            "-kn",
+            "--knames",
+            default=["$\Gamma$", "X", "M", "$\Gamma$", "R"],
+            type=str,
+            nargs="+",
+            help="Names of the k-points",
+        )
+        parser_bands.add_argument(
+            "-kp",
+            "--kplist",
+            default=[[0, 0, 0], [0.5, 0, 0], [0.5, 0.5, 0], [0, 0, 0], [0.5, 0.5, 0.5]],
+            type=int,
+            nargs="+",
+            action="append",
+            help="List of k-points as an array",
+        )
+        parser_bands.add_argument(
+            "-plotplain", action="store_true", help="Flag to plot plain band structure"
+        )
+        parser_bands.add_argument(
+            "-sp",
+            action="store_true",
+            help="Flag to plot spin-polarized band structure",
+        )
+        parser_bands.add_argument(
+            "-plotpartial",
+            action="store_true",
+            help="Flag to plot projected band structure",
+        )
+        parser_bands.add_argument(
+            "-wo",
+            "--wanorbs",
+            default=[4, 5, 6, 7, 8],
+            type=int,
+            nargs="+",
+            help="List of Wannier orbitals to project",
+        )
+        parser_bands.add_argument(
+            "-vlim", type=float, nargs=2, help="Spectral intensity range"
+        )
+        parser_bands.add_argument(
+            "-show", action="store_true", help="Display the bands"
+        )
+        parser_bands.set_defaults(func=PostProcess().bands)
 
-    # parser for oreo
-    parser_oreo = subparsers.add_parser("oreo", help="Runs oreo.py")
-    parser_oreo.add_argument("-trigger", default="Degree", type=str, help="trigger")
-    parser_oreo.add_argument("-trig1", default="band No.", type=str, help="trig1")
-    parser_oreo.add_argument("-bands", default=5, type=int, help="No. of bands")
-    parser_oreo.add_argument("-flag", default="-1", type=str, help="flag")
-    parser_oreo.add_argument("-begin", default=1000, type=int, help="begin")
-    parser_oreo.add_argument("-kpt", default=1, type=int, help="kpt")
-    parser_oreo.set_defaults(func=PostProcess().oreo_call)
+        # parser for oreo
+        parser_oreo = subparsers.add_parser("oreo", help="Runs oreo.py")
+        parser_oreo.add_argument("-trigger", default="Degree", type=str, help="trigger")
+        parser_oreo.add_argument("-trig1", default="band No.", type=str, help="trig1")
+        parser_oreo.add_argument("-bands", default=5, type=int, help="No. of bands")
+        parser_oreo.add_argument("-flag", default="-1", type=str, help="flag")
+        parser_oreo.add_argument("-begin", default=1000, type=int, help="begin")
+        parser_oreo.add_argument("-kpt", default=1, type=int, help="kpt")
+        parser_oreo.set_defaults(func=PostProcess().oreo_call)
 
-    # parser for Re_wt
-    parser_re_wt = subparsers.add_parser("Re_wt", help="Runs Re_wt.py")
-    parser_re_wt.add_argument(
-        "-trigger",
-        default="Degree",
-        type=str,
-        help="Which deg. of fredom do you want from OUTCAR?\n (Please mind your whitespace and if mode is imaginary):",
-    )
-    parser_re_wt.add_argument(
-        "-count", default=1, type=int, help="How many atoms are there:"
-    )
-    parser_re_wt.add_argument(
-        "-bands", default=5, type=int, help="How many Bloch bands did you use:"
-    )
-    parser_re_wt.add_argument("-trig1", default="band No.", type=str, help="trig1")
-    parser_re_wt.add_argument("-dof", default=1, type=int, help="dof")
-    parser_re_wt.add_argument("-xwt", default=0, type=float, help="xwt")
-    parser_re_wt.add_argument("-ywt", default=0, type=float, help="ywt")
-    parser_re_wt.add_argument("-zwt", default=0, type=float, help="zwt")
-    parser_re_wt.add_argument("-strang", default="", type=str, help="strang")
-    parser_re_wt.add_argument("-begin", default=1000, type=int, help="begin")
-    parser_re_wt.add_argument("-kpt", default=1, type=int, help="kpt")
-    parser_re_wt.set_defaults(func=PostProcess().re_wt_call)
+        # parser for Re_wt
+        parser_re_wt = subparsers.add_parser("Re_wt", help="Runs Re_wt.py")
+        parser_re_wt.add_argument(
+            "-trigger",
+            default="Degree",
+            type=str,
+            help="Which deg. of fredom do you want from OUTCAR?\n (Please mind your whitespace and if mode is imaginary):",
+        )
+        parser_re_wt.add_argument(
+            "-count", default=1, type=int, help="How many atoms are there:"
+        )
+        parser_re_wt.add_argument(
+            "-bands", default=5, type=int, help="How many Bloch bands did you use:"
+        )
+        parser_re_wt.add_argument("-trig1", default="band No.", type=str, help="trig1")
+        parser_re_wt.add_argument("-dof", default=1, type=int, help="dof")
+        parser_re_wt.add_argument("-xwt", default=0, type=float, help="xwt")
+        parser_re_wt.add_argument("-ywt", default=0, type=float, help="ywt")
+        parser_re_wt.add_argument("-zwt", default=0, type=float, help="zwt")
+        parser_re_wt.add_argument("-strang", default="", type=str, help="strang")
+        parser_re_wt.add_argument("-begin", default=1000, type=int, help="begin")
+        parser_re_wt.add_argument("-kpt", default=1, type=int, help="kpt")
+        parser_re_wt.set_defaults(func=PostProcess().re_wt_call)
 
-    args = parser.parse_args()
-    args.func(args)
+        args = parser.parse_args()
+        args.func(args)
+
+    else:
+        print("Usage: postDMFT.py -h")

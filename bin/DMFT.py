@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 from argparse import RawTextHelpFormatter
+from itertools import groupby
 from shutil import copyfile
 
 import numpy as np
@@ -18,13 +19,12 @@ from splash import welcome
 
 
 class Initialize:
-    """DMFTwDFT Initialization and Calculation
+    """ DMFTwDFT Initialization and Calculation (Python 2.x version).
 
-	This class contains methods to run the initial DFT and wannier90 calculation
+	This class contains methods to run the initial DFT and wannier90 calculations
 	to generate inputs for the DMFT calculation and performs it.
 
-	For ionic convergence create a directory DFT_relax under the root directory and have
-	DFT input files there.
+        This version does not support ionic covergence. Please use an optimized structure for the calculation.
 
 	Run with:
 	DMFT.py <options>
@@ -32,24 +32,20 @@ class Initialize:
 	<options>:
 	-dft <vasp,siesta>
 	-dftexec : Name of the DFT executable. Default: vasp_std
-	-relax : This flag turns on DFT relaxation if DFT_relax directory exists
 	-dmft : This flag performs dmft calculation
 	-hf : This flag performs Hartree-Fock calcualtion
 	-force : This flag forces a dmft or hf calculation even if it has been completed
 	-kmeshtol : k-mesh tolerance for wannier90
-
-
-	if the -relax flag is used then the program will check if convergence is reached and rerun
-	if necessary. Remember to put an updated version of the DFT inputs for higher convergence
-	inside DFT_relax. This only works with VASP.
+        -v : Enable verbosity
 
 	"""
 
     def __init__(self, args):
         """
-		Contains common functions for all methods.
-		This launches the dmft calculation as well.
-		"""
+	Contains common functions for all methods.
+	This launches the dmft calculation as well.
+	"""
+
         if os.path.exists("para_com.dat"):
             fipa = open("para_com.dat", "r")
             self.para_com = str(fipa.readline())[:-1]
@@ -85,6 +81,8 @@ class Initialize:
         # Verbosity
         self.v = args.v
 
+        print("Starting calculation...\n")
+
         ###################### VASP  ###################################################
         if args.dft == "vasp":
             self.dft = "vasp"
@@ -101,7 +99,6 @@ class Initialize:
 
         ###################### Siesta  ######################################################
         if args.dft == "siesta":
-            import pychemia
 
             self.dft = "siesta"
 
@@ -146,13 +143,51 @@ class Initialize:
 
     def fdf_to_poscar(self):
         """
-		This function converts the siesta .fdf format to POSCAR for further calculations.
-		"""
-        file = pychemia.code.siesta.SiestaInput(self.structurename + ".fdf")
-        self.st = file.get_structure()
-        pychemia.code.vasp.write_poscar(
-            self.st, filepath="POSCAR", newformat=True, direct=True, comment=None
+	This function converts the siesta .fdf format to POSCAR for further calculations.
+	"""
+        # file = pychemia.code.siesta.SiestaInput(self.structurename + ".fdf")
+        # self.st = file.get_structure()
+        # pychemia.code.vasp.write_poscar(
+        #     self.st, filepath="POSCAR", newformat=True, direct=True, comment=None
+        # )
+        fname = self.structurename + ".fdf"
+        file = open(fname, "r")
+        data = file.read()
+        file.close()
+
+        atoms = []
+        lattice_constant = float(re.findall(r"LatticeConstant\s*([\d.]*)", data)[0])
+        lattice_vectors = re.findall(r"LatticeVectors\s*([\d.\s]*)%endblock", data)
+        atomic_coordinates = re.findall(
+            r"AtomicCoordinatesAndAtomicSpecies\s*([\d.\sa-zA-Z]*)%endblock", data
         )
+        atomic_coordinates_lines = atomic_coordinates[0].split("\n")
+
+        atm_coord_len = len(atomic_coordinates_lines)
+        for i in range(atm_coord_len - 1):
+            atoms.append(atomic_coordinates_lines[i].split()[-1])
+        species = [i[0] for i in groupby(atoms)]
+        species_count = [len(list(group)) for key, group in groupby(atoms)]
+
+        f = open("POSCAR", "w")
+        f.write(" ".join(str(x) for x in species))
+        f.write("\n%f\n" % lattice_constant)
+        f.write("\n".join(str(x) for x in lattice_vectors[0].split("\n")))
+        f.write(" ".join(str(x) for x in species))
+        f.write("\n")
+        f.write(" ".join(str(x) for x in species_count))
+        f.write("\nDirect\n")
+        for i in range(atm_coord_len - 1):
+            f.write(
+                " ".join(
+                    [
+                        " ".join(map(str, atomic_coordinates_lines[i].split()[0:3])),
+                        atomic_coordinates_lines[i].split()[-1],
+                        "\n",
+                    ]
+                )
+            )
+        f.close()
 
     def gen_win(self):
         """
@@ -296,11 +331,12 @@ class Initialize:
 
     def vasp_convergence(self):
 
-        """
-		This function checks for convergence inside the DFT_relax directory
-		and copies CONTCAR as POSCAR to root directory. Otherwise it runs vasp for convergence.
-		If you want better convergence remember to copy an updated INCAR in the DFT_relax directory.
-		"""
+        """ NOT SUPPORTED IN THE PYTHON 2.X VERSION!
+
+            This function checks for convergence inside the DFT_relax directory
+            and copies CONTCAR as POSCAR to root directory. Otherwise it runs vasp for convergence.
+            If you want better convergence remember to copy an updated INCAR in the DFT_relax directory.
+            """
 
         def check_relax(vaspout):
             # Checks for convergence
@@ -722,60 +758,55 @@ class Initialize:
 
 
 if __name__ == "__main__":
+    args = sys.argv[1:]
+    if args:
+        welcome()
+        des = "This script performs DFT+DMFT calculations through maximally localized Wannier functions.\nFor post-processing, run postDMFT.py."
+        parser = argparse.ArgumentParser(
+            description=des, formatter_class=RawTextHelpFormatter
+        )
 
-    # top level parser
-    # print(
-    #    "\n---------------------- \n| Welcome to DMFTwDFT |\n----------------------\n"
-    # )
-    welcome()
-    des = "This script performs DFT+DMFT calculations through maximally localized Wannier functions.\n For post-processing, run postDMFT.py."
-    parser = argparse.ArgumentParser(
-        description=des, formatter_class=RawTextHelpFormatter
-    )
+        # parser for dft
+        parser.add_argument(
+            "-dft",
+            default="vasp",
+            type=str,
+            help="Choice of DFT code for the DMFT calculation.",
+            choices=["vasp", "siesta", "aiida"],
+        )
+        type_parser = parser.add_mutually_exclusive_group()
+        type_parser.add_argument(
+            "-dmft",
+            action="store_true",
+            help="Flag to run DMFT. Checks for a previous DMFT calculation and runs only if it is incomplete.",
+        )
+        type_parser.add_argument(
+            "-hf",
+            action="store_true",
+            help="Flag to perform Hartree-Fock calculation to the correlated orbitals.",
+        )
+        parser.add_argument(
+            "-force",
+            action="store_true",
+            help="Flag to force DMFT or HF calculation even if a previous calculation has been completed.",
+        )
+        parser.add_argument(
+            "-structurename",
+            type=str,
+            help="Name of the structure. Not required for VASP. ",
+        )
+        parser.add_argument(
+            "-kmeshtol",
+            default=0.00001,
+            type=float,
+            help="The tolerance to control if two k-points belong to the same shell in wannier90.",
+        )
+        parser.add_argument(
+            "-v", action="store_true", help="Enable verbosity.",
+        )
 
-    # parser for dft
-    parser.add_argument(
-        "-dft",
-        default="vasp",
-        type=str,
-        help="Choice of DFT code for the DMFT calculation.",
-        choices=["vasp", "siesta", "aiida"],
-    )
-    parser.add_argument(
-        "-relax",
-        action="store_true",
-        help="Flag to check for DFT convergence. Program exits if not converged.",
-    )
-    type_parser = parser.add_mutually_exclusive_group()
-    type_parser.add_argument(
-        "-dmft",
-        action="store_true",
-        help="Flag to run DMFT. Checks for a previous DMFT calculation and runs only if it is incomplete.",
-    )
-    type_parser.add_argument(
-        "-hf",
-        action="store_true",
-        help="Flag to perform Hartree-Fock calculation to the correlated orbitals.",
-    )
-    parser.add_argument(
-        "-force",
-        action="store_true",
-        help="Flag to force DMFT or HF calculation even if a previous calculation has been completed.",
-    )
-    parser.add_argument(
-        "-structurename",
-        type=str,
-        help="Name of the structure. Not required for VASP. ",
-    )
-    parser.add_argument(
-        "-kmeshtol",
-        default=0.00001,
-        type=float,
-        help="The tolerance to control if two k-points belong to the same shell in wannier90.",
-    )
-    parser.add_argument(
-        "-v", action="store_true", help="Verbosity",
-    )
+        args = parser.parse_args()
+        Initialize(args)
 
-    args = parser.parse_args()
-    Initialize(args)
+    else:
+        print("Usage: DMFT.py -h")
