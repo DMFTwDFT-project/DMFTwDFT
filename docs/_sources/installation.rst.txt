@@ -10,7 +10,6 @@ Please install the following dependencies prior to installing DMFTwDFT.
 * numpy 
 * scipy
 * weave
-* pychemia
 * mpi4py
 
 
