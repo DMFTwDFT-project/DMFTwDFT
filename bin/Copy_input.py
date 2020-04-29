@@ -34,7 +34,7 @@ if __name__ == "__main__":
         default="vasp",
         type=str,
         help="Choice of DFT code for the DMFT calculation.",
-        choices=["vasp", "siesta"],
+        choices=["vasp", "siesta", "aiida"],
     )
     args = parser.parse_args()
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
                 "para_com.dat",
             ],
             "Siesta": [str(structure) + ".out", "para_com.dat", "POSCAR"],
-            "aiida": ["POSCAR"],
+            "aiida": ["aiida.wout", "POSCAR"],
         }
         Ldft = False
         for dft in DFTfiles:
@@ -158,35 +158,40 @@ if __name__ == "__main__":
                     savetxt("./DFT_mu.out", array([EFermi]))
                     fi.close()
 
-    Wannierfiles = ["wannier90.chk", "wannier90.eig", "wannier90.win", "wannier90.amn"]
-    for i, files in enumerate(Wannierfiles):
-        # copy files
-        if os.path.exists(cpdr + "/" + files):
-            print("Copying Wannier file " + files + " to the current directory")
-            shutil.copy2(cpdr + "/" + files, ".")
-        else:
-            print(files + " must exist in a " + cpdr + " directory! Exiting!")
-            sys.exit(1)
-            # if i<2:
-            #   print files+" must exist in a "+cpdr+" directory! Exiting!"; sys.exit(1)
-            # else:
-            #   print files+" does not exist in a "+cpdr+" directory!"
-            #   print files+" will be needed for charge update!"
+        Wannierfiles = [
+            "wannier90.chk",
+            "wannier90.eig",
+            "wannier90.win",
+            "wannier90.amn",
+        ]
+        for i, files in enumerate(Wannierfiles):
+            # copy files
+            if os.path.exists(cpdr + "/" + files):
+                print("Copying Wannier file " + files + " to the current directory")
+                shutil.copy2(cpdr + "/" + files, ".")
+            else:
+                print(files + " must exist in a " + cpdr + " directory! Exiting!")
+                sys.exit(1)
+                # if i<2:
+                #   print files+" must exist in a "+cpdr+" directory! Exiting!"; sys.exit(1)
+                # else:
+                #   print files+" does not exist in a "+cpdr+" directory!"
+                #   print files+" will be needed for charge update!"
 
-    DMFTfiles = ["sig.inp", "DMFT_mu.out", "INPUT.py"]
-    if os.path.exists(cpdr + "/sig.inp"):
-        print("Copying DMFT file sig.inp to the current directory")
-        shutil.copy2(cpdr + "/sig.inp", ".")
-    else:
-        print("sig.inp file does not exist! Must be generated using sigzero.py")
-    if os.path.exists(cpdr + "/INPUT.py"):
-        print("Copying DMFT file INPUT.py to the current directory")
-        shutil.copy2(cpdr + "/INPUT.py", ".")
-    else:
-        print("sig.inp file does not exist! Must be generated using sigzero.py")
-    if os.path.exists(cpdr + "/DMFT_mu.out"):
-        print("Copying DMFT file DMFT_mu.out to the current directory")
-        shutil.copy2(cpdr + "/DMFT_mu.out", ".")
-    else:
-        print("DMFT_mu.out file does not exist! Copying from DFT_mu.out")
-        shutil.copy2("./DFT_mu.out", "./DMFT_mu.out")
+        DMFTfiles = ["sig.inp", "DMFT_mu.out", "INPUT.py"]
+        if os.path.exists(cpdr + "/sig.inp"):
+            print("Copying DMFT file sig.inp to the current directory")
+            shutil.copy2(cpdr + "/sig.inp", ".")
+        else:
+            print("sig.inp file does not exist! Must be generated using sigzero.py")
+        if os.path.exists(cpdr + "/INPUT.py"):
+            print("Copying DMFT file INPUT.py to the current directory")
+            shutil.copy2(cpdr + "/INPUT.py", ".")
+        else:
+            print("sig.inp file does not exist! Must be generated using sigzero.py")
+        if os.path.exists(cpdr + "/DMFT_mu.out"):
+            print("Copying DMFT file DMFT_mu.out to the current directory")
+            shutil.copy2(cpdr + "/DMFT_mu.out", ".")
+        else:
+            print("DMFT_mu.out file does not exist! Copying from DFT_mu.out")
+            shutil.copy2("./DFT_mu.out", "./DMFT_mu.out")
