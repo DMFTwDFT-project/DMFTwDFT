@@ -643,6 +643,7 @@ class Initialize:
                             f.close()
                             sys.exit()
                         else:
+                            print(self.type + " calculation complete.\n")
                             outdir = self.type + os.sep + self.type + ".out"
                             f = open(outdir, "wb")
                             f.write(out)
@@ -707,6 +708,7 @@ class Initialize:
                         f.close()
                         sys.exit()
                     else:
+                        print(self.type + " calculation complete.\n")
                         outdir = self.type + os.sep + self.type + ".out"
                         f = open(outdir, "wb")
                         f.write(out)
@@ -764,6 +766,7 @@ class Initialize:
                     f.close()
                     sys.exit()
                 else:
+                    print(self.type + " calculation complete.\n")
                     outdir = self.type + os.sep + self.type + ".out"
                     f = open(outdir, "wb")
                     f.write(out)
