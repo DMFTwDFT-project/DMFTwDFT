@@ -1,4 +1,4 @@
-DMFTwDFT (Python 2.x version)
+DMFTwDFT 
 =========
 
 DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly
@@ -39,7 +39,7 @@ If you have used DMFTwDFT in your work, please cite:
 
 [arXiv:2002.00068 [cond-mat.str-el]](https://arxiv.org/abs/2002.00068)
 
-BibTex::
+BibTex:
 
      @misc{singh2020dmftwdft,
     title={DMFTwDFT: An open-source code combining Dynamical Mean Field Theory with various Density Functional Theory packages},

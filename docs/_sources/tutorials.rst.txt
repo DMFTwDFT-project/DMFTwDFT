@@ -1,11 +1,11 @@
 Tutorials
 =========
 
-The following set of tutorials explain usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo. 
-To perform a DFT+DMFT calculation, the following files should be present.
+The following set of tutorials explain the usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo. 
+To perform a DFT+DMFT calculation, the following files should be present within the calculation directory.
 
-* INPUT.py : contains the input parameters that govern the DMFT calculation. 
-* DFT_mu.out : This is a guess for the DFT Fermi energy. 
+* INPUT.py : Contains the input parameters that govern the DMFT calculation. 
+* DFT_mu.out : This is a guess for the DFT Fermi energy (Optional). Will be updated after the initial DFT run. 
 * para_com.dat : The number of processors used for the DMFT calculation. E.g. mpirun -np 32
 * para_com_dft.dat : The number of processors used for the DFT calculation. If not specified it will use the same as para_com.dat. 
 * DFT files: VASP = {POSCAR, KPOINTS, POTCAR, INCAR}, Siesta = {.fdf, .psf}	
@@ -13,7 +13,7 @@ To perform a DFT+DMFT calculation, the following files should be present.
 Before you start remember to add the ``bin`` directory path in ``INPUT.py`` as the value for the key ``path_bin``.
 Eg.::
 
-	"path_bin":"~/Dropbox/Research/Projects/DMFTwDFT/bin/"
+	"path_bin":"~/Dropbox/git/DMFTwDFT/bin/"
 
 
 DMFT calculation
@@ -30,7 +30,7 @@ This script has the following options.
 	The choice of DFT code. Currently, VASP and Siesta are supported.
 
 * -relax:
-	This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  ``DFT_relax`` directory. 
+	This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  ``DFT_relax`` directory. NOTE: ONLY SUPPORTED IN THE PYTHON 3.x VERSION.
 
 * -structurename:
 	DFT codes such as Siesta uses input files that contain the name of the system e.g. :math:`SrVO_3.fdf`. Therefore when performing DFT+DMFT calculations with Siesta this flag is required.
@@ -46,6 +46,9 @@ This script has the following options.
 
 * -kmeshtol:
 	This controls the tolerance of two k-points belonging to the the same shell in the wannier90 calculation. 	
+
+* -v:
+	Flag to enable verbosity.
 
 The calculations are performed in an automatically generated ``DMFT`` or ``HF`` directory where the script was run from. 
 
@@ -88,6 +91,7 @@ This script performs anaytical continuation, density of states and band structur
 	- -kp : A list of k-points corresponding to the the k-point labels
 	- -plotplain : Flag to plot a plain band structure
 	- -plotpartial : Flag to plot a projected band structure
+	- -sp : Flag to plot spin-polarized band structure
 	- -wo : List of Wannier orbitals to project onto the band structure
 	- -vlim : Spectral intensity range
 	- -show : Display the bands
@@ -102,3 +106,4 @@ E.g.: ::
 	$postDMFT.py dos -show
 	$postDMFT.py bands -plotplain
 	$postDMFT.py bands -plotpartial -wo 4 5 6
+	$postDMFT.py bands -sp -show

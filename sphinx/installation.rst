@@ -1,6 +1,9 @@
 Installation
 ============
-DMFTwDFT is currently supported by Python 2.x. Eventually, we will move on to Python 3.x.
+
+DMFTwDFT is currently supports Python 2.x. It will be transitioned to Python 3.x in the future. 
+The Python 2.x version does not support ionic relaxation, therefore use an already relaxed structure as input. 
+
 Please install the following dependencies prior to installing DMFTwDFT. 
 
 * matplotlib 
@@ -17,73 +20,62 @@ The structure of the directories is as follows. ::
 		├── bin
 		├── docs
 		├── examples
+		├── reference 
 		├── scripts
 		├── sphinx
 		└── sources
 			├── src
-			├── src_atomd
-			├── src_ctqmc
-			└── src_post-tools
-				├── ksum
-				├── maxent_source
-				└── skrams
+			├── dmft_ksum
+			├── fort_kpt_tools
+			└── CSC-mods
 
-The following section describes the procesdure to compile the different componenets required to run DMFTwDFT. Once the executables and libraries have been compiled, they should be copied into the ``/bin`` directory.
+The following section describes the procedure to compile the different componenets required to run DMFTwDFT. Once the executables and libraries have been compiled, they should be inside the ``bin`` directory.
+
+Compiling sources
+-----------------
+
+From the ``sources`` directory execute::
+
+	make all
+
+This should compile the follwing executables and libraries and copy them to the ``bin`` directory.
+
+* dmft.x - This module is for achieving DMFT self-consistency. It performs the :math:`k`-point sum and and computes the local Green's function (G_loc.out) and hybridization function (Delta.inp).
+* dmft_dos.x - Performs DOS calculation. 
+* dmft_ksum_band - Performs band structure calculation. 
+* dmft_ksum_partial_band - Performs projected band structure calculation. 
+* fort_kpt_tools.so - Fortran based k-points tool.
+
 
 Compiling library mode
 ----------------------
 
-Compiling the Fortran file ``dmft_lib.F90`` available in the ``/sources/src/`` directory generates ``libdmft.a`` which can be used to link to DFT codes. In the case of VASP, add the location of this file to ``LLIBS`` in makefile.include. To compile: ::
+The above compilation also generates ``libdmft.a`` which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. In the case of VASP, add the location of this file to ``LLIBS`` in VASP's makefile.include. The modified VASP files are in the ``sources/CSC-mods`` directory. Copy these to the VASP source directory and recompile VASP. 
 
-	make lib
 
-Compiling dmft.x
-----------------
+External libraries and executables
+----------------------------------
 
-This module is for achieving DMFT self-consistency.
-More details can found in the following article (Appendix B):
+DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Kristjan Haule at Rutgers University and are available in the eDMFT package.
+Follow the provided instructions on the `web page <http://hauleweb.rutgers.edu/tutorials/index.html>`_ to download and compile it. 
 
-`<https://journals.aps.org/prb/pdf/10.1103/PhysRevB.90.235103>`_
+Once compiled copy the following executables and libraries to the DMFTwDFT ``bin`` directory.
 
-It performs the :math:`k`-point sum and and computes the local Green's function (G_loc.out) and hybridization function (Delta.inp). ``atomd.py`` computes local atomic interactions and generates inputs required for the ``ctqmc`` run. These parts are developed by Kristjan Haule at Rutgers University.
-The sources to compile dmft.x is located in ``/sources/``. To compile: ::
+* ctqmc
+* gaunt.so
+* gutils.so
+* skrams
+* maxent_routines.so
 
-	make 
+If the automated compilation is successful, these are found in the eDMFT ``bin`` directory. Otherwise compile them manually inside the ``src/impurity`` directories. gaunt.so and gutils.so are inside the 
 
-Compiling dmft_dos.x
---------------------
+Wannier90 library
+-----------------
 
-This module is used for calculating DMFT partial density of states for the correlated orbitals. The sources are located in ``/source/``. To compile: ::
+DMFTwDFT requires ``wannier90.x`` and ``w90chk2chk.x`` to be in the ``bin`` directory. You can get them from `<http://www.wannier.org/>`_. VASP should be recompiled with the Wannier90 library.
 
-	make dos
+PATH variables
+--------------
 
-Compiling atomd
----------------
-
-This module computes local atomic interactions and generates inputs required for the ctqmc impurity solver. The sources are located in ``/sources/src_atomd/``. To compile: ::
-
-	make all
-
-Compiling ctqmc
----------------
-
-This is the continuous time quantum monte carlo code to solve the impurity problem. The sources are located in ``/sources/src_ctqmc``. To compile: ::
-
-	make all
-
-This will generate the Fortran libraries ``gaunt.so`` and ``gutils.so``.
-
-Compiling post-tools
---------------------
-
-This is a set of modules to perform DMFT post-processing with the ``postDMFT.py`` script. 
-The sources are located under the directory ``/src_post-tools/``, namely ``ksum``, ``maxent_source`` and ``skrams``. To compile, cd into each directory and do: ::
-
-	make all
-
-Once the above executables and libraries are compiled, don't forget to copy them into the ``/bin`` directory.
-
-DMFTwDFT requires ``wannier90.x`` to be in the ``/bin`` directory as well. You can get it from `<http://www.wannier.org/>`_.
-
-Finally, the location of the ``/bin`` directory should be added to the ``$PATH`` and ``$PYTHONPATH`` environmental variables in your ``.bashrc``.
+Finally, the location of the DMFTwDFT ``bin`` directory should be added to the ``$PATH`` and ``$PYTHONPATH`` environmental variables in your ``.bashrc``.
 

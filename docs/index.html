@@ -83,7 +83,8 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 
@@ -160,17 +161,16 @@
 <p>The <code class="docutils literal notranslate"><span class="pre">/scripts</span></code> directory contains several utility scripts.</p>
 <div class="section" id="library-mode">
 <h2>Library mode<a class="headerlink" href="#library-mode" title="Permalink to this headline">¶</a></h2>
-<p>DMFTwDFT consists of a library mode that can be used to interface other DFT codes to the framework. This calls Fortran subroutines to obtain information to update charge density within the DFT+DMFT loop. Specifically, one can pass the <span class="math notranslate nohighlight">\(k\)</span>-points information within DFT to the subroutine <code class="docutils literal notranslate"><span class="pre">Compute_DMFT()</span></code> and can obtain DMFT weight and Unitary matrix at each <span class="math notranslate nohighlight">\(k\)</span>-point for computing the charge density <span class="math notranslate nohighlight">\(\rho(r)\)</span>. The example of using this library can be found in library-mode-test directory. Instructions on how to compile this mode is provided in the installation section.</p>
-<p>For a detailed explanation of DMFTwDFT please refer to:</p>
+<p>DMFTwDFT consists of a library mode that can be used to interface other DFT codes to the framework to enable full charge self-consistent DFT+DMFT calculations. This calls Fortran subroutines to obtain information to update charge density within the DFT+DMFT loop. Specifically, one can pass the <span class="math notranslate nohighlight">\(k\)</span>-points information within DFT to the subroutine <code class="docutils literal notranslate"><span class="pre">Compute_DMFT()</span></code> and can obtain DMFT weights and Unitary matrix at each <span class="math notranslate nohighlight">\(k\)</span>-point for computing the charge density <span class="math notranslate nohighlight">\(\rho(r)\)</span>. The example of using this library can be found in library-mode-test directory. Instructions on how to compile this mode is provided in the installation section.</p>
+<p>For a detailed explanation of DMFTwDFT please refer to the documents in the <code class="docutils literal notranslate"><span class="pre">reference</span></code> directory and the articles <a class="reference external" href="https://arxiv.org/abs/2002.00068">DMFTwDFT</a> and <a class="reference external" href="https://journals.aps.org/prb/pdf/10.1103/PhysRevB.90.235103">PhysRevB.90.235103</a>.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-sources">Compiling sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-library-mode">Compiling library mode</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-dmft-x">Compiling dmft.x</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-dmft-dos-x">Compiling dmft_dos.x</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-atomd">Compiling atomd</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-ctqmc">Compiling ctqmc</a></li>
-<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-post-tools">Compiling post-tools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#external-libraries-and-executables">External libraries and executables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#wannier90-library">Wannier90 library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#path-variables">PATH variables</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
@@ -178,7 +178,8 @@
 <li class="toctree-l2"><a class="reference internal" href="tutorials.html#dmft-post-processing">DMFT Post-processing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 </div>

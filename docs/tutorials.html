@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Contributors" href="contributors.html" />
+    <link rel="next" title="Developers" href="developers.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
@@ -88,7 +88,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#dmft-post-processing">DMFT Post-processing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="contributors.html">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 
@@ -156,18 +157,18 @@
             
   <div class="section" id="tutorials">
 <h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
-<p>The following set of tutorials explain usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo.
-To perform a DFT+DMFT calculation, the following files should be present.</p>
+<p>The following set of tutorials explain the usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo.
+To perform a DFT+DMFT calculation, the following files should be present within the calculation directory.</p>
 <ul class="simple">
-<li><p>INPUT.py : contains the input parameters that govern the DMFT calculation.</p></li>
-<li><p>DFT_mu.out : This is a guess for the DFT Fermi energy.</p></li>
+<li><p>INPUT.py : Contains the input parameters that govern the DMFT calculation.</p></li>
+<li><p>DFT_mu.out : This is a guess for the DFT Fermi energy (Optional). Will be updated after the initial DFT run.</p></li>
 <li><p>para_com.dat : The number of processors used for the DMFT calculation. E.g. mpirun -np 32</p></li>
 <li><p>para_com_dft.dat : The number of processors used for the DFT calculation. If not specified it will use the same as para_com.dat.</p></li>
 <li><p>DFT files: VASP = {POSCAR, KPOINTS, POTCAR, INCAR}, Siesta = {.fdf, .psf}</p></li>
 </ul>
 <p>Before you start remember to add the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory path in <code class="docutils literal notranslate"><span class="pre">INPUT.py</span></code> as the value for the key <code class="docutils literal notranslate"><span class="pre">path_bin</span></code>.
 Eg.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;path_bin&quot;</span><span class="p">:</span><span class="s2">&quot;~/Dropbox/Research/Projects/DMFTwDFT/bin/&quot;</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;path_bin&quot;</span><span class="p">:</span><span class="s2">&quot;~/Dropbox/git/DMFTwDFT/bin/&quot;</span>
 </pre></div>
 </div>
 <div class="section" id="dmft-calculation">
@@ -185,7 +186,7 @@ To get a description of the options, run:</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-relax:</dt><dd><p>This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  <code class="docutils literal notranslate"><span class="pre">DFT_relax</span></code> directory.</p>
+<dt>-relax:</dt><dd><p>This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  <code class="docutils literal notranslate"><span class="pre">DFT_relax</span></code> directory. NOTE: ONLY SUPPORTED IN THE PYTHON 3.x VERSION.</p>
 </dd>
 </dl>
 </li>
@@ -211,6 +212,11 @@ To get a description of the options, run:</p>
 </li>
 <li><dl class="simple">
 <dt>-kmeshtol:</dt><dd><p>This controls the tolerance of two k-points belonging to the the same shell in the wannier90 calculation.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>-v:</dt><dd><p>Flag to enable verbosity.</p>
 </dd>
 </dl>
 </li>
@@ -260,6 +266,7 @@ To get a description of the options, run:</p>
 <li><p>-kp : A list of k-points corresponding to the the k-point labels</p></li>
 <li><p>-plotplain : Flag to plot a plain band structure</p></li>
 <li><p>-plotpartial : Flag to plot a projected band structure</p></li>
+<li><p>-sp : Flag to plot spin-polarized band structure</p></li>
 <li><p>-wo : List of Wannier orbitals to project onto the band structure</p></li>
 <li><p>-vlim : Spectral intensity range</p></li>
 <li><p>-show : Display the bands</p></li>
@@ -276,6 +283,7 @@ The following are some example commands to perform post-processing.</p>
 $postDMFT.py dos -show
 $postDMFT.py bands -plotplain
 $postDMFT.py bands -plotpartial -wo 4 5 6
+$postDMFT.py bands -sp -show
 </pre></div>
 </div>
 </div>
@@ -289,7 +297,7 @@ $postDMFT.py bands -plotpartial -wo 4 5 6
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="contributors.html" class="btn btn-neutral float-right" title="Contributors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="developers.html" class="btn btn-neutral float-right" title="Developers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

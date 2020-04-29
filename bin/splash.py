@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
 
+import sys
+
 version = "1.0"
 date = "April 23, 2020"
 
@@ -13,14 +15,14 @@ def welcome():
 | |_| | |  | |  _|   | |  \ V  V /| |_| |  _|   | |
 |____/|_|  |_|_|     |_|   \_/\_/ |____/|_|     |_|
 
-Python 2.x version.
     """
-
+    pversion = ".".join(map(str, sys.version_info[:3]))
     print(art)
+    print("Python 2.x version running on Python %s." % pversion)
     print(
-        "--- An open-source code combining Dynamical Mean Field Theory with various Density Functional Theory packages. ---"
+        "\n--- An open-source code combining Dynamical Mean Field Theory with various Density Functional Theory packages. ---"
     )
-    print("\nVersion %s updated on %s\n" % (version, date))
+    print("\nVersion %s updated on %s.\n" % (version, date))
     print(
         "Please cite:\nVijay Singh, Uthpala Herath, Benny Wah, Xingyu Liao, Aldo H. Romero, Hyowon Park,. DMFTwDFT: An open-source code combining Dynamical Mean Field Theory with various Density Functional Theory packages,. arXiv:2002.00068 [cond-mat.str-el].\n"
     )
