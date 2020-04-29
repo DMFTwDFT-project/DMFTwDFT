@@ -158,6 +158,12 @@ class Initialize:
         atoms = []
         lattice_constant = float(re.findall(r"LatticeConstant\s*([\d.]*)", data)[0])
         lattice_vectors = re.findall(r"LatticeVectors\s*([\d.\s]*)%endblock", data)
+
+        # creating a numpy array with lattice vectors
+        lattice_vec = np.array(lattice_vectors[0].split(), dtype="float64")
+        lattice_vec = lattice_vec.reshape(3, 3)
+        self.cell = lattice_constant * lattice_vec
+
         atomic_coordinates = re.findall(
             r"AtomicCoordinatesAndAtomicSpecies\s*([\d.\sa-zA-Z]*)%endblock", data
         )
@@ -166,8 +172,15 @@ class Initialize:
         atm_coord_len = len(atomic_coordinates_lines)
         for i in range(atm_coord_len - 1):
             atoms.append(atomic_coordinates_lines[i].split()[-1])
+
+        self.symbols = atoms
+
         species = [i[0] for i in groupby(atoms)]
         species_count = [len(list(group)) for key, group in groupby(atoms)]
+
+        self.positions = np.zeros((atm_coord_len - 1, 3), dtype="float64")
+        for counter in range(atm_coord_len - 1):
+            self.positions[counter, :] = atomic_coordinates_lines[counter].split()[0:3]
 
         f = open("POSCAR", "w")
         f.write(" ".join(str(x) for x in species))
@@ -201,7 +214,7 @@ class Initialize:
         if list(pV.keys()).count("NBANDS="):
             self.DFT.NBANDS = pV["NBANDS="][0]
         else:
-            self.DFT.NBANDS = 10
+            self.DFT.NBANDS = 100
         self.DFT.Create_win(
             TB,
             p["atomnames"],
@@ -218,16 +231,16 @@ class Initialize:
             # Update wannier90.win file then rename it
             f = open("wannier90.win", "a")
             f.write("\nbegin unit_cell_cart\n")
-            np.savetxt(f, self.st.cell)
+            np.savetxt(f, self.cell)
             f.write("end unit_cell_cart\n\n")
 
             # writing the atoms cart block
-            f.write("begin atoms_cart\n")
-            aT = (np.array([self.st.symbols])).T
-            b = self.st.positions
+            f.write("begin atoms_frac\n")
+            aT = (np.array([self.symbols])).T
+            b = self.positions
             atoms_cart = np.concatenate((aT, b), axis=1)
             np.savetxt(f, atoms_cart, fmt="%s")
-            f.write("end atoms_cart\n\n")
+            f.write("end atoms_frac\n\n")
 
             # writing the mp_grid line
             fi = open(self.structurename + ".fdf")
