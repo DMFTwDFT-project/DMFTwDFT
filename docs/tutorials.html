@@ -160,11 +160,11 @@
 <p>The following set of tutorials explain the usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo.
 To perform a DFT+DMFT calculation, the following files should be present within the calculation directory.</p>
 <ul class="simple">
-<li><p>INPUT.py : Contains the input parameters that govern the DMFT calculation.</p></li>
-<li><p>DFT_mu.out : This is a guess for the DFT Fermi energy (Optional). Will be updated after the initial DFT run.</p></li>
-<li><p>para_com.dat : The number of processors used for the DMFT calculation. E.g. mpirun -np 32</p></li>
-<li><p>para_com_dft.dat : The number of processors used for the DFT calculation. If not specified it will use the same as para_com.dat.</p></li>
-<li><p>DFT files: VASP = {POSCAR, KPOINTS, POTCAR, INCAR}, Siesta = {.fdf, .psf}</p></li>
+<li><p>INPUT.py - Contains the input parameters that govern the DMFT calculation.</p></li>
+<li><p>DFT_mu.out - This is a guess for the DFT Fermi energy (Optional). Will be updated after the initial DFT run.</p></li>
+<li><p>para_com.dat - The number of processors used for the DMFT calculation. E.g. mpirun -np 32</p></li>
+<li><p>para_com_dft.dat - The number of processors used for the DFT calculation. If not specified it will use the same as para_com.dat.</p></li>
+<li><p>DFT files - VASP = {POSCAR, KPOINTS, POTCAR, INCAR}, Siesta = {.fdf, .psf}</p></li>
 </ul>
 <p>Before you start remember to add the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory path in <code class="docutils literal notranslate"><span class="pre">INPUT.py</span></code> as the value for the key <code class="docutils literal notranslate"><span class="pre">path_bin</span></code>.
 Eg.:</p>
