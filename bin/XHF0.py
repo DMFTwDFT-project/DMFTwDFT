@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 import sys, subprocess
 import re, os, glob, shutil, socket, time
@@ -17,7 +17,7 @@ import copy
 #### This part controls the overall self-consistent steps        ##########
 ############################################  Dr. Hyowon Park    ##########
 
-
+         
 def HF_eigsystem(KPTS,TOT_NKPTS,NBANDMAX,EIGVAL,BAND_WIN,WANU):
    """ This function perform the k-sum of HF Self-consistent calculation
    """
@@ -25,12 +25,12 @@ def HF_eigsystem(KPTS,TOT_NKPTS,NBANDMAX,EIGVAL,BAND_WIN,WANU):
 #   ncor_orb=len(SigMdc)
 
    for ikp,kp in enumerate(KPTS):
-      if kp<TOT_NKPTS+1:
+      if kp<TOT_NKPTS+1: 
          nbmin=BAND_WIN[ikp][0]; nbmax=BAND_WIN[ikp][1]
          num_band_max=nbmax-nbmin+1
          evalHF[ikp,:num_band_max]=array(EIGVAL[ikp][nbmin:nbmax+1])
    return evalHF
-
+   
 
 def Ksum_HF(KPTS,TOT_NKPTS,NBANDMAX,NWANN,EIGVAL,BAND_WIN,WANU,evalHF,KWEIGHT):
    """Compute dm and EKIN"""
@@ -44,8 +44,8 @@ def Ksum_HF(KPTS,TOT_NKPTS,NBANDMAX,NWANN,EIGVAL,BAND_WIN,WANU,evalHF,KWEIGHT):
          EKIN+=2*dot(EIGVAL[ikp][nbmin:nbmax+1],KWEIGHT[ikp][:num_band_max]).real
          #EKIN+=dot(EIGVAL[ikp][nbmin:nbmax+1],diag(Uwanband2*DMFTW_perk*Uwanband2.H)).real
          DM+=2*diag(Uwanband*diag(KWEIGHT[ikp][:num_band_max])*Uwanband.H).real
-   return DM,EKIN
-
+   return DM,EKIN       
+   
 def Compute_totN_HF2(KPTS,TOT_NKPTS,BAND_WIN,KWEIGHT):
    totN=0.
    for ikp,kp in enumerate(KPTS):
@@ -133,7 +133,7 @@ def Compute_TETRA(ef,TOT_NKPTS,NBANDMAX,tetkptr,tet_idx,evalHF_reciv,TET_KPTS,nt
             WEIGHT[i2,b]+=cw2/6
             WEIGHT[i3,b]+=cw3/6
             WEIGHT[i4,b]+=cw4/6
-   return WEIGHT
+   return WEIGHT   
 
 def Compute_EPOT(DM,MOM,ncor_orb,norb,atm_idx,U,Up,Jh):
    EPOT=0.0
@@ -152,7 +152,7 @@ def Compute_EPOT(DM,MOM,ncor_orb,norb,atm_idx,U,Up,Jh):
    return Nd,EPOT
 
 if __name__ == '__main__':
-
+   
    comm = MPI.COMM_WORLD
    size = comm.Get_size()
    rank = comm.Get_rank()
@@ -242,18 +242,18 @@ if __name__ == '__main__':
       EIGVAL_send[:TOT_NKPTS,:]=array(WAN.eigvals[:,:])
       WANU_send=zeros((len(KPTS_send),NWANN,NBANDMAX),dtype=complex)
       WANU_send[:TOT_NKPTS,:,:]=array(WAN.WANU[:,:,:])
-
-   else:
-      ntet=None; tet_idx=None; TET_NK_proc=None; TET_KPTS_send=None; tetkptr_send=None; KVEC_send=None; NK_proc=None; NKTET_proc=None; KPTS_send=None; NWANN=None; NBANDS=None; TOT_NKPTS=None; NBANDMAX=None; BAND_WIN_send=None; NBANDMAX_send=None; #EIGVALTET_send=None;
-      EIGVAL_send=None; WANU_send=None; KWEIGHT_send=None;KWEIGHT_dn_send=None;
-
+      
+   else: 
+      ntet=None; tet_idx=None; TET_NK_proc=None; TET_KPTS_send=None; tetkptr_send=None; KVEC_send=None; NK_proc=None; NKTET_proc=None; KPTS_send=None; NWANN=None; NBANDS=None; TOT_NKPTS=None; NBANDMAX=None; BAND_WIN_send=None; NBANDMAX_send=None; #EIGVALTET_send=None;  
+      EIGVAL_send=None; WANU_send=None; KWEIGHT_send=None;KWEIGHT_dn_send=None; 
+      
    ######## Broadcast data for mpi #####
-   NK_proc = comm.bcast(NK_proc, root=0)
-   NBANDS = comm.bcast(NBANDS, root=0)
-   NWANN = comm.bcast(NWANN, root=0)
-   TOT_NKPTS = comm.bcast(TOT_NKPTS, root=0)
+   NK_proc = comm.bcast(NK_proc, root=0)   
+   NBANDS = comm.bcast(NBANDS, root=0)   
+   NWANN = comm.bcast(NWANN, root=0)   
+   TOT_NKPTS = comm.bcast(TOT_NKPTS, root=0)   
    NBANDMAX = comm.bcast(NBANDMAX, root=0)
-   TET_NK_proc = comm.bcast(TET_NK_proc, root=0)
+   TET_NK_proc = comm.bcast(TET_NK_proc, root=0)   
    tet_idx = comm.bcast(tet_idx, root=0)
    ntet = comm.bcast(ntet, root=0)
    evalHF_reciv=zeros((NK_proc*size,NBANDMAX),dtype=float)
@@ -275,7 +275,7 @@ if __name__ == '__main__':
    comm.Scatter(tetkptr_send, tetkptr, root=0)
    TET_KPTS=zeros(TET_NK_proc,dtype=int)
    comm.Scatter(TET_KPTS_send, TET_KPTS, root=0)
-
+         
 
    evalHF = HF_eigsystem(KPTS,TOT_NKPTS,NBANDMAX,EIGVAL,BAND_WIN,WANU)
 
@@ -297,7 +297,7 @@ if __name__ == '__main__':
       totN=Compute_totN_HF2(KPTS,TOT_NKPTS,BAND_WIN,KWEIGHT)
       totN=comm.allreduce(totN,op=MPI.SUM)
       totN=2*totN/TOT_NKPTS
-
+      
       if abs(totN-n_tot)<1e-10: break
       if totN<n_tot:
          if HIGHB==False:
@@ -316,14 +316,14 @@ if __name__ == '__main__':
    DM_sum=zeros(shape(DM))
    EKIN=comm.allreduce(EKIN,op=MPI.SUM)
    comm.Allreduce(DM,DM_sum,op=MPI.SUM)
-
+   
    if rank==0:
       EKIN=EKIN/TOT_NKPTS
       DM_sum=DM_sum/TOT_NKPTS
 #      MOM_sum=zeros(shape(DM_sum))
       #print DM_sum, MOM_sum; exit()
 #      Nd,EPOT=Compute_EPOT(DM_sum,MOM_sum,ncor_orb,norb,atm_idx,U,Up,Jh)
-
+      
       HF_iter.write( '%12.6f%12.6f%12.6f%12.6f%12.6f%12.6f' % (mu, totN, sum(DM_sum[:n_orbs]), sum(DM_sum[n_orbs*(Natom-1):n_orbs*Natom]), EKIN, 0.0) )
       HF_iter.write('\n')
       HF_iter.flush()
