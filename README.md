@@ -5,7 +5,7 @@ DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vib
 correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes.
 
 ### Features <br />
-![](docs/images/welcome.png)
+![](docs/images/welcome.jpg)
 
 ### Workflow <br />
 ![](docs/images/steps.png)

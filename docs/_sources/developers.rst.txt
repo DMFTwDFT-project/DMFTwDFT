@@ -14,9 +14,12 @@ Contributors
 1. Kristjan Haule [c]
 2. Chris Marianetti [d]
 
-[a] Department of Physics, University of Illinois at Chicago <br />
-[b] Department of Physics and Astronomy, West Virginia University <br />
-[c] Department of Physics and Astronomy, Rutgers University <br />
-[d] Materials Science & Engineering, Columbia University <br />
+[a] Department of Physics, University of Illinois at Chicago 
 
-We acknowledge Professor Kristjan Haule and Rutgers University for the CTQMC impurity solver and max-entropy routines which are used in DMFTwDFT. 
+[b] Department of Physics and Astronomy, West Virginia University 
+
+[c] Department of Physics and Astronomy, Rutgers University 
+
+[d] Materials Science & Engineering, Columbia University 
+
+We acknowledge Professor Kristjan Haule and Rutgers University for the CTQMC impurity solver and max-entropy routines which are used in DMFTwDFT. Please cite the relevant articles found on his website. 
