@@ -92,10 +92,6 @@ class Initialize:
 
             self.gen_win()
             self.gen_sig()
-            if args.relax:
-                import pychemia
-
-                self.vasp_convergence()
 
         ###################### Siesta  ######################################################
         if args.dft == "siesta":
