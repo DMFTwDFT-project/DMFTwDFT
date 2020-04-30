@@ -5,7 +5,7 @@ from scipy import *
 class VASP_class:
    def __init__(self):
       #pass
-      if not os.path.exists('DFT_mu.out'): print "DFT_mu.out should exist!"; exit() 
+      if not os.path.exists('DFT_mu.out'): print "DFT_mu.out should exist!"; exit()
       self.EFERMI=float(loadtxt('DFT_mu.out'))
       self.NBANDS=0
 
@@ -20,11 +20,11 @@ class VASP_class:
             if CHG[j]>=0:
                expon=int(log10(CHG[j]))+1
                print >>fi, '%.11fE%+.2d'% (CHG[j]/10**expon,expon),
-            else: 
+            else:
                expon=int(log10(abs(CHG[j])))+1
                num='%.11f' %(abs(CHG[j])/10**expon)
                print >>fi, '-'+num[1:]+'E%+.2d'% expon,
-         print >>fi, '' 
+         print >>fi, ''
       if Ngrid%5>0:
          print >>fi, '',
          for i in range((Ngrid/5)*5,Ngrid):
@@ -52,8 +52,8 @@ class VASP_class:
                   print >>fi, ' %.7E'% augCHG[i][j],
                else: print >>fi, '-%.7E'% abs(augCHG[i][j]),
             print >>fi, ''
-      fi.close() 
-     
+      fi.close()
+
 
    def Read_CHGCAR(self,finame='CHGCAR'):
       fi=open(finame,'r')
@@ -63,7 +63,7 @@ class VASP_class:
       line=fi.readline()
       headlines.append(line)
       num_atom=[int(na) for na in line.split()]
-      headlines.append(fi.readline()) 
+      headlines.append(fi.readline())
       for i in range(sum(num_atom)):
          headlines.append(fi.readline())
       headlines.append(fi.readline())
@@ -92,13 +92,13 @@ class VASP_class:
                augment[i*5:(i+1)*5]=[float(na) for na in fi.readline().split()]
             if num_proj%5>0: augment[(num_proj/5)*5:]=[float(na) for na in fi.readline().split()]
             augCHG.append(augment)
-            
+
          #AC=[sum(na) for na in augCHG]
          #print 'AUG charge=',sum(AC)
          else:
             fi.close()
             break
-      return headlines,CHG,augCHG,augIDX 
+      return headlines,CHG,augCHG,augIDX
 
    def Diff_CHGCAR(self,fi1name='CHGCAR.0',fi2name='CHGCAR.1'):
       fi=open(fi1name,'r')
@@ -126,7 +126,7 @@ class VASP_class:
       AC=[sum(na) for na in augCHG1]
       #print sum(AC)
       fi.close()
-    
+
       fi=open(fi2name,'r')
       for i in range(6):
          fi.readline()
@@ -161,7 +161,7 @@ class VASP_class:
          diff_aug+=sum((array(a1)-array(augCHG2[i]))**2)
       print sqrt(diff_aug)
       return diff_chg
-   
+
    def Read_OSZICAR(self,finame='OSZICAR',dft='vasp',structurename=None):
       if dft =='vasp':
          fi=open(finame,'r')
@@ -172,15 +172,15 @@ class VASP_class:
          data = fi.read()
          fi.close()
          self.E = float(re.findall(r'Total\s=[\s0-9+-.]*',data)[0].split()[-1])
-         
+
    def Read_NBANDS(self):
       cmd="grep NBANDS= OUTCAR | sed 's/.* //g'"
-      out, err = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate() 
+      out, err = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
       self.NBANDS=int(out[:-1]) #Ignoring \n
    def Read_NELECT(self):
       cmd="grep NELECT OUTCAR"
       out, err = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
-      self.NELECT=float(out.split()[2]) 
+      self.NELECT=float(out.split()[2])
 
    def Read_EFERMI(self):
       fi=open('OUTCAR','r')
@@ -198,11 +198,11 @@ class VASP_class:
       out, err = subprocess.Popen(cmd,shell=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
       self.EBAND=float(out.split()[3])
 
-   def Create_win(self,TB,atomnames,orbs,L_rot,nb=60,emin=0.0,emax=10.0,kmesh_tol=0.0001,num_iter=100):
+   def Create_win(self,TB,atomnames,orbs,L_rot,nb=60,emin=0.0,emax=10.0,kmesh_tol=0.0001,num_iter=500):
       if len(L_rot)!=len(atomnames): print "Check INPUT.py for atomnames and L_rot!"; exit()
       if len(orbs)!=len(atomnames): print "Check INPUT.py for atomnames and L_rot!"; exit()
       nwann=0
-      for i,orb in enumerate(orbs): nwann+=(2*TB.L[orb]+1)*TB.num_atoms[atomnames[i]] 
+      for i,orb in enumerate(orbs): nwann+=(2*TB.L[orb]+1)*TB.num_atoms[atomnames[i]]
       fi=open('wannier90.win','w')
       if nb==0:
          pass
@@ -266,7 +266,7 @@ if __name__ == '__main__':
       for idx in range(len(augIDX)):
          augCHG_new.append(augCHG_old[idx]+mix_CHG*(augCHG[idx]-augCHG_old[idx]))
    else: print "Cannot mix CHGCAR!"; exit()
-   ##print augCHG_new 
+   ##print augCHG_new
    VASP.Print_CHGCAR(headlines,CHG_new,augCHG_new,augIDX)
    ##for line in headlines:
    ##   print line,
