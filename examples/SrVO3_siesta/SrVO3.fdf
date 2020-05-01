@@ -1,0 +1,118 @@
+SystemName          Bulk SrVO3
+#                   Centrosymmetric paraelectric configuration
+#                   LDA-CA
+#                   600 Ry
+#                   8 x 8 x 8; 0.5 0.5 0.5 MP mesh
+
+SystemLabel         SrVO3
+NumberOfAtoms       5 
+NumberOfSpecies     3
+
+%block ChemicalSpeciesLabel
+ 1  38  Sr
+ 2  23  V
+ 3  8   O
+%endblock ChemicalSpeciesLabel
+
+#
+# Basis definition
+#
+
+%block PS.lmax
+   Sr    3
+    V    3
+    O    3
+%endblock PS.lmax
+
+%block PAO.Basis 
+Sr   5      1.64000
+ n=4   0   1   E   155.00000     6.00000
+     6.49993
+     1.00000
+ n=5   0   2   E   149.48000     6.50000
+     6.99958     5.49957
+     1.00000     1.00000
+ n=4   1   1   E   148.98000     5.61000
+     6.74964
+     1.00000
+ n=5   1   1   E     4.57000     1.20000
+     4.00000
+     1.00000
+ n=4   2   1   E   146.26000     6.09000
+     6.63062
+     1.00000
+V    5      1.91
+ n=3    0    1   E     93.95      5.20
+   5.69946662616249
+   1.00000000000000
+ n=3    1    1   E     95.47      5.20
+   5.69941339465994
+   1.00000000000000
+ n=4    0    2   E     96.47      5.60
+   6.09996398975307        5.09944363262274
+   1.00000000000000        1.00000000000000
+ n=3    2    2   E     46.05      4.95
+   5.94327035784617        4.70009988294302
+   1.00000000000000        1.00000000000000
+ n=4    1    1   E      0.50      1.77
+   3.05365979938936
+   1.00000000000000
+O     3     -0.28
+ n=2    0    2   E     40.58      3.95
+   4.95272270428712        3.60331408800389
+   1.00000000000000        1.00000000000000
+ n=2    1    2   E     36.78      4.35
+   4.99990228025066        3.89745395068600
+   1.00000000000000        1.00000000000000
+ n=3    2    1   E     21.69      0.93
+   2.73276990670788
+   1.00000000000000
+%endblock PAO.Basis 
+
+LatticeConstant     3.84652 Ang
+%block LatticeVectors
+    1.000   0.000   0.000
+    0.000   1.000   0.000
+    0.000   0.000   1.000
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat    Fractional
+%block AtomicCoordinatesAndAtomicSpecies
+    0.00000000    0.00000000    0.00000000   1  87.62       Sr
+    0.50000000    0.50000000    0.50000000   2  47.867      V
+    0.50000000    0.50000000    0.00000000   3  15.9994     O
+    0.50000000    0.00000000    0.50000000   3  15.9994     O
+    0.00000000    0.50000000    0.50000000   3  15.9994     O
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+%block kgrid_Monkhorst_Pack
+   8   0   0    0.5
+   0   8   0    0.5
+   0   0   8    0.5
+%endblock kgrid_Monkhorst_Pack
+
+XC.functional           LDA
+XC.authors              CA 
+
+MeshCutoff              600 Ry
+
+MaxSCFIterations        300
+DM.NumberPulay          3 
+DM.MixingWeight         0.2000
+DM.UseSaveDM            .true. 
+DM.Tolerance            0.0001
+ElectronicTemperature   0.075 eV
+SCF.MixAfterConvergence .false.
+
+Siesta2Wannier90.WriteMmn       .true.
+Siesta2Wannier90.WriteAmn       .true.
+Siesta2Wannier90.WriteEig       .true.
+Siesta2Wannier90.WriteUnk       .false.
+
+Siesta2Wannier90.NumberOfBands 28 
+
+#Siesta2Wannier90.UnkGrid1       4
+#Siesta2Wannier90.UnkGrid2       4
+#Siesta2Wannier90.UnkGrid3       4
+
+

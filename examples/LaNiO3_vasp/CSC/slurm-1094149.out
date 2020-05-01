@@ -1,0 +1,2 @@
+cp: omitting directory ‘../1094149’
+slurmstepd: error: *** JOB 1094149 ON bdwd-0008 CANCELLED AT 2019-05-09T19:02:36 ***

@@ -1,0 +1,267 @@
+{'O4': ['p_z', 'p_x', 'p_y'], 'Ni2': ['d_z2', 'd_xz', 'd_yz', 'd_x2y2', 'd_xy'], 'O6': ['p_z', 'p_x', 'p_y'], 'O5': ['p_z', 'p_x', 'p_y'], 'Ni1': ['d_z2', 'd_xz', 'd_yz', 'd_x2y2', 'd_xy'], 'O3': ['p_z', 'p_x', 'p_y'], 'O2': ['p_z', 'p_x', 'p_y'], 'O1': ['p_z', 'p_x', 'p_y']}
+
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+
+
+Reading a file  Delta.out
+
+
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  0 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  1 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  2 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  3 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  4 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  5 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  6 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  7 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  8 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  9 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  10 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  11 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  12 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  13 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+
+Reading a file  Delta.out
+Executed file atom_d.inp
+Br: kindx= [(7, 3), (9, 1), (5, -5), (7, -1), (6, 2), (3, -3), (5, 1), (1, -1), (4, -2), (4, 0), (3, 3), (6, -4), (4, 4), (8, -2), (7, -3), (2, 2), (10, 0), (5, 3), (1, 1), (5, -1), (6, 4), (0, 0), (8, 2), (7, 1), (2, -2), (6, 0), (9, -1), (8, 0), (4, 2), (5, -3), (5, 5), (4, -4), (3, 1), (3, -1), (6, -2), (2, 0)]
+Br: Stage1: Computing F^ in direct base
+Br: Stage2: Compressing F^+ according to its block diagonal form
+Br: Stage3: Renumbers states -- creates superstates for ctqmc
+Br: Stage4: F^dagger matrices between superstates evaluated
+
+Running ---- qmc for atom 0 iteration :  14 -----
+
+Reading a file  imp.0/Sig.out
+Reading a file  imp.0/Delta.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp
+Reading a file  G_loc.out
+Reading a file  sig.inp

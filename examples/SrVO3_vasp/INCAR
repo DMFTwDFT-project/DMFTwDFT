@@ -1,0 +1,12 @@
+ISPIN=    1 	#ISPIN
+LMAXMIX=    4 	#LMAX
+NBANDS=    46 	# LMAX
+EDIFF=    0.0001 	# ISMEAR
+System=    SrVO3 	# The name of system
+GGA=    PS 	#GGA
+IALGO=    48 	#LMAX
+LWANNIER90=    .TRUE. 	# ISMEAR
+ISMEAR=    -4 	# ISMEAR
+ADDGRID=    .TRUE. 	#GGA
+NCORE=    1 	#LMAX
+ENCUT=    600.0 	# Energy cutoff

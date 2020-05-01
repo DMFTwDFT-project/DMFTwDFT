@@ -281,7 +281,7 @@ if __name__ == "__main__":
                     para_com
                     + " "
                     + p["path_bin"]
-                    + "XHF0.py > ksum_output_XHF 2> ksum_error_XHF"  # should it be XHF.py?
+                    + "XHF.py > ksum_output_XHF 2> ksum_error_XHF"  # should it be XHF0.py?
                 )
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE

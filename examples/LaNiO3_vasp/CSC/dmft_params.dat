@@ -1,0 +1,13 @@
+# Number of k-points in Wannier basis=
+24 24 24
+# Total number of electrons=
+50.0
+# Number of om points for k-sum
+400
+# Number of iterations for mu
+100
+# Number of total correlated atoms
+2
+# Orbital index for the self-energy at each atom
+1 2 2 1 2 
+1 2 2 1 2 
