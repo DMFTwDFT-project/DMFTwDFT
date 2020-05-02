@@ -50,13 +50,21 @@ if __name__ == "__main__":
         "-structurename",
         type=str,
         help="Name of the structure. Not required for VASP. ",
+        default=None,
     )
     parser.add_argument(
         "-dft",
         default="vasp",
         type=str,
         help="Choice of DFT code for the DMFT calculation.",
-        choices=["vasp", "siesta"],
+        choices=["vasp", "siesta", "aiida"],
+    )
+    parser.add_argument(
+        "-aiida_type",
+        type=str,
+        help="Type of aiida calculation. ",
+        default="qe",
+        choices=["qe"],
     )
     parser.add_argument(
         "-hf",
@@ -64,6 +72,8 @@ if __name__ == "__main__":
         help="Flag to perform Hartree-Fock calculation to the correlated orbitals.",
     )
     args = parser.parse_args()
+
+    # ENF OF ARGPARSE SECTION #
 
     execfile("INPUT.py")  # Read input file
 
@@ -184,7 +194,9 @@ if __name__ == "__main__":
         sym_idx.append(idx.tolist())
 
     DMFT = DMFT_MOD.DMFT_class(p, pC, TB)
-    DFT = VASP.VASP_class()
+    DFT = VASP.VASP_class(
+        dft=args.dft, structurename=args.structurename, aiida_type=args.aiida_type
+    )
 
     ETOT_old = 0.0
     ETOT2_old = 0.0
@@ -200,13 +212,6 @@ if __name__ == "__main__":
         main_out.flush()
 
         Fileio.Create_dmft_params(p, pC, N_atoms, atm_idx, sym_idx)
-
-        # Read siesta total energy
-        if args.dft == "siesta":
-            fi = open(args.structurename + ".out", "r")
-            data = fi.read()
-            fi.close()
-            DFT.E = float(re.findall(r"Total\s=[\s0-9+-.]*", data)[0].split()[-1])
 
         for it in range(p["Nit"]):
             main_out.write("--- Starting DMFT loop " + str(it + 1) + now() + "---")
@@ -332,7 +337,7 @@ if __name__ == "__main__":
             ################# Mix sig.inp ###############################3
 
             DMFT.Read_Sig(TB, p["nspin"])
-            DMFT.Compute_Energy(DFT, TB, Ed, args.dft, args.structurename)
+            DMFT.Compute_Energy(DFT, TB, Ed)
             DMFT.Compute_Sigoo_and_Vdc(p, TB)
             DMFT.Mix_Sig_and_Print_sig_inp(
                 TB, p["Nd_qmc"], p["mix_sig"], "sig.inp", p["nspin"]

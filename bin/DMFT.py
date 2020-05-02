@@ -64,7 +64,9 @@ class Initialize:
         self.create_DFTmu()
 
         # import the VASP class. This can be used for other DFT codes as well.
-        self.DFT = VASP.VASP_class()
+        self.DFT = VASP.VASP_class(
+            dft=args.dft, aiida_type=args.aiida_type, structurename=args.structurename
+        )
 
         # dft running directory (current directory)
         self.dir = os.getcwd()
@@ -80,6 +82,9 @@ class Initialize:
 
         # Verbosity
         self.v = args.v
+
+        # Type of aiida calculation
+        self.aiida_type = args.aiida_type
 
         print("Starting calculation...\n")
 
@@ -217,10 +222,16 @@ class Initialize:
             p["orbs"],
             p["L_rot"],
             self.DFT.NBANDS,
+            # Initially DFT.EFERMI is taken from DFT_mu.out but will
+            # be updated later one the DFT calculation is complete.
             self.DFT.EFERMI + p["ewin"][0],
             self.DFT.EFERMI + p["ewin"][1],
             self.kmeshtol,
         )
+
+        # VASP populates the .win file when running but Siesta
+        # does not so we need to create a complete .win file for
+        # Siesta runs.
 
         if self.dft == "siesta":
 
@@ -402,44 +413,23 @@ class Initialize:
 
     def update_win(self):
         """
-		This updates the wannier90.win file with the number of bands and fermi energy
-		from the initial DFT calculation.
-		"""
-        if self.dft == "vasp":
-            # Updating wannier90.win with the number of DFT bands
-            self.DFT.Read_NBANDS()
-            self.DFT.Read_EFERMI()
-            self.DFT.Update_win(
-                self.DFT.NBANDS,
-                self.DFT.EFERMI + p["ewin"][0],
-                self.DFT.EFERMI + p["ewin"][1],
-            )
+        This updates the wannier90.win file with the number of bands and fermi energy
+        from the initial DFT calculation.
+	"""
+        # Updating wannier90.win with the number of DFT bands
+        self.DFT.Read_NBANDS()
+        self.DFT.Read_EFERMI()
+        self.DFT.Update_win(
+            self.DFT.NBANDS,
+            self.DFT.EFERMI + p["ewin"][0],
+            self.DFT.EFERMI + p["ewin"][1],
+        )
 
-        elif self.dft == "siesta":
-
-            # Reading the Fermi energy and number of bands from siesta output
-            fi = open(self.structurename + ".out", "r")
-            data = fi.read()
-            fi.close()
-
-            self.DFT.EFERMI = float(
-                re.findall(r"Fermi\s=[\s0-9+-.]*", data)[0].split()[-1]
-            )
-            self.DFT.NBANDS = int(
-                re.findall(r"Siesta2Wannier90.NumberOfBands[\s0-9]*", data)[0].split()[
-                    -1
-                ]
-            )
-
-            self.DFT.Update_win(
-                self.DFT.NBANDS,
-                self.DFT.EFERMI + p["ewin"][0],
-                self.DFT.EFERMI + p["ewin"][1],
-            )
+        if self.dft == "siesta":
             shutil.copy("wannier90.win", self.structurename + ".win")
 
-            # Updating DFT_mu.out
-            np.savetxt("DFT_mu.out", [self.DFT.EFERMI])
+        # Updating DFT_mu.out
+        np.savetxt("DFT_mu.out", [self.DFT.EFERMI])
 
     def run_wan90_pp(self):
         """
@@ -597,6 +587,8 @@ class Initialize:
                                 + self.dft
                                 + " -structurename "
                                 + self.structurename
+                                + " -aiida_type "
+                                + self.aiida_type
                             )
                         else:
                             cmd = (
@@ -607,6 +599,30 @@ class Initialize:
                                 + self.dft
                                 + " -structurename "
                                 + self.structurename
+                                + " -aiida_type "
+                                + self.aiida_type
+                            )
+
+                    elif self.dft != None:
+                        if self.type == "HF":
+                            cmd = (
+                                "cd "
+                                + self.type
+                                + " && "
+                                + "RUNDMFT.py -hf -dft "
+                                + self.dft
+                                + " -aiida_type "
+                                + self.aiida_type
+                            )
+                        else:
+                            cmd = (
+                                "cd "
+                                + self.type
+                                + " && "
+                                + "RUNDMFT.py -dft "
+                                + self.dft
+                                + " -aiida_type "
+                                + self.aiida_type
                             )
 
                     else:
@@ -676,6 +692,27 @@ class Initialize:
                             + " -structurename "
                             + self.structurename
                         )
+                elif self.dft != None:
+                    if self.type == "HF":
+                        cmd = (
+                            "cd "
+                            + self.type
+                            + " && "
+                            + "RUNDMFT.py -hf -dft "
+                            + self.dft
+                            + " -aiida_type "
+                            + self.aiida_type
+                        )
+                    else:
+                        cmd = (
+                            "cd "
+                            + self.type
+                            + " && "
+                            + "RUNDMFT.py -dft "
+                            + self.dft
+                            + " -aiida_type "
+                            + self.aiida_type
+                        )
 
                 else:
                     if self.type == "HF":
@@ -733,6 +770,28 @@ class Initialize:
                         + self.dft
                         + " -structurename "
                         + self.structurename
+                    )
+
+            elif self.dft != None:
+                if self.type == "HF":
+                    cmd = (
+                        "cd "
+                        + self.type
+                        + " && "
+                        + "RUNDMFT.py -hf -dft "
+                        + self.dft
+                        + " -aiida_type "
+                        + self.aiida_type
+                    )
+                else:
+                    cmd = (
+                        "cd "
+                        + self.type
+                        + " && "
+                        + "RUNDMFT.py -dft "
+                        + self.dft
+                        + " -aiida_type "
+                        + self.aiida_type
                     )
 
             else:
@@ -806,6 +865,14 @@ if __name__ == "__main__":
             "-structurename",
             type=str,
             help="Name of the structure. Not required for VASP. ",
+            default=None,
+        )
+        parser.add_argument(
+            "-aiida_type",
+            type=str,
+            help="Type of aiida calculation. ",
+            default="qe",
+            choices=["qe"],
         )
         parser.add_argument(
             "-kmeshtol",

@@ -147,7 +147,7 @@ class DMFT_class:
         # print self.nom,self.ncor_orb
         # print self.Sigoo, self.Vdc
 
-    def Compute_Energy(self, DFT, TB, ed, dft="vasp", structurename=None):
+    def Compute_Energy(self, DFT, TB, ed):
         # """This module compute totoal energy using DMFT"""
         self.ETOT = 0.0
         self.ETOT2 = 0.0
@@ -156,7 +156,7 @@ class DMFT_class:
         self.EDC = 0.0
         self.EKIN = 0.0
         # self.EKIN0=0.0
-        DFT.Read_OSZICAR("OSZICAR", dft, structurename)
+        DFT.Read_OSZICAR("OSZICAR")
         ETOT_imp = 0.0
         TrDeltaG = 0.0
         for i, ats in enumerate(self.cor_at):

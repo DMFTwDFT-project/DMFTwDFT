@@ -98,18 +98,22 @@ if __name__ == "__main__":
                 "para_com.dat",
             ],
             "Siesta": [str(structure) + ".out", "para_com.dat", "POSCAR"],
-            "aiida": ["aiida.wout", "POSCAR"],
+            "aiida": ["aiida.wout", "POSCAR", "aiida.out"],
         }
         Ldft = False
         for dft in DFTfiles:
             outfile = DFTfiles[dft][0]
             if os.path.exists(cpdr + "/" + outfile):
-                print(dft + " results has been found in a " + cpdr + " directory!")
+                print(dft + " results have been found in a " + cpdr + " directory!")
                 Ldft = True
                 break
             if Ldft == False:
                 print(
-                    "No " + dft + " results has been found in a " + cpdr + " directory!"
+                    "No "
+                    + dft
+                    + " results have been found in a "
+                    + cpdr
+                    + " directory!"
                 )  # ; break #sys.exit(1)
 
         if Ldft == True:
