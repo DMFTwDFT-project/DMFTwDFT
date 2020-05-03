@@ -24,9 +24,9 @@ p = {
     "mix_sig": 0.2,  # Mixing parameter for Sigma
     "q": [24, 24, 24],  # Number of k-points for Wannier k-sum
     "ewin": [-8, 8],  # Energy Window with respect to Fermi energy
-    "noms": 6000,  # Number of Matsubara frequencies for k-sum
+    "noms": 400,  # Number of Matsubara frequencies for k-sum
     "dc_type": 1,  # Vdc type
-    "mu_iter": 200,  # Steps for the chemical potential convergence
+    "mu_iter": 100,  # Steps for the chemical potential convergence
     "Nd_qmc": 0,  # 0: Use Nd_latt, 1: Use Nd_imp
     "path_bin": "~/Dropbox/Research/Projects/DMFTwDFT_sp/bin/",  # Path to bin files
 }

@@ -138,12 +138,12 @@ def RUN_CTQMC(p, pC, pD, it, itt, para_com, mu, ed, vdc, hf):
 
             if hf:
                 print ("\nSetting up CTQMC for Hartree-Fock...\n")
-                pD["Eimp="] = array(ed[i]) - ed[i][0] - array([0, 100.0])
+                pD["Eimp="] = array(ed[0]) - ed[i][0] - array([0, 100.0])
             else:
                 print ("\nSetting up CTQMC for DMFT...\n")
-                pD["Eimp="] = array(ed[i]) - ed[i][0]
+                pD["Eimp="] = array(ed[0]) - ed[i][0]
 
-            # changed ed[0] to ed[i] in sp version.
+            # changed ed[i] to ed[0] in sp version.
 
             Create_atomd(pD)
             # IMP_SOLVER.Create_Trans(TB.ncor_orb_list[i],p['nspin'],ats[0],cor_orb[i],TB)

@@ -86,6 +86,9 @@ class Initialize:
         # Type of aiida calculation
         self.aiida_type = args.aiida_type
 
+        # Flag for Siesta Lowdin
+        self.lowdin = args.lowdin
+
         print("Starting calculation...\n")
 
         ###################### VASP  ###################################################
@@ -107,7 +110,8 @@ class Initialize:
             self.siesta_exec = "siesta"
 
             self.fdf_to_poscar()
-            self.gen_win()
+            if not self.lowdin:
+                self.gen_win()
             self.gen_sig()
 
         #################### aiida ########################################################
@@ -304,7 +308,8 @@ class Initialize:
 		This method runs the initial siesta calculation.
 		"""
         # wannier90 pre-processing
-        self.run_wan90_pp()
+        if not self.lowdin:
+            self.run_wan90_pp()
 
         # Running siesta
         print("Running Siesta in %s" % dir)
@@ -536,8 +541,10 @@ class Initialize:
 
             # need to rename .eigW to .eig to run wannier90
             shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
-            self.update_win()
-            self.run_wan90(self.structurename)
+
+            if not self.lowdin:
+                self.update_win()
+                self.run_wan90(self.structurename)
 
             # renaming files
             shutil.copy(self.structurename + ".eig", "wannier90.eig")
@@ -879,6 +886,9 @@ if __name__ == "__main__":
             default=0.00001,
             type=float,
             help="The tolerance to control if two k-points belong to the same shell in wannier90.",
+        )
+        parser.add_argument(
+            "-lowdin", action="store_true", help="Flag to use Siesta Lowdin version.",
         )
         parser.add_argument(
             "-v", action="store_true", help="Enable verbosity.",

@@ -20,15 +20,15 @@ p = {
     ],  # DMFT orbitals, other orbitals are treated by HF
     "U": [5.0],  # Intra-U for each cor_at
     "J": [1.0],  # Hund's coupling
-    "alpha": [4.8],  # Double counting parameter
+    "alpha": [0.2],  # Double counting parameter
     "mix_sig": 0.2,  # Mixing parameter for Sigma
     "q": [24, 24, 24],  # Number of k-points for Wannier k-sum
-    "ewin": [-8, 8],  # Energy Window with respect to Fermi energy
-    "noms": 6000,  # Number of Matsubara frequencies for k-sum
+    "ewin": [-8, 6],  # Energy Window with respect to Fermi energy
+    "noms": 400,  # Number of Matsubara frequencies for k-sum
     "dc_type": 1,  # Vdc type
-    "mu_iter": 6000,  # Steps for the chemical potential convergence
+    "mu_iter": 100,  # Steps for the chemical potential convergence
     "Nd_qmc": 1,  # 0: Use Nd_latt, 1: Use Nd_imp
-    "path_bin": "~/Dropbox/Research/Projects/DMFTwDFT/bin/",  # Path to bin files
+    "path_bin": "~/Dropbox/git/DMFTwDFT/bin/",  # Path to bin files
 }
 
 
