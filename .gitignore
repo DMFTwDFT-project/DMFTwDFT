@@ -6,6 +6,8 @@ skrams
 vaspDMFT
 libdmft.a
 *.o
+wannier90.x
+w90chk2chk.x
 
 #sphinx
 _build/
