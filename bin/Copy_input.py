@@ -98,7 +98,7 @@ if __name__ == "__main__":
                 "para_com.dat",
             ],
             "Siesta": [str(structure) + ".out", "para_com.dat", "POSCAR"],
-            "aiida": ["aiida.wout", "POSCAR", "aiida.out"],
+            "aiida": ["aiida.out", "POSCAR"],
         }
         Ldft = False
         for dft in DFTfiles:
