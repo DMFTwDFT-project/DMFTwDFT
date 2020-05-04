@@ -8,6 +8,8 @@ libdmft.a
 *.o
 wannier90.x
 w90chk2chk.x
+dmft.x
+dmft_dos.x
 
 #sphinx
 _build/
