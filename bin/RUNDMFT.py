@@ -326,6 +326,7 @@ if __name__ == "__main__":
                     Delta_loc, om_loc, "Delta" + str(i + 1) + ".inp"
                 )
             Ed = array(Ed)
+            print "Ed:", Ed
             if TB.LHF == ".FALSE.":
                 IMP_SOLVER.RUN_CTQMC(
                     p, pC, pD, it, itt, para_com, DMFT.mu, Ed, DMFT.Vdc, args.hf
