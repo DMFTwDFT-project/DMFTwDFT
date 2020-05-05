@@ -453,8 +453,8 @@ class Initialize:
 
     def run_wan90(self, filename="wannier90"):
         """
-		Running wannier90.x to generate .chk and .eig files.
-		"""
+        Running wannier90.x to generate .chk and .eig files.
+        """
 
         print("Running wannier90...")
         cmd = "wannier90.x " + filename

@@ -416,8 +416,8 @@ if __name__ == "__main__":
             )
             main_out.write("\n")
             main_out.flush()
-            # cmd = para_com+" "+p['path_bin']+"wannier90.x wannier90"
             cmd = p["path_bin"] + "wannier90.x wannier90"
+            # cmd = p["path_bin"] + "wannier90.x wannier90"
             out, err = subprocess.Popen(
                 cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             ).communicate()
