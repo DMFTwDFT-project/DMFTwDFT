@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Installation &mdash; DMFTwDFT 2.0 documentation</title>
+  <title>Installation &mdash; DMFTwDFT 1.0 documentation</title>
   
 
   
@@ -91,8 +91,8 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Library mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 
@@ -170,6 +170,7 @@ The Python 2.x version does not support ionic relaxation, therefore use an alrea
 <li><p>weave</p></li>
 <li><p>mpi4py</p></li>
 </ul>
+<p>The executables of the DFT codes (vasp_std, siesta etc.) should be globally accessible.</p>
 <p>The structure of the directories is as follows.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>DMFTwDFT
         ├── bin
@@ -198,16 +199,22 @@ The Python 2.x version does not support ionic relaxation, therefore use an alrea
 <li><p>dmft_dos.x - Performs DOS calculation.</p></li>
 <li><p>dmft_ksum_band - Performs band structure calculation.</p></li>
 <li><p>dmft_ksum_partial_band - Performs projected band structure calculation.</p></li>
-<li><p>fort_kpt_tools.so - Fortran based k-points tool.</p></li>
+<li><p>fort_kpt_tools.so - Fortran based k-points calculation module.</p></li>
 </ul>
 </div>
 <div class="section" id="compiling-library-mode">
 <h2>Compiling library mode<a class="headerlink" href="#compiling-library-mode" title="Permalink to this headline">¶</a></h2>
-<p>The above compilation also generates <code class="docutils literal notranslate"><span class="pre">libdmft.a</span></code> which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. In the case of VASP, add the location of this file to <code class="docutils literal notranslate"><span class="pre">LLIBS</span></code> in VASP’s makefile.include. The modified VASP files are in the <code class="docutils literal notranslate"><span class="pre">sources/CSC-mods</span></code> directory. Copy these to the VASP source directory and recompile VASP.</p>
+<p>The above compilation also generates <code class="docutils literal notranslate"><span class="pre">libdmft.a</span></code> which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. In the case of VASP, add the location of this file to <code class="docutils literal notranslate"><span class="pre">LLIBS</span></code> in VASP’s makefile.include as shown below:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LLIBS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">Lparser</span> <span class="o">-</span><span class="n">lparser</span> <span class="o">-</span><span class="n">lstdc</span><span class="o">++</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">uthpala</span><span class="o">/</span><span class="n">wannier90</span><span class="o">/</span><span class="n">wannier90</span><span class="o">-</span><span class="mf">1.2</span><span class="o">/</span><span class="n">libwannier</span><span class="o">.</span><span class="n">a</span>
+         <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">uthpala</span><span class="o">/</span><span class="n">Dropbox</span><span class="o">/</span><span class="n">git</span><span class="o">/</span><span class="n">DMFTwDFT</span><span class="o">/</span><span class="n">sources</span><span class="o">/</span><span class="n">libdmft</span><span class="o">.</span><span class="n">a</span>
+</pre></div>
+</div>
+<p>The modified VASP files to enable full charge self-consistent DFT+DMFT calculations are in the <code class="docutils literal notranslate"><span class="pre">sources/CSC-mods</span></code> directory. Copy these to the VASP source directory and recompile VASP. Then rename this vasp executable to <code class="docutils literal notranslate"><span class="pre">vaspDMFT</span></code> and copy it to the <code class="docutils literal notranslate"><span class="pre">DMFTwDFT/bin</span></code> directory.</p>
+<p>More information on the library mode can be found in the <a class="reference internal" href="library.html#labellibrary"><span class="std std-ref">Library mode</span></a> section.</p>
 </div>
 <div class="section" id="external-libraries-and-executables">
 <h2>External libraries and executables<a class="headerlink" href="#external-libraries-and-executables" title="Permalink to this headline">¶</a></h2>
-<p>DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Kristjan Haule at Rutgers University and are available in the eDMFT package.
+<p>DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Professor Kristjan Haule at Rutgers University and are available in the eDMFT package.
 Follow the provided instructions on the <a class="reference external" href="http://hauleweb.rutgers.edu/tutorials/index.html">web page</a> to download and compile it.</p>
 <p>Once compiled copy the following executables and libraries to the DMFTwDFT <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory.</p>
 <ul class="simple">
@@ -217,7 +224,7 @@ Follow the provided instructions on the <a class="reference external" href="http
 <li><p>skrams</p></li>
 <li><p>maxent_routines.so</p></li>
 </ul>
-<p>If the automated compilation is successful, these are found in the eDMFT <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory. Otherwise compile them manually inside the <code class="docutils literal notranslate"><span class="pre">src/impurity</span></code> directories. gaunt.so and gutils.so are inside the</p>
+<p>If the automated compilation is successful, these are found in the eDMFT <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory. Otherwise compile them manually inside the relevant <code class="docutils literal notranslate"><span class="pre">src/impurity</span></code> directories. gaunt.so and gutils.so are compiled in the src/impurity/atomd directory.</p>
 </div>
 <div class="section" id="wannier90-library">
 <h2>Wannier90 library<a class="headerlink" href="#wannier90-library" title="Permalink to this headline">¶</a></h2>
@@ -249,7 +256,7 @@ Follow the provided instructions on the <a class="reference external" href="http
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Uthpala Herath
+        &copy; Copyright 2020, The DMFTwDFT Project
 
     </p>
   </div>

@@ -12,6 +12,7 @@ Please install the following dependencies prior to installing DMFTwDFT.
 * weave
 * mpi4py
 
+The executables of the DFT codes (vasp_std, siesta etc.) should be globally accessible. 
 
 The structure of the directories is as follows. ::
 
@@ -43,19 +44,26 @@ This should compile the follwing executables and libraries and copy them to the 
 * dmft_dos.x - Performs DOS calculation. 
 * dmft_ksum_band - Performs band structure calculation. 
 * dmft_ksum_partial_band - Performs projected band structure calculation. 
-* fort_kpt_tools.so - Fortran based k-points tool.
+* fort_kpt_tools.so - Fortran based k-points calculation module.
 
 
 Compiling library mode
 ----------------------
 
-The above compilation also generates ``libdmft.a`` which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. In the case of VASP, add the location of this file to ``LLIBS`` in VASP's makefile.include. The modified VASP files are in the ``sources/CSC-mods`` directory. Copy these to the VASP source directory and recompile VASP. 
+The above compilation also generates ``libdmft.a`` which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. In the case of VASP, add the location of this file to ``LLIBS`` in VASP's makefile.include as shown below::
+
+	LLIBS += -Lparser -lparser -lstdc++ /home/uthpala/wannier90/wannier90-1.2/libwannier.a  
+	         /home/uthpala/Dropbox/git/DMFTwDFT/sources/libdmft.a
+
+The modified VASP files to enable full charge self-consistent DFT+DMFT calculations are in the ``sources/CSC-mods`` directory. Copy these to the VASP source directory and recompile VASP. Then rename this vasp executable to ``vaspDMFT`` and copy it to the ``DMFTwDFT/bin`` directory.
+
+More information on the library mode can be found in the :ref:`labellibrary` section.
 
 
 External libraries and executables
 ----------------------------------
 
-DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Kristjan Haule at Rutgers University and are available in the eDMFT package.
+DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Professor Kristjan Haule at Rutgers University and are available in the eDMFT package.
 Follow the provided instructions on the `web page <http://hauleweb.rutgers.edu/tutorials/index.html>`_ to download and compile it. 
 
 Once compiled copy the following executables and libraries to the DMFTwDFT ``bin`` directory.
@@ -66,7 +74,7 @@ Once compiled copy the following executables and libraries to the DMFTwDFT ``bin
 * skrams
 * maxent_routines.so
 
-If the automated compilation is successful, these are found in the eDMFT ``bin`` directory. Otherwise compile them manually inside the ``src/impurity`` directories. gaunt.so and gutils.so are inside the 
+If the automated compilation is successful, these are found in the eDMFT ``bin`` directory. Otherwise compile them manually inside the relevant ``src/impurity`` directories. gaunt.so and gutils.so are compiled in the src/impurity/atomd directory.
 
 Wannier90 library
 -----------------

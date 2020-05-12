@@ -57,14 +57,10 @@ if __name__ == "__main__":
         default="vasp",
         type=str,
         help="Choice of DFT code for the DMFT calculation.",
-        choices=["vasp", "siesta", "aiida"],
+        choices=["vasp", "siesta", "qe"],
     )
     parser.add_argument(
-        "-aiida_type",
-        type=str,
-        help="Type of aiida calculation. ",
-        default="qe",
-        choices=["qe"],
+        "-aiida", help="Flag for aiida calculation. ", type=str, default="False"
     )
     parser.add_argument(
         "-hf",
@@ -73,7 +69,13 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    # ENF OF ARGPARSE SECTION #
+    # setting aiida flag from string to boolean.
+    if args.aiida == "True":
+        args.aiida = True
+    elif args.aiida == "False":
+        args.aiida = False
+
+    # END OF ARGPARSE SECTION #
 
     execfile("INPUT.py")  # Read input file
 
@@ -195,7 +197,7 @@ if __name__ == "__main__":
 
     DMFT = DMFT_MOD.DMFT_class(p, pC, TB)
     DFT = VASP.VASP_class(
-        dft=args.dft, structurename=args.structurename, aiida_type=args.aiida_type
+        dft=args.dft, structurename=args.structurename, aiida=args.aiida
     )
 
     ETOT_old = 0.0

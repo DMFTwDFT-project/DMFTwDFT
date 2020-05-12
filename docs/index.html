@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>DMFTwDFT documentation &mdash; DMFTwDFT 2.0 documentation</title>
+  <title>DMFTwDFT documentation &mdash; DMFTwDFT 1.0 documentation</title>
   
 
   
@@ -83,8 +83,8 @@
               <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Library mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 
@@ -152,17 +152,13 @@
             
   <div class="section" id="dmftwdft-documentation">
 <h1>DMFTwDFT documentation<a class="headerlink" href="#dmftwdft-documentation" title="Permalink to this headline">¶</a></h1>
-<p>DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently VASP and Siesta are supported.</p>
+<p>DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently VASP, Siesta and Quantum Espresso (through Aiida) are supported.</p>
 <p>DMFTwDFT consists of two main segments.</p>
 <ol class="arabic simple">
 <li><p>DMFT.py     - Performs the DFT and DMFT calculations.</p></li>
 <li><p>postDMFT.py - Performs post-processing including analytic contiuation, density of states and band structures.</p></li>
 </ol>
 <p>The <code class="docutils literal notranslate"><span class="pre">/scripts</span></code> directory contains several utility scripts.</p>
-<div class="section" id="library-mode">
-<h2>Library mode<a class="headerlink" href="#library-mode" title="Permalink to this headline">¶</a></h2>
-<p>DMFTwDFT consists of a library mode that can be used to interface other DFT codes to the framework to enable full charge self-consistent DFT+DMFT calculations. This calls Fortran subroutines to obtain information to update charge density within the DFT+DMFT loop. Specifically, one can pass the <span class="math notranslate nohighlight">\(k\)</span>-points information within DFT to the subroutine <code class="docutils literal notranslate"><span class="pre">Compute_DMFT()</span></code> and can obtain DMFT weights and Unitary matrix at each <span class="math notranslate nohighlight">\(k\)</span>-point for computing the charge density <span class="math notranslate nohighlight">\(\rho(r)\)</span>. The example of using this library can be found in library-mode-test directory. Instructions on how to compile this mode is provided in the installation section.</p>
-<p>For a detailed explanation of DMFTwDFT please refer to the documents in the <code class="docutils literal notranslate"><span class="pre">reference</span></code> directory and the articles <a class="reference external" href="https://arxiv.org/abs/2002.00068">DMFTwDFT</a> and <a class="reference external" href="https://journals.aps.org/prb/pdf/10.1103/PhysRevB.90.235103">PhysRevB.90.235103</a>.</p>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
@@ -174,15 +170,17 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="tutorials.html#dmft-calculation">DMFT calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#dft-dmft-calculation">DFT+DMFT calculation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tutorials.html#dmft-post-processing">DMFT Post-processing</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Library mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
-</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -212,7 +210,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Uthpala Herath
+        &copy; Copyright 2020, The DMFTwDFT Project
 
     </p>
   </div>

@@ -6,7 +6,7 @@
 DMFTwDFT documentation
 ======================
 
-DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently VASP and Siesta are supported. 
+DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently VASP, Siesta and Quantum Espresso (through Aiida) are supported. 
 
 DMFTwDFT consists of two main segments.
 
@@ -17,20 +17,12 @@ The ``/scripts`` directory contains several utility scripts.
 
 
 
-Library mode
-------------
-
-DMFTwDFT consists of a library mode that can be used to interface other DFT codes to the framework to enable full charge self-consistent DFT+DMFT calculations. This calls Fortran subroutines to obtain information to update charge density within the DFT+DMFT loop. Specifically, one can pass the :math:`k`-points information within DFT to the subroutine ``Compute_DMFT()`` and can obtain DMFT weights and Unitary matrix at each :math:`k`-point for computing the charge density :math:`\rho(r)`. The example of using this library can be found in library-mode-test directory. Instructions on how to compile this mode is provided in the installation section. 
-
-For a detailed explanation of DMFTwDFT please refer to the documents in the ``reference`` directory and the articles `DMFTwDFT <https://arxiv.org/abs/2002.00068>`_ and `PhysRevB.90.235103 <https://journals.aps.org/prb/pdf/10.1103/PhysRevB.90.235103>`_. 
-
-
-
 .. toctree::
    :maxdepth: 2
  
    installation 
    tutorials
+   library
    developers
    cite
 

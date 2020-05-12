@@ -30,12 +30,13 @@ class Initialize:
 	DMFT.py <options>
 
 	<options>:
-	-dft <vasp,siesta>
+	-dft <vasp,siesta,qe>
 	-dftexec : Name of the DFT executable. Default: vasp_std
 	-dmft : This flag performs dmft calculation
 	-hf : This flag performs Hartree-Fock calcualtion
 	-force : This flag forces a dmft or hf calculation even if it has been completed
 	-kmeshtol : k-mesh tolerance for wannier90
+        -aiida : Flag for aiida calculations
         -v : Enable verbosity
 
 	"""
@@ -65,7 +66,7 @@ class Initialize:
 
         # import the VASP class. This can be used for other DFT codes as well.
         self.DFT = VASP.VASP_class(
-            dft=args.dft, aiida_type=args.aiida_type, structurename=args.structurename
+            dft=args.dft, aiida=args.aiida, structurename=args.structurename
         )
 
         # dft running directory (current directory)
@@ -83,53 +84,63 @@ class Initialize:
         # Verbosity
         self.v = args.v
 
-        # Type of aiida calculation
-        self.aiida_type = args.aiida_type
+        # DFT type
+        self.dft = args.dft
+
+        # Flag for aiida calculation
+        self.aiida = args.aiida
 
         # Flag for Siesta Lowdin
         self.lowdin = args.lowdin
 
         print("Starting calculation...\n")
 
-        ###################### VASP  ###################################################
-        if args.dft == "vasp":
-            self.dft = "vasp"
+        ### DFT initialization ###
+
+        # VASP calculation
+        if self.dft == "vasp":
 
             # vasp executable
             self.vasp_exec = "vasp_std"
 
+            # Generating .win file
             self.gen_win()
-            self.gen_sig()
 
-        ###################### Siesta  ######################################################
-        if args.dft == "siesta":
-
-            self.dft = "siesta"
+        # Siesta calculation
+        elif self.dft == "siesta":
 
             # siesta executable
             self.siesta_exec = "siesta"
 
             self.fdf_to_poscar()
             if not self.lowdin:
+
+                # Generate .win file. Lowdin does this internally.
                 self.gen_win()
-            self.gen_sig()
 
-        #################### aiida ########################################################
+        # QE calculation
+        elif self.dft == "qe":
+            # Nothing to do here for now since we only have
+            # QE aiida calculations.
+            pass
 
-        if args.dft == "aiida":
+        # aiida calculation
+        if self.aiida:
+            self.win_to_poscar(input="aiida.win")
 
-            self.dft = "aiida"
-            self.gen_sig()
+        ### DMFT initialization ###
 
-        #################################################################################
+        # Generate initial self energy.
+        self.gen_sig()
 
-        # DMFT run
+        # Setting  DMFT type
         if args.dmft:
             self.type = "DMFT"
 
-        if args.hf:
+        elif args.hf:
             self.type = "HF"
 
+        # DMFT calculation
         self.run_dmft()
 
     def create_DFTmu(self):
@@ -205,6 +216,61 @@ class Initialize:
                     ]
                 )
             )
+        f.close()
+
+    def win_to_poscar(self, input="aiida.win"):
+        """This function generates a POSCAR from a .win file.
+        Used in aiida calculations where the .win file is provided."""
+
+        file = open(input, "r")
+        data = file.read()
+        file.close()
+
+        # Unit cell
+        unit_cell_data = re.findall(
+            r"begin\s*unit\s*_cell_cart\s*[a-zA-Z]*([\s\d.]*)end", data
+        )
+        unit_cell = np.array(unit_cell_data[0].split(), dtype="float64")
+        unit_cell = unit_cell.reshape(3, 3)
+
+        # coordinate type (cartesian or direct)
+        coord_type = re.findall(r"begin\s*atoms_([a-z]*)", data)[0]
+
+        # atomic coordinates
+        atom_coords = np.array(
+            re.findall(r"begin\s*atoms_[\sa-z]*([\sa-zA-Z\d.]*)end", data)[0].split()
+        )
+        atom_coords = atom_coords.reshape(int(len(atom_coords) / 4), 4)
+
+        atoms = atom_coords[:, 0]
+        species = [i[0] for i in groupby(atoms)]
+        species_count = [len(list(group)) for key, group in groupby(atoms)]
+
+        f = open("POSCAR", "w")
+        f.write(" ".join(str(x) for x in species))
+        f.write("\n%f\n" % 1.0)
+        for i in range(len(unit_cell)):
+            f.write("%f %f %f\n" % (unit_cell[i, 0], unit_cell[i, 1], unit_cell[i, 2]))
+        f.write(" ".join(str(x) for x in species))
+        f.write("\n")
+        f.write(" ".join(str(x) for x in species_count))
+        f.write("\n")
+        if coord_type == "cart":
+            f.write("Cartesian\n")
+        elif coord_type == "frac":
+            f.write("Direct\n")
+
+        for i in range(len(atom_coords)):
+            f.write(
+                "%s %s %s %s\n"
+                % (
+                    atom_coords[i, 1],
+                    atom_coords[i, 2],
+                    atom_coords[i, 3],
+                    atom_coords[i, 0],
+                )
+            )
+
         f.close()
 
     def gen_win(self):
@@ -554,7 +620,7 @@ class Initialize:
             self.copy_files()
 
         # aiida
-        elif self.dft == "aiida":
+        if self.aiida:
             # renaming files
             shutil.copy("aiida.eig", "wannier90.eig")
             shutil.copy("aiida.chk", "wannier90.chk")
@@ -564,9 +630,9 @@ class Initialize:
 
     def run_dmft(self):
         """
-		This first checks if there is a previous DMFT or HF calculation and runs
-		only if that run is incomplete unless forced.
-		"""
+        This first checks if there is a previous DMFT or HF calculation and runs
+        only if that run is incomplete unless forced.
+        """
 
         # Checking for previous DMFT run in the directory
         pathstr = self.type + os.sep + "INFO_TIME"
@@ -594,8 +660,8 @@ class Initialize:
                                 + self.dft
                                 + " -structurename "
                                 + self.structurename
-                                + " -aiida_type "
-                                + self.aiida_type
+                                + " -aiida "
+                                + str(self.aiida)
                             )
                         else:
                             cmd = (
@@ -606,8 +672,8 @@ class Initialize:
                                 + self.dft
                                 + " -structurename "
                                 + self.structurename
-                                + " -aiida_type "
-                                + self.aiida_type
+                                + " -aiida "
+                                + str(self.aiida)
                             )
 
                     elif self.dft != None:
@@ -618,8 +684,8 @@ class Initialize:
                                 + " && "
                                 + "RUNDMFT.py -hf -dft "
                                 + self.dft
-                                + " -aiida_type "
-                                + self.aiida_type
+                                + " -aiida "
+                                + str(self.aiida)
                             )
                         else:
                             cmd = (
@@ -628,8 +694,8 @@ class Initialize:
                                 + " && "
                                 + "RUNDMFT.py -dft "
                                 + self.dft
-                                + " -aiida_type "
-                                + self.aiida_type
+                                + " -aiida "
+                                + str(self.aiida)
                             )
 
                     else:
@@ -707,8 +773,8 @@ class Initialize:
                             + " && "
                             + "RUNDMFT.py -hf -dft "
                             + self.dft
-                            + " -aiida_type "
-                            + self.aiida_type
+                            + " -aiida "
+                            + str(self.aiida)
                         )
                     else:
                         cmd = (
@@ -717,8 +783,8 @@ class Initialize:
                             + " && "
                             + "RUNDMFT.py -dft "
                             + self.dft
-                            + " -aiida_type "
-                            + self.aiida_type
+                            + " -aiida "
+                            + str(self.aiida)
                         )
 
                 else:
@@ -787,8 +853,8 @@ class Initialize:
                         + " && "
                         + "RUNDMFT.py -hf -dft "
                         + self.dft
-                        + " -aiida_type "
-                        + self.aiida_type
+                        + " -aiida "
+                        + str(self.aiida)
                     )
                 else:
                     cmd = (
@@ -797,8 +863,8 @@ class Initialize:
                         + " && "
                         + "RUNDMFT.py -dft "
                         + self.dft
-                        + " -aiida_type "
-                        + self.aiida_type
+                        + " -aiida "
+                        + str(self.aiida)
                     )
 
             else:
@@ -850,7 +916,7 @@ if __name__ == "__main__":
             default="vasp",
             type=str,
             help="Choice of DFT code for the DMFT calculation.",
-            choices=["vasp", "siesta", "aiida"],
+            choices=["vasp", "siesta", "qe"],
         )
         type_parser = parser.add_mutually_exclusive_group()
         type_parser.add_argument(
@@ -875,11 +941,7 @@ if __name__ == "__main__":
             default=None,
         )
         parser.add_argument(
-            "-aiida_type",
-            type=str,
-            help="Type of aiida calculation. ",
-            default="qe",
-            choices=["qe"],
+            "-aiida", help="Flag for aiida calculation. ", action="store_true"
         )
         parser.add_argument(
             "-kmeshtol",

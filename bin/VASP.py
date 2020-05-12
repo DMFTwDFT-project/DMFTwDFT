@@ -7,7 +7,7 @@ from scipy import *
 
 
 class VASP_class:
-    def __init__(self, dft="vasp", structurename=None, aiida_type="qe"):
+    def __init__(self, dft="vasp", structurename=None, aiida=False):
         # pass
         if not os.path.exists("DFT_mu.out"):
             print "DFT_mu.out should exist!"
@@ -16,7 +16,7 @@ class VASP_class:
         self.NBANDS = 0
         self.dft = dft
         self.structurename = structurename
-        self.aiida_type = aiida_type
+        self.aiida = aiida
 
     def Print_CHGCAR(self, headlines, CHG, augCHG, augIDX):
         fi = open("CHGCAR", "w")
@@ -196,8 +196,8 @@ class VASP_class:
             self.E = float(re.findall(r"Total\s=[\s0-9+-.]*", data)[0].split()[-1])
             print ("Total energy read from Siesta = %f eV" % self.E)
 
-        elif self.dft == "aiida":
-            if self.aiida_type == "qe":
+        elif self.dft == "qe":
+            if self.aiida:
                 fi = open("aiida.out", "r")
                 data = fi.read()
                 fi.close()
@@ -256,8 +256,8 @@ class VASP_class:
             savetxt("DFT_mu.out", array([self.EFERMI]))
             print ("Fermi energy read from Siesta = %f eV" % self.EFERMI)
 
-        elif self.dft == "aiida":
-            if self.aiida_type == "qe":
+        elif self.dft == "qe":
+            if self.aiida:
                 fi = open("aiida.out", "r")
                 data = fi.read()
                 fi.close()

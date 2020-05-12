@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Tutorials &mdash; DMFTwDFT 2.0 documentation</title>
+  <title>Tutorials &mdash; DMFTwDFT 1.0 documentation</title>
   
 
   
@@ -36,7 +36,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Developers" href="developers.html" />
+    <link rel="next" title="Library mode" href="library.html" />
     <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
@@ -84,12 +84,12 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Tutorials</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#dmft-calculation">DMFT calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dft-dmft-calculation">DFT+DMFT calculation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#dmft-post-processing">DMFT Post-processing</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Library mode</a></li>
 <li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 
@@ -157,66 +157,77 @@
             
   <div class="section" id="tutorials">
 <h1>Tutorials<a class="headerlink" href="#tutorials" title="Permalink to this headline">¶</a></h1>
-<p>The following set of tutorials explain the usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo.
+<p>The following set of tutorials explain the usage of DMFTwDFT. Example files required to run these calculations are available in the <code class="docutils literal notranslate"><span class="pre">/examples</span></code> directory in the github repo.
 To perform a DFT+DMFT calculation, the following files should be present within the calculation directory.</p>
-<ul class="simple">
+<ul>
 <li><p>INPUT.py - Contains the input parameters that govern the DMFT calculation.</p></li>
-<li><p>DFT_mu.out - This is a guess for the DFT Fermi energy (Optional). Will be updated after the initial DFT run.</p></li>
 <li><p>para_com.dat - The number of processors used for the DMFT calculation. E.g. mpirun -np 32</p></li>
-<li><p>para_com_dft.dat - The number of processors used for the DFT calculation. If not specified it will use the same as para_com.dat.</p></li>
-<li><p>DFT files - VASP = {POSCAR, KPOINTS, POTCAR, INCAR}, Siesta = {.fdf, .psf}</p></li>
+<li><p>DFT files - Input files required to launch an initial DFT calculation to initialize the DMFT calculation (Aiida files are from a completed DFT calculation).</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>VASP = {POSCAR, KPOINTS, POTCAR, INCAR}</p></li>
+<li><p>Siesta = {.fdf, .psf}</p></li>
+<li><p>QE (Aiida) = {aiida.amn, aiida.chk, aiida.eig, aiida.mmn, aiida.out, aiida.win}</p></li>
+</ul>
+</div></blockquote>
+</li>
 </ul>
 <p>Before you start remember to add the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory path in <code class="docutils literal notranslate"><span class="pre">INPUT.py</span></code> as the value for the key <code class="docutils literal notranslate"><span class="pre">path_bin</span></code>.
 Eg.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;path_bin&quot;</span><span class="p">:</span><span class="s2">&quot;~/Dropbox/git/DMFTwDFT/bin/&quot;</span>
 </pre></div>
 </div>
-<div class="section" id="dmft-calculation">
-<h2>DMFT calculation<a class="headerlink" href="#dmft-calculation" title="Permalink to this headline">¶</a></h2>
-<p>This performs the DFT + DMFT calculations through the script <code class="docutils literal notranslate"><span class="pre">DMFT.py</span></code>.
-To get a description of the options, run:</p>
+<div class="section" id="dft-dmft-calculation">
+<h2>DFT+DMFT calculation<a class="headerlink" href="#dft-dmft-calculation" title="Permalink to this headline">¶</a></h2>
+<p>This performs the DFT + DMFT calculations through the script <code class="docutils literal notranslate"><span class="pre">DMFT.py</span></code>. Since the DMFTwDFT/bin directory is in PATH variable, <code class="docutils literal notranslate"><span class="pre">DMFT.py</span></code> can be run from any calculation directory.
+To get a description of its options, run:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">DMFT</span><span class="o">.</span><span class="n">py</span> <span class="o">-</span><span class="n">h</span>
 </pre></div>
 </div>
 <p>This script has the following options.</p>
 <ul class="simple">
 <li><dl class="simple">
-<dt>-dft:</dt><dd><p>The choice of DFT code. Currently, VASP and Siesta are supported.</p>
+<dt>dft:</dt><dd><p>The choice of DFT code. Currently, <code class="docutils literal notranslate"><span class="pre">vasp</span></code>, <code class="docutils literal notranslate"><span class="pre">siesta</span></code> and <code class="docutils literal notranslate"><span class="pre">qe</span></code> (Quantum Espresso) are supported. Quantum Espresso is supported through aiida so for this case use the flag, <code class="docutils literal notranslate"><span class="pre">-aiida</span></code> as well.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-relax:</dt><dd><p>This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  <code class="docutils literal notranslate"><span class="pre">DFT_relax</span></code> directory. NOTE: ONLY SUPPORTED IN THE PYTHON 3.x VERSION.</p>
+<dt>relax:</dt><dd><p>This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  <code class="docutils literal notranslate"><span class="pre">DFT_relax</span></code> directory. NOTE: ONLY SUPPORTED IN THE PYTHON 3.x VERSION.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-structurename:</dt><dd><p>DFT codes such as Siesta uses input files that contain the name of the system e.g. <span class="math notranslate nohighlight">\(SrVO_3.fdf\)</span>. Therefore when performing DFT+DMFT calculations with Siesta this flag is required.</p>
+<dt>structurename:</dt><dd><p>DFT codes such as Siesta uses input files that contain the name of the system e.g. <span class="math notranslate nohighlight">\(SrVO_3.fdf\)</span>. Therefore when performing DFT+DMFT calculations with Siesta this flag is required.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-dmft:</dt><dd><p>This flag performs the DMFT calculation using the results from the DFT calculation if a previous DMFT calculation in the same directory is incomplete.</p>
+<dt>dmft:</dt><dd><p>This flag performs the DMFT calculation using the results from the DFT calculation if a previous DMFT calculation in the same directory is incomplete.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-hf:</dt><dd><p>This flag performs the Hartree-Fock (HF) calculation to the correlated orbitals specified in INPUT.py if a previous HF calculation in the same directory is incomplete.</p>
+<dt>hf:</dt><dd><p>This flag performs the Hartree-Fock (HF) calculation to the correlated orbitals specified in INPUT.py if a previous HF calculation in the same directory is incomplete.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-force:</dt><dd><p>This flag forces a DMFT or HF calculation even if a previous calculation has been completed. The option to check for completeness is helpful when running many DMFT/HF jobs on a cluster.</p>
+<dt>force:</dt><dd><p>This flag forces a DMFT or HF calculation even if a previous calculation has been completed. The option to check for completeness is helpful when running many DMFT/HF jobs on a cluster.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-kmeshtol:</dt><dd><p>This controls the tolerance of two k-points belonging to the the same shell in the wannier90 calculation.</p>
+<dt>kmeshtol:</dt><dd><p>This controls the tolerance of two k-points belonging to the the same shell in the wannier90 calculation.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>-v:</dt><dd><p>Flag to enable verbosity.</p>
+<dt>aiida:</dt><dd><p>Flag for aiida calculations. Currently, Quantum Espresso is supported through aiida.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>v:</dt><dd><p>Flag to enable verbosity.</p>
 </dd>
 </dl>
 </li>
@@ -225,6 +236,7 @@ To get a description of the options, run:</p>
 <p>E.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$DMFT.py -dft vasp -relax -dmft
 $DMFT.py -dft siesta -structurename SrVO3 -dmft
+$DMFT.py -dft qe -aiida -dmft -v
 </pre></div>
 </div>
 </div>
@@ -275,7 +287,7 @@ To get a description of the options, run:</p>
 </dl>
 </li>
 </ul>
-<p>The projected bands are especially helpful in determining the contribution to bands from different orbitals.
+<p>The projected bands are especially helpful in determining the contribution to bands from different orbitals. The ordering is equivalent to the wannier90 orbital order.
 The calculations are stored in directories ac, dos and bands, respectively.
 The following are some example commands to perform post-processing.</p>
 <p>E.g.:</p>
@@ -297,7 +309,7 @@ $postDMFT.py bands -sp -show
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="developers.html" class="btn btn-neutral float-right" title="Developers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="library.html" class="btn btn-neutral float-right" title="Library mode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
@@ -309,7 +321,7 @@ $postDMFT.py bands -sp -show
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Uthpala Herath
+        &copy; Copyright 2020, The DMFTwDFT Project
 
     </p>
   </div>

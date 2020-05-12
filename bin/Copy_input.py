@@ -34,7 +34,7 @@ if __name__ == "__main__":
         default="vasp",
         type=str,
         help="Choice of DFT code for the DMFT calculation.",
-        choices=["vasp", "siesta", "aiida"],
+        choices=["vasp", "siesta", "qe"],
     )
     args = parser.parse_args()
 

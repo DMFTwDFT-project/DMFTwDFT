@@ -1,14 +1,16 @@
 Tutorials
 =========
 
-The following set of tutorials explain the usage of DMFTwDFT. Example files required to run these calculations are available in the /examples directory in the github repo. 
+The following set of tutorials explain the usage of DMFTwDFT. Example files required to run these calculations are available in the ``/examples`` directory in the github repo. 
 To perform a DFT+DMFT calculation, the following files should be present within the calculation directory.
 
 * INPUT.py - Contains the input parameters that govern the DMFT calculation. 
-* DFT_mu.out - This is a guess for the DFT Fermi energy (Optional). Will be updated after the initial DFT run. 
 * para_com.dat - The number of processors used for the DMFT calculation. E.g. mpirun -np 32
-* para_com_dft.dat - The number of processors used for the DFT calculation. If not specified it will use the same as para_com.dat. 
-* DFT files - VASP = {POSCAR, KPOINTS, POTCAR, INCAR}, Siesta = {.fdf, .psf}	
+* DFT files - Input files required to launch an initial DFT calculation to initialize the DMFT calculation (Aiida files are from a completed DFT calculation). 
+
+	- VASP = {POSCAR, KPOINTS, POTCAR, INCAR}
+	- Siesta = {.fdf, .psf}
+	- QE (Aiida) = {aiida.amn, aiida.chk, aiida.eig, aiida.mmn, aiida.out, aiida.win}	
 
 Before you start remember to add the ``bin`` directory path in ``INPUT.py`` as the value for the key ``path_bin``.
 Eg.::
@@ -16,38 +18,41 @@ Eg.::
 	"path_bin":"~/Dropbox/git/DMFTwDFT/bin/"
 
 
-DMFT calculation
-----------------
+DFT+DMFT calculation
+--------------------
 
-This performs the DFT + DMFT calculations through the script ``DMFT.py``.
-To get a description of the options, run: ::
+This performs the DFT + DMFT calculations through the script ``DMFT.py``. Since the DMFTwDFT/bin directory is in PATH variable, ``DMFT.py`` can be run from any calculation directory. 
+To get a description of its options, run: ::
 	
 	DMFT.py -h
 
 This script has the following options.
 
-* -dft:
-	The choice of DFT code. Currently, VASP and Siesta are supported.
+* dft:
+	The choice of DFT code. Currently, ``vasp``, ``siesta`` and ``qe`` (Quantum Espresso) are supported. Quantum Espresso is supported through aiida so for this case use the flag, ``-aiida`` as well.
 
-* -relax:
+* relax:
 	This flag turns on DFT convergence testing. If the forces are not converged a convergence calculation is attempted and if it fails the user is asked to modify convergence parameters. This is useful for vacancy and defect calculations where a force convergence is required after the vacancy or defect is created in order to obtain a relaxed structure to perform DFT+DMFT with. Currently supported for VASP. This uses PyChemia to check for convergence. The relaxation occurs inside a  ``DFT_relax`` directory. NOTE: ONLY SUPPORTED IN THE PYTHON 3.x VERSION.
 
-* -structurename:
+* structurename:
 	DFT codes such as Siesta uses input files that contain the name of the system e.g. :math:`SrVO_3.fdf`. Therefore when performing DFT+DMFT calculations with Siesta this flag is required.
 
-* -dmft:
+* dmft:
 	This flag performs the DMFT calculation using the results from the DFT calculation if a previous DMFT calculation in the same directory is incomplete. 
 
-* -hf:
+* hf:
 	This flag performs the Hartree-Fock (HF) calculation to the correlated orbitals specified in INPUT.py if a previous HF calculation in the same directory is incomplete. 
 
-* -force: 
+* force: 
 	This flag forces a DMFT or HF calculation even if a previous calculation has been completed. The option to check for completeness is helpful when running many DMFT/HF jobs on a cluster.
 
-* -kmeshtol:
+* kmeshtol:
 	This controls the tolerance of two k-points belonging to the the same shell in the wannier90 calculation. 	
 
-* -v:
+* aiida:
+	Flag for aiida calculations. Currently, Quantum Espresso is supported through aiida.
+
+* v:
 	Flag to enable verbosity.
 
 The calculations are performed in an automatically generated ``DMFT`` or ``HF`` directory where the script was run from. 
@@ -56,6 +61,7 @@ E.g.: ::
 
 	$DMFT.py -dft vasp -relax -dmft
 	$DMFT.py -dft siesta -structurename SrVO3 -dmft
+	$DMFT.py -dft qe -aiida -dmft -v
 	
 DMFT Post-processing
 --------------------
@@ -96,7 +102,7 @@ This script performs anaytical continuation, density of states and band structur
 	- -vlim : Spectral intensity range
 	- -show : Display the bands
 
-The projected bands are especially helpful in determining the contribution to bands from different orbitals. 
+The projected bands are especially helpful in determining the contribution to bands from different orbitals. The ordering is equivalent to the wannier90 orbital order. 
 The calculations are stored in directories ac, dos and bands, respectively. 
 The following are some example commands to perform post-processing.
 
