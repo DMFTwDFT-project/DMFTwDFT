@@ -2,8 +2,8 @@
 
 import sys
 
-version = "1.0"
-date = "April 23, 2020"
+version = "1.1"
+date = "May 11th, 2020"
 
 
 def welcome():
