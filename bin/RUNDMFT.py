@@ -433,6 +433,10 @@ if __name__ == "__main__":
                 cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             ).communicate()
             print out  # , err
+            if err is None:
+                print ("wannier90 calculation complete.")
+            else:
+                print ("wannier90 calculation failed!")
 
     main_out.write("Caculation Ends" + now())
     print ("\nCalculation complete.")
