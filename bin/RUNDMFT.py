@@ -381,9 +381,12 @@ if __name__ == "__main__":
             E_iter.flush()
 
         if itt < p["Niter"] - 1:
-            main_out.write("--- Running vaspCHG " + now() + "---")
+            main_out.write("--- Running vaspDMFT " + now() + "---")
             main_out.write("\n")
             main_out.flush()
+            print (
+                "\n--- Running vaspDMFT for self-consistent DFT+DMFT calculation ---"
+            )
 
             if itt == 0:
                 f = open("INCAR", "a")
@@ -400,11 +403,14 @@ if __name__ == "__main__":
                 cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             ).communicate()
             shutil.copy2("CHGCAR", "CHGCAR." + str(itt))
+            shutil.copy2("OUTCAR", "OUTCAR." + str(itt))
             if itt > 0:
                 DFT.Read_NELECT()
                 CHGDIFF = DFT.Diff_CHGCAR(
                     "CHGCAR." + str(itt - 1), "CHGCAR." + str(itt)
                 )
+                print ("Charge difference = %f" % CHGDIFF)
+
             DFT.Read_NBANDS()
             DFT.Read_EFERMI()
             DFT.Update_win(
@@ -416,6 +422,7 @@ if __name__ == "__main__":
             main_out.write(
                 "-------------- Running wannier 90 " + str(itt + 1) + "----------------"
             )
+            print ("Running wannier90...")
             main_out.write("\n")
             main_out.flush()
             cmd = p["path_bin"] + "wannier90.x wannier90"
