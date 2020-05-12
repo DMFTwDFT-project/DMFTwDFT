@@ -226,6 +226,7 @@ class VASP_class:
                     -1
                 ]
             )
+        print ("Number of bands = %d " % self.NBANDS)
 
     def Read_NELECT(self):
         cmd = "grep NELECT OUTCAR"

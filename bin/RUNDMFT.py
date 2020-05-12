@@ -385,7 +385,7 @@ if __name__ == "__main__":
             main_out.write("\n")
             main_out.flush()
             print (
-                "\n--- Running vaspDMFT for self-consistent DFT+DMFT calculation ---"
+                "\n--- Running vaspDMFT for self-consistent DFT+DMFT calculation ---\n"
             )
 
             if itt == 0:
@@ -413,6 +413,8 @@ if __name__ == "__main__":
 
             DFT.Read_NBANDS()
             DFT.Read_EFERMI()
+            DFT.Read_OSZICAR()
+
             DFT.Update_win(
                 DFT.NBANDS, DFT.EFERMI + p["ewin"][0], DFT.EFERMI + p["ewin"][1]
             )
