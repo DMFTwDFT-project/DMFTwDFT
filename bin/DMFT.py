@@ -312,7 +312,7 @@ class Initialize:
 
         except:
             self.DFT.NBANDS = 100
-            print("Setting default number of bands = %d " % self.DFT.NBANDS)
+            print("Number of bands not set in DFT input file.)
 
         self.DFT.Create_win(
             TB,
