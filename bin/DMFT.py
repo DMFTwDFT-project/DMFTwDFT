@@ -653,7 +653,7 @@ class Initialize:
                     print("-force flag enabled. Restarting " + self.type + "...")
                     self.run_dft()
                     print(separator_art)
-                    print("----- Starting " + self.type + " calculation ----- \n")
+                    print("*-*-*-*- Starting " + self.type + " calculation -*-*-*-* \n")
 
                     if self.dft != None and self.structurename != None:
                         if self.type == "HF":
@@ -749,7 +749,7 @@ class Initialize:
                 print("Incomplete " + self.type + " calculation found.")
                 self.run_dft()
                 print(separator_art)
-                print("----- Starting " + self.type + " calculation -----\n")
+                print("*-*-*-*- Starting " + self.type + " calculation -*-*-*-* \n")
                 if self.dft != None and self.structurename != None:
                     if self.type == "HF":
                         cmd = (
@@ -829,7 +829,7 @@ class Initialize:
             # no DMFT/INFO_TIME found
             self.run_dft()
             print(separator_art)
-            print("----- Starting " + self.type + " calculation -----\n")
+            print("*-*-*-*- Starting " + self.type + " calculation -*-*-*-* \n")
             if self.dft != None and self.structurename != None:
                 if self.type == "HF":
                     cmd = (
