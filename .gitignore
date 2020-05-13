@@ -1,8 +1,6 @@
 *.pyc
 .DS_Store
 *.so
-ctqmc
-skrams
 vaspDMFT
 libdmft.a
 *.o
@@ -10,6 +8,14 @@ wannier90.x
 w90chk2chk.x
 dmft.x
 dmft_dos.x
+dmft_ksum_band
+dmft_ksum_partial_band
+fort_kpt_tools.so
+ctqmc
+skrams
+gaunt.so
+gutils.so
+maxent_routines.so
 
 #sphinx
 _build/
