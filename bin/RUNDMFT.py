@@ -432,6 +432,7 @@ if __name__ == "__main__":
             out, err = subprocess.Popen(
                 cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             ).communicate()
+            print ("wannier90 calculation complete.")
             print out  # , err
 
     main_out.write("Caculation Ends" + now())
