@@ -228,7 +228,8 @@ if __name__ == "__main__":
         for it in range(p["Nit"]):
             main_out.write("--- Starting DMFT loop " + str(it + 1) + now() + "---")
             print (
-                "\n--- Starting loop DFT:%s, DMFT:%s ---" % (str(itt + 1), str(it + 1))
+                "\n--- Starting loop DFT:%s, DMFT:%s ---\n"
+                % (str(itt + 1), str(it + 1))
             )
             main_out.write("\n")
             main_out.flush()
