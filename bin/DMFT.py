@@ -93,7 +93,7 @@ class Initialize:
         # Flag for Siesta Lowdin
         self.lowdin = args.lowdin
 
-        print("Starting calculation...\n")
+        print("Initializing calculation...\n")
 
         ### DFT initialization ###
 
@@ -547,7 +547,7 @@ class Initialize:
             print(err.decode("utf-8"))
             sys.exit()
         else:
-            print("\nInitial self-energy file generated.\n")
+            print("Initial self-energy file generated.\n")
 
     def copy_files(self):
         """
