@@ -210,7 +210,7 @@ if __name__ == "__main__":
 
     for itt in range(p["Niter"]):
         main_out.write("--- Starting Charge loop " + str(itt + 1) + now() + "---")
-        print ("--- Starting Charge loop " + str(itt + 1) + " ---")
+        print ("--- Starting Charge loop " + str(itt + 1) + " ---\n")
         main_out.write("\n")
         main_out.flush()
 
@@ -218,7 +218,7 @@ if __name__ == "__main__":
 
         for it in range(p["Nit"]):
             main_out.write("--- Starting DMFT loop " + str(it + 1) + now() + "---")
-            print ("--- Starting DMFT loop " + str(it + 1) + " ---")
+            print ("--- Starting DMFT loop " + str(it + 1) + " ---\n")
             main_out.write("\n")
             main_out.flush()
 
