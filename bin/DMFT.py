@@ -297,6 +297,7 @@ class Initialize:
                 self.DFT.NBANDS = int(
                     re.findall(r"\n\s*NBANDS\s*=\s*([\d\s]*)", data)[0]
                 )
+                print("Number of bands read from INCAR = %d " % self.DFT.NBANDS)
 
             elif self.dft == "siesta":
                 fi = open(self.structurename + ".fdf", "r")
@@ -307,11 +308,11 @@ class Initialize:
                         0
                     ].split()[-1]
                 )
+                print("Number of bands read from .fdf = %d " % self.DFT.NBANDS)
 
         except:
             self.DFT.NBANDS = 100
-
-        print("Number of bands = %d " % self.DFT.NBANDS)
+            print("Setting default number of bands = %d " % self.DFT.NBANDS)
 
         self.DFT.Create_win(
             TB,
