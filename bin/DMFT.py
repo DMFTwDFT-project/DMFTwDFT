@@ -275,17 +275,44 @@ class Initialize:
 
     def gen_win(self):
         """
-		This method generates wannier90.win for initial DFT run.
-		"""
+        This method generates wannier90.win for initial DFT run.
+        """
 
         # generating wannier90.win
         TB = Struct.TBstructure("POSCAR", p["atomnames"], p["orbs"])
         TB.Compute_cor_idx(p["cor_at"], p["cor_orb"])
         # print((TB.TB_orbs))
-        if list(pV.keys()).count("NBANDS="):
-            self.DFT.NBANDS = pV["NBANDS="][0]
-        else:
+
+        # if list(pV.keys()).count("NBANDS="):
+        #     self.DFT.NBANDS = pV["NBANDS="][0]
+        # else:
+        #     self.DFT.NBANDS = 100
+
+        # Read number of bands from DFT input file
+        try:
+            if self.dft == "vasp":
+                fi = open("INCAR", "r")
+                data = fi.read()
+                fi.close()
+                self.DFT.NBANDS = int(
+                    re.findall(r"\n\s*NBANDS\s*=\s*([\d\s]*)", data)[0]
+                )
+
+            elif self.dft == "siesta":
+                fi = open(self.structurename + ".fdf", "r")
+                data = fi.read()
+                fi.close()
+                self.DFT.NBANDS = int(
+                    re.findall(r"\n\s*Siesta2Wannier90.NumberOfBands[\s0-9]*", data)[
+                        0
+                    ].split()[-1]
+                )
+
+        except:
             self.DFT.NBANDS = 100
+
+        print("Number of bands = %d " % self.DFT.NBANDS)
+
         self.DFT.Create_win(
             TB,
             p["atomnames"],
