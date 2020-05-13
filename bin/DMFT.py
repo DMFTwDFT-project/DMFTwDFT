@@ -634,6 +634,10 @@ class Initialize:
         only if that run is incomplete unless forced.
         """
 
+        separator_art = """
+*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
+        """
+
         # Checking for previous DMFT run in the directory
         pathstr = self.type + os.sep + "INFO_TIME"
 
@@ -648,6 +652,7 @@ class Initialize:
                     # forcing DMFT calculation
                     print("-force flag enabled. Restarting " + self.type + "...")
                     self.run_dft()
+                    print(separator_art)
                     print("----- Starting " + self.type + " calculation ----- \n")
 
                     if self.dft != None and self.structurename != None:
@@ -743,6 +748,7 @@ class Initialize:
                 # Incomplete DMFT calculation.
                 print("Incomplete " + self.type + " calculation found.")
                 self.run_dft()
+                print(separator_art)
                 print("----- Starting " + self.type + " calculation -----\n")
                 if self.dft != None and self.structurename != None:
                     if self.type == "HF":
@@ -822,6 +828,7 @@ class Initialize:
         else:
             # no DMFT/INFO_TIME found
             self.run_dft()
+            print(separator_art)
             print("----- Starting " + self.type + " calculation -----\n")
             if self.dft != None and self.structurename != None:
                 if self.type == "HF":
