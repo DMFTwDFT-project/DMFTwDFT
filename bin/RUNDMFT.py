@@ -10,6 +10,7 @@ import subprocess
 import sys
 import time
 from argparse import RawTextHelpFormatter
+from collections import OrderedDict
 from copy import deepcopy
 from os.path import getsize
 
@@ -160,7 +161,16 @@ if __name__ == "__main__":
     cor_at = p["cor_at"]
     cor_orb = p["cor_orb"]
     TB.Compute_cor_idx(cor_at, cor_orb)
-    print TB.TB_orbs
+
+    # ordering dictionary items to print more clearly
+    print ("Wannier orbitals in correlated subspace:")
+    orb_dic = TB.TB_orbs
+    l = list(orb_dic.items())
+    l.sort()
+    orb_dic = OrderedDict(l)
+    for i in orb_dic:
+        print ("%s : %s" % (i, orb_dic[i]))
+
     if TB.LHF == ".TRUE.":
         p["Nd_qmc"] = 0
     U = p["U"]
@@ -210,7 +220,6 @@ if __name__ == "__main__":
 
     for itt in range(p["Niter"]):
         main_out.write("--- Starting charge loop " + str(itt + 1) + now() + "---")
-        print ("\n--- Starting charge loop " + str(itt + 1) + " ---\n")
         main_out.write("\n")
         main_out.flush()
 
@@ -218,7 +227,9 @@ if __name__ == "__main__":
 
         for it in range(p["Nit"]):
             main_out.write("--- Starting DMFT loop " + str(it + 1) + now() + "---")
-            print ("--- Starting DMFT loop " + str(it + 1) + " ---\n")
+            print (
+                "\n--- Starting loop DFT:%s, DMFT:%s ---" % (str(itt + 1), str(it + 1))
+            )
             main_out.write("\n")
             main_out.flush()
 

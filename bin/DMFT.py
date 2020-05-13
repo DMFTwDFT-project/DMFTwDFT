@@ -741,7 +741,7 @@ class Initialize:
 
             else:
                 # Incomplete DMFT calculation.
-                print(self.type + " calculation incomplete.")
+                print("Incomplete " + self.type + " calculation found.")
                 self.run_dft()
                 print("----- Starting " + self.type + " calculation -----\n")
                 if self.dft != None and self.structurename != None:
