@@ -192,7 +192,7 @@ def RUN_CTQMC(p, pC, pD, it, itt, para_com, mu, ed, vdc, hf):
             # cmd = 'cp '+dir_name+'status.* .'
             # print os.popen(cmd).read()
             # Running ctqmc
-            print "--- Running qmc for atom", i, "iteration : ", str(it + 1), " ---"
+            print "--- Running qmc for atom", i, "iteration: ", str(it + 1), " ---"
             strftime("%a, %d %b %Y %H:%M:%S", gmtime())
 
             cmd = (
