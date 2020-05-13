@@ -210,6 +210,7 @@ if __name__ == "__main__":
 
     for itt in range(p["Niter"]):
         main_out.write("--- Starting Charge loop " + str(itt + 1) + now() + "---")
+        print ("--- Starting Charge loop " + str(itt + 1) + " ---")
         main_out.write("\n")
         main_out.flush()
 
@@ -217,6 +218,7 @@ if __name__ == "__main__":
 
         for it in range(p["Nit"]):
             main_out.write("--- Starting DMFT loop " + str(it + 1) + now() + "---")
+            print ("--- Starting DMFT loop " + str(it + 1) + " ---")
             main_out.write("\n")
             main_out.flush()
 
@@ -255,7 +257,7 @@ if __name__ == "__main__":
 
             if it == 0:
                 DMFT.EKIN0 = 0
-                print ("Running XHF0")
+                print ("Running XHF0...")
                 cmd = (
                     para_com
                     + " "
@@ -272,7 +274,7 @@ if __name__ == "__main__":
 
             if TB.LHF == ".FALSE.":
                 # cmd = para_com+" "+p['path_bin']+"dmft_ksum_sp > ksum_output 2> ksum_error"
-                print ("Running dmft.x")
+                print ("Running dmft.x...")
                 cmd = (
                     para_com
                     + " "
@@ -283,7 +285,7 @@ if __name__ == "__main__":
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
             else:
-                print ("Running XHF")
+                print ("Running XHF...")
                 cmd = (
                     para_com
                     + " "
@@ -384,9 +386,7 @@ if __name__ == "__main__":
             main_out.write("--- Running vaspDMFT " + now() + "---")
             main_out.write("\n")
             main_out.flush()
-            print (
-                "\n--- Running vaspDMFT for self-consistent DFT+DMFT calculation ---\n"
-            )
+            print ("\n--- Running vaspDMFT ---\n")
 
             if itt == 0:
                 f = open("INCAR", "a")
@@ -433,10 +433,6 @@ if __name__ == "__main__":
                 cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             ).communicate()
             print out  # , err
-            if err is None:
-                print ("wannier90 calculation complete.")
-            else:
-                print ("wannier90 calculation failed!")
 
     main_out.write("Caculation Ends" + now())
     print ("\nCalculation complete.")
