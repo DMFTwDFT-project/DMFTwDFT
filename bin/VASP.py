@@ -179,7 +179,7 @@ class VASP_class:
         diff_aug = 0.0
         for i, a1 in enumerate(augCHG1):
             diff_aug += sum((array(a1) - array(augCHG2[i])) ** 2)
-        print sqrt(diff_aug)
+        print ("Augmentation difference = %f " % sqrt(diff_aug))
         return diff_chg
 
     def Read_OSZICAR(self, finame="OSZICAR"):
