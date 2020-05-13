@@ -281,7 +281,7 @@ class Initialize:
         # generating wannier90.win
         TB = Struct.TBstructure("POSCAR", p["atomnames"], p["orbs"])
         TB.Compute_cor_idx(p["cor_at"], p["cor_orb"])
-        print((TB.TB_orbs))
+        # print((TB.TB_orbs))
         if list(pV.keys()).count("NBANDS="):
             self.DFT.NBANDS = pV["NBANDS="][0]
         else:
