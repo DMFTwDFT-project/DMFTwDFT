@@ -209,8 +209,8 @@ if __name__ == "__main__":
     shutil.copy2("sig.inp", "sig.inp.0")
 
     for itt in range(p["Niter"]):
-        main_out.write("--- Starting Charge loop " + str(itt + 1) + now() + "---")
-        print ("--- Starting Charge loop " + str(itt + 1) + " ---\n")
+        main_out.write("--- Starting charge loop " + str(itt + 1) + now() + "---")
+        print ("\n--- Starting charge loop " + str(itt + 1) + " ---\n")
         main_out.write("\n")
         main_out.flush()
 
