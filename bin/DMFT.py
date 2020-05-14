@@ -101,7 +101,7 @@ class Initialize:
         if self.dft == "vasp":
 
             # vasp executable
-            self.vasp_exec = "vasp_std"
+            self.vasp_exec = "vaspDMFT"
 
             # Generating .win file
             self.gen_win()

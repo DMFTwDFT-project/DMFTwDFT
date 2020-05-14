@@ -415,7 +415,6 @@ if __name__ == "__main__":
                 cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             ).communicate()
             shutil.copy2("CHGCAR", "CHGCAR." + str(itt))
-            shutil.copy2("OUTCAR", "OUTCAR." + str(itt))
             if itt > 0:
                 DFT.Read_NELECT()
                 CHGDIFF = DFT.Diff_CHGCAR(
@@ -425,7 +424,6 @@ if __name__ == "__main__":
 
             DFT.Read_NBANDS()
             DFT.Read_EFERMI()
-            DFT.Read_OSZICAR()
 
             DFT.Update_win(
                 DFT.NBANDS, DFT.EFERMI + p["ewin"][0], DFT.EFERMI + p["ewin"][1]
@@ -448,7 +446,7 @@ if __name__ == "__main__":
             print ("wannier90 calculation complete.")
             print out  # , err
 
-    main_out.write("Caculation Ends" + now())
+    main_out.write("Calculation Ends" + now())
     print ("\nCalculation complete.")
     main_out.write("\n")
     main_out.flush()
