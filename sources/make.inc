@@ -2,9 +2,9 @@
 #=====================================================
 # For Linux with intel version 11/12 on 64bit machines
 #=====================================================
-F90 = ifort
+F90 = gfortran 
 COMMS=mpi
-MPIF90=mpiifort
+MPIF90=mpifort
 CMP = f2py --fcompiler=intelem # fortran to python converter
 
 
