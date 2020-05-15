@@ -100,6 +100,14 @@ if __name__ == "__main__":
     else:
         para_com2 = ""
 
+    ########### Global variables ###########################
+
+    # Number of wannier bands to be set in the .win file
+    # when it is not the same as the DFT bands
+    wanbands = 0
+
+    updatewanbands = False
+
     ############ Initial Preparation ########################
 
     if p["Nit"] > 0 and p["Niter"] > 1:
@@ -217,6 +225,8 @@ if __name__ == "__main__":
     CHGDIFF = 0.0
     CHGDIFF2 = 0.0
     shutil.copy2("sig.inp", "sig.inp.0")
+
+    # ----------------------- Starting DFT+DMFT loop -----------------------------
 
     for itt in range(p["Niter"]):
         main_out.write("--- Starting charge loop " + str(itt + 1) + now() + "---")
@@ -394,57 +404,190 @@ if __name__ == "__main__":
             E_iter.write("\n")
             E_iter.flush()
 
+        # ------------------------- Full charge self-consistent DFT+DMFT calculation -------------------------------------
+
         if itt < p["Niter"] - 1:
-            main_out.write("--- Running vaspDMFT " + now() + "---")
-            main_out.write("\n")
-            main_out.flush()
-            print ("\n--- Running vaspDMFT ---\n")
 
-            if itt == 0:
-                f = open("INCAR", "a")
-                print >> f, "NELM= " + str(p["Ndft"])
-                f.close()
+            if args.dft == "vasp":
 
-            cmd = (
-                para_com
-                + " "
-                + p["path_bin"]
-                + "vaspDMFT > vasp.out 2> vasp.error || { echo 'Parallel run failed!'; exit 1; }"
-            )
-            out, err = subprocess.Popen(
-                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            ).communicate()
-            shutil.copy2("CHGCAR", "CHGCAR." + str(itt))
-            if itt > 0:
-                DFT.Read_NELECT()
-                CHGDIFF = DFT.Diff_CHGCAR(
-                    "CHGCAR." + str(itt - 1), "CHGCAR." + str(itt)
+                main_out.write("--- Running vaspDMFT " + now() + "---")
+                main_out.write("\n")
+                main_out.flush()
+                print ("\n--- Running vaspDMFT ---\n")
+
+                if itt == 0:
+                    f = open("INCAR", "a")
+                    print >> f, "NELM= " + str(p["Ndft"])
+                    f.close()
+
+                cmd = (
+                    para_com
+                    + " "
+                    + p["path_bin"]
+                    + "vaspDMFT > vasp.out 2> vasp.error || { echo 'Parallel run failed!'; exit 1; }"
                 )
-                print ("Charge difference = %f" % CHGDIFF)
+                out, err = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ).communicate()
+                shutil.copy2("CHGCAR", "CHGCAR." + str(itt))
+                if itt > 0:
+                    DFT.Read_NELECT()
+                    CHGDIFF = DFT.Diff_CHGCAR(
+                        "CHGCAR." + str(itt - 1), "CHGCAR." + str(itt)
+                    )
+                    print ("Charge difference = %f" % CHGDIFF)
 
-            DFT.Read_NBANDS()
-            DFT.Read_EFERMI()
+                DFT.Read_NBANDS()
+                DFT.Read_EFERMI()
+                print ("Total energy = %s eV" % str(DFT.E))
 
-            DFT.Update_win(
-                DFT.NBANDS, DFT.EFERMI + p["ewin"][0], DFT.EFERMI + p["ewin"][1]
-            )
+                # Setting num_bands in .win file.
+                # If set to False num_bands is set to number of DFT bands.
+                if list(p.keys()).count("num_bands_win"):
+                    if p["num_bands_win"]:
+                        wanbands = p["num_bands_win"]
+                        updatewanbands = False
+                    else:
+                        wanbands = DFT.NBANDS
+                else:
+                    wanbands = DFT.NBANDS
 
-            print os.popen("rm wannier90.chk").read()
-            print os.popen("rm wannier90.chk.fmt").read()
-            main_out.write(
-                "-------------- Running wannier 90 " + str(itt + 1) + "----------------"
-            )
-            print ("Running wannier90...")
-            main_out.write("\n")
-            main_out.flush()
-            # parallel support is available for wannier90 versions above v1.2
-            cmd = para_com + " " + p["path_bin"] + "wannier90.x wannier90"
-            # cmd = p["path_bin"] + "wannier90.x wannier90"
-            out, err = subprocess.Popen(
-                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            ).communicate()
-            print ("wannier90 calculation complete.")
-            print out  # , err
+                # Updating .win
+                DFT.Update_win(
+                    wanbands, DFT.EFERMI + p["ewin"][0], DFT.EFERMI + p["ewin"][1]
+                )
+
+                print os.popen("rm wannier90.chk").read()
+                print os.popen("rm wannier90.chk.fmt").read()
+                main_out.write(
+                    "-------------- Running wannier 90 "
+                    + str(itt + 1)
+                    + "----------------"
+                )
+                print ("Running wannier90...")
+                main_out.write("\n")
+                main_out.flush()
+                # parallel support is available for wannier90 versions above v1.2
+                cmd = para_com + " " + p["path_bin"] + "wannier90.x wannier90"
+                # cmd = p["path_bin"] + "wannier90.x wannier90"
+                out, err = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ).communicate()
+                print ("wannier90 calculation complete.")
+                print out  # , err
+
+            elif args.dft == "siesta":
+
+                main_out.write("--- Running siesta " + now() + "---")
+                main_out.write("\n")
+                main_out.flush()
+                print ("\n--- Running siesta ---\n")
+
+                # Renaming wannier90.win files to siesta files.
+                shutil.copy("wannier90.eig", args.structurename + ".eig")
+                shutil.copy("wannier90.amn", args.structurename + ".amn")
+                shutil.copy("wannier90.chk", args.structurename + ".chk")
+                shutil.copy("wannier90.win", args.structurename + ".win")
+
+                # Copying the .psf and .fdf files from top directory
+                fdfsource = "../" + args.structurename + ".fdf"
+                shutil.copy(fdfsource, ".")
+                for file in glob.glob(r"../*.psf"):
+                    shutil.copy(file, ".")
+
+                # Running wannier90 pre-processor to obtain .nnkp file
+                cmd = p["path_bin"] + "wannier90.x" + " -pp" + " " + args.structurename
+                out, err = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ).communicate()
+                print (out)
+
+                # Running siesta
+                cmd = (
+                    p["path_bin"]
+                    + "siesta"
+                    + "<"
+                    + args.structurename
+                    + ".fdf>"
+                    + args.structurename
+                    + ".out"
+                    + " 2>"
+                    + "siesta-dmft.error"
+                )
+                out, err = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ).communicate()
+
+                if os.path.exists(args.structurename + ".out"):
+                    fi = open(args.structurename + ".out", "r")
+                    done_word = fi.readlines()[-1]
+                    fi.close()
+                    if done_word.split()[0] == "Job":
+                        print ("siesta calculation complete.\n")
+                    else:
+                        print ("siesta calculation failed!\n")
+                        sys.exit()
+                else:
+                    print ("siesta calculation failed!\n")
+                    sys.exit()
+
+                # need to rename .eigW to .eig to run wannier90
+                shutil.copy(args.structurename + ".eigW", args.structurename + ".eig")
+
+                # Update Bands and Fermi energy
+                DFT.Read_NBANDS()
+                DFT.Read_EFERMI()
+                print ("Total energy = %s eV" % str(DFT.E))
+
+                # Setting num_bands in .win file.
+                # If set to False num_bands is set to number of DFT bands.
+                if list(p.keys()).count("num_bands_win"):
+                    if p["num_bands_win"]:
+                        wanbands = p["num_bands_win"]
+                        updatewanbands = False
+                    else:
+                        wanbands = DFT.NBANDS
+                else:
+                    wanbands = DFT.NBANDS
+
+                # Updating .win
+                DFT.Update_win(
+                    DFT.NBANDS, DFT.EFERMI + p["ewin"][0], DFT.EFERMI + p["ewin"][1]
+                )
+                shutil.copy("wannier90.win", args.structurename + ".win")
+
+                # Running wannier90
+                print os.popen("rm wannier90.chk").read()
+                print os.popen("rm wannier90.chk.fmt").read()
+                main_out.write(
+                    "-------------- Running wannier 90 "
+                    + str(itt + 1)
+                    + "----------------"
+                )
+                print ("Running wannier90...")
+                main_out.write("\n")
+                main_out.flush()
+                # parallel support is available for wannier90 versions above v1.2
+                cmd = (
+                    para_com
+                    + " "
+                    + p["path_bin"]
+                    + "wannier90.x"
+                    + " "
+                    + args.structurename
+                )
+                # cmd = p["path_bin"] + "wannier90.x wannier90"
+                out, err = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ).communicate()
+                print ("wannier90 calculation complete.")
+                print out  # , err
+
+                # Renaming siesta files to wannier90 files
+                shutil.copy(args.structurename + ".eig", "wannier90.eig")
+                shutil.copy(args.structurename + ".chk", "wannier90.chk")
+                shutil.copy(args.structurename + ".win", "wannier90.win")
+                shutil.copy(args.structurename + ".amn", "wannier90.amn")
 
     main_out.write("Calculation Ends" + now())
     print ("\nCalculation complete.")

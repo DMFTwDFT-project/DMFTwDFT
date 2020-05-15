@@ -18,7 +18,7 @@ from INPUT import *
 from splash import welcome
 
 
-class Initialize:
+class DMFTLauncher:
     """ DMFTwDFT Initialization and Calculation (Python 2.x version).
 
 	This class contains methods to run the initial DFT and wannier90 calculations
@@ -31,12 +31,12 @@ class Initialize:
 
 	<options>:
 	-dft <vasp,siesta,qe>
-	-dftexec : Name of the DFT executable. Default: vasp_std
 	-dmft : This flag performs dmft calculation
 	-hf : This flag performs Hartree-Fock calcualtion
 	-force : This flag forces a dmft or hf calculation even if it has been completed
 	-kmeshtol : k-mesh tolerance for wannier90
         -aiida : Flag for aiida calculations
+        -nowin : Flag to disable automatic generation of .win file
         -v : Enable verbosity
 
 	"""
@@ -46,6 +46,8 @@ class Initialize:
 	Contains common functions for all methods.
 	This launches the dmft calculation as well.
 	"""
+
+        print("Initializing calculation...\n")
 
         if os.path.exists("para_com.dat"):
             fipa = open("para_com.dat", "r")
@@ -69,54 +71,33 @@ class Initialize:
             dft=args.dft, aiida=args.aiida, structurename=args.structurename
         )
 
-        # dft running directory (current directory)
-        self.dir = os.getcwd()
+        self.dir = os.getcwd()  # dft running directory (current directory)
+        self.structurename = (
+            args.structurename
+        )  # name of structure. Required for siesta (structurename.fdf).
+        self.kmeshtol = args.kmeshtol  # kmesh tolerence for wannier mesh
+        self.force = args.force  # force dmft calculation True of False
+        self.v = args.v  # Verbosity
+        self.dft = args.dft  # DFT type
+        self.aiida = args.aiida  # Flag for aiida calculation
+        self.lowdin = args.lowdin  # Flag for Siesta Lowdin
+        self.nowin = args.nowin  # Flag for .win generation
 
-        # name of structure. Required for siesta-> structurename.fdf etc.
-        self.structurename = args.structurename
+        ####### DFT and wannier90 initialization #######
 
-        # kmesh tolerence for wannier mesh
-        self.kmeshtol = args.kmeshtol
-
-        # force dmft calculation True of False
-        self.force = args.force
-
-        # Verbosity
-        self.v = args.v
-
-        # DFT type
-        self.dft = args.dft
-
-        # Flag for aiida calculation
-        self.aiida = args.aiida
-
-        # Flag for Siesta Lowdin
-        self.lowdin = args.lowdin
-
-        print("Initializing calculation...\n")
-
-        ### DFT initialization ###
+        # wannier90 executable
+        self.wannier90_exec = "wannier90.x"
+        self.wanbands = 0
+        self.updatewanbands = True
 
         # VASP calculation
         if self.dft == "vasp":
-
-            # vasp executable
-            self.vasp_exec = "vaspDMFT"
-
-            # Generating .win file
-            self.gen_win()
+            self.vasp_exec = "vaspDMFT"  # vasp executable
 
         # Siesta calculation
         elif self.dft == "siesta":
-
-            # siesta executable
-            self.siesta_exec = "siesta"
-
+            self.siesta_exec = "siesta"  # siesta executable
             self.fdf_to_poscar()
-            if not self.lowdin:
-
-                # Generate .win file. Lowdin does this internally.
-                self.gen_win()
 
         # QE calculation
         elif self.dft == "qe":
@@ -128,7 +109,7 @@ class Initialize:
         if self.aiida:
             self.win_to_poscar(input="aiida.win")
 
-        ### DMFT initialization ###
+        ####### DMFT initialization #######
 
         # Generate initial self energy.
         self.gen_sig()
@@ -140,8 +121,10 @@ class Initialize:
         elif args.hf:
             self.type = "HF"
 
-        # DMFT calculation
+        # Launch DMFT calculation
         self.run_dmft()
+
+    # ------------------------------- UTILITIES -------------------------------------------------
 
     def create_DFTmu(self):
         """
@@ -156,6 +139,20 @@ class Initialize:
         f = open("DFT_mu.out", "w")
         f.write("%f" % mu)
         f.close()
+
+    def gen_sig(self):
+        """
+        This method generates the initial self energy file sig.inp.
+        """
+        cmd = "sigzero.py"
+        out, err = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        ).communicate()
+        if err:
+            print(err.decode("utf-8"))
+            sys.exit()
+        else:
+            print("Initial self-energy file generated.")
 
     def fdf_to_poscar(self):
         """
@@ -273,20 +270,57 @@ class Initialize:
 
         f.close()
 
+    def copy_files(self):
+        """
+        This creates a directory DMFT or HF in the root directory
+        and copies all the necessary files.
+        """
+
+        # creating directory for DMFT
+        if os.path.exists(self.type):
+            if os.path.exists(self.type + "/imp.0/"):
+                shutil.rmtree(self.type + "/imp.0/")
+                # os.makedirs("DMFT")
+        else:
+            os.makedirs(self.type)
+
+        # copying files into DMFT or HF directory
+        if self.structurename != None and self.dft != None:
+            cmd = (
+                "cd "
+                + self.type
+                + " && Copy_input.py ../ "
+                + "-structurename "
+                + self.structurename
+                + " -dft "
+                + self.dft
+            )
+        else:
+            cmd = "cd " + self.type + " && Copy_input.py ../ "
+        out, err = subprocess.Popen(cmd, shell=True).communicate()
+        if err:
+            print("File copy failed!\n")
+            print(err)
+            sys.exit()
+        else:
+            print(out)
+            print(
+                "\n"
+                + self.type
+                + " initialization complete. Ready to run calculation.\n"
+            )
+
+    # ----------------------------- WANNIER90 -------------------------------------------
+
     def gen_win(self):
         """
-        This method generates wannier90.win for initial DFT run.
+        This method generates wannier90.win for the initial DFT run.
         """
 
         # generating wannier90.win
         TB = Struct.TBstructure("POSCAR", p["atomnames"], p["orbs"])
         TB.Compute_cor_idx(p["cor_at"], p["cor_orb"])
         # print((TB.TB_orbs))
-
-        # if list(pV.keys()).count("NBANDS="):
-        #     self.DFT.NBANDS = pV["NBANDS="][0]
-        # else:
-        #     self.DFT.NBANDS = 100
 
         # Read number of bands from DFT input file
         try:
@@ -314,18 +348,44 @@ class Initialize:
             self.DFT.NBANDS = 100
             print("WARNING: Number of bands not set in DFT input file!")
 
+        # Setting num_bands in .win file.
+        # If set to False num_bands is set to number of DFT bands.
+        if list(p.keys()).count("num_bands_win"):
+            if p["num_bands_win"]:
+                self.wanbands = p["num_bands_win"]
+                self.updatewanbands = False
+            else:
+                self.wanbands = self.DFT.NBANDS
+        else:
+            self.wanbands = self.DFT.NBANDS
+
         self.DFT.Create_win(
             TB,
             p["atomnames"],
             p["orbs"],
             p["L_rot"],
-            self.DFT.NBANDS,
+            self.wanbands,
             # Initially DFT.EFERMI is taken from DFT_mu.out but will
-            # be updated later one the DFT calculation is complete.
+            # be updated later once the DFT calculation is complete.
             self.DFT.EFERMI + p["ewin"][0],
             self.DFT.EFERMI + p["ewin"][1],
             self.kmeshtol,
         )
+
+        # If exclude_bands are to be included in the .win file.
+        # Appending to current .win file.
+        if list(p.keys()).count("exclude_bands"):
+            if p["exclude_bands"]:
+                f = open("wannier90.win", "a")
+                f.write("\nexclude_bands :\t")
+                f.write(", ".join(str(x) for x in p["exclude_bands"]))
+                f.write("\n")
+                f.close()
+
+            else:
+                pass
+        else:
+            pass
 
         # VASP populates the .win file when running but Siesta
         # does not so we need to create a complete .win file for
@@ -368,7 +428,122 @@ class Initialize:
                 print(err.decode("utf-8"))
             f.write("end kpoints")
             f.close()
-            shutil.copy("wannier90.win", self.structurename + ".win")
+        print(".win generated.")
+
+    def update_win(self):
+        """
+        This updates the wannier90.win file with the number of bands and fermi energy
+        from the initial DFT calculation.
+	"""
+        # Updating wannier90.win with the number of DFT bands
+        if self.updatewanbands:
+            self.DFT.Read_NBANDS()
+            self.DFT.Read_EFERMI()
+            self.DFT.Update_win(
+                self.DFT.NBANDS,
+                self.DFT.EFERMI + p["ewin"][0],
+                self.DFT.EFERMI + p["ewin"][1],
+            )
+        else:
+            self.DFT.Read_NBANDS()
+            self.DFT.Read_EFERMI()
+            self.DFT.Update_win(
+                self.wanbands,
+                self.DFT.EFERMI + p["ewin"][0],
+                self.DFT.EFERMI + p["ewin"][1],
+            )
+
+        print(".win updated.")
+
+        # Updating DFT_mu.out
+        np.savetxt("DFT_mu.out", [self.DFT.EFERMI])
+
+    def run_wan90_pp(self):
+        """
+	This function performs the wannier90 pre-processing required by some DFT codes like siesta.
+        Outputs a .nnkp file which is required for the DFT calculaiton.
+        """
+        cmd = self.wannier90_exec + " -pp" + " " + self.structurename
+        out, err = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        ).communicate()
+        if err:
+            print(err.decode("utf-8"))
+            sys.exit()
+        else:
+            print(out.decode("utf-8"))
+
+    def run_wan90(self, filename="wannier90"):
+        """
+        Running wannier90.x to generate .chk and .eig files.
+        """
+
+        print("Running wannier90...")
+        cmd = self.para_com + " " + self.wannier90_exec + " " + filename
+        out, err = subprocess.Popen(
+            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+        ).communicate()
+        if err:
+            print("wannier90 calculation failed!")
+            print(err.decode("utf-8"))
+            sys.exit()
+        else:
+            print("wannier90 calculation complete.")
+            print(out.decode("utf-8"))
+
+    # -------------------------------- DFT ----------------------------------------------
+
+    def run_dft(self):
+        """
+		This function  calls the dft calculations and the wannier calculations
+		"""
+
+        # VASP
+        if self.dft == "vasp":
+            if not self.nowin:
+                self.gen_win()  # Generating .win file
+            else:
+                self.updatewanbands = False
+            self.vasp_run(self.dir)
+            self.update_win()
+            self.run_wan90()
+            self.copy_files()
+
+        # Siesta
+        elif self.dft == "siesta":
+            if not self.lowdin:  # Generate .win file. Lowdin does this internally.
+                if not self.nowin:
+                    self.gen_win()
+                    shutil.copy("wannier90.win", self.structurename + ".win")
+                else:
+                    self.updatewanbands = False
+
+            self.siesta_run(self.dir)
+
+            # need to rename .eigW to .eig to run wannier90
+            shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
+
+            if not self.lowdin:
+                if not self.nowin:
+                    self.update_win()
+                    shutil.copy("wannier90.win", self.structurename + ".win")
+                self.run_wan90(self.structurename)
+
+            # renaming files
+            shutil.copy(self.structurename + ".eig", "wannier90.eig")
+            shutil.copy(self.structurename + ".chk", "wannier90.chk")
+            shutil.copy(self.structurename + ".win", "wannier90.win")
+            shutil.copy(self.structurename + ".amn", "wannier90.amn")
+            self.copy_files()
+
+        # aiida
+        if self.aiida:
+            # renaming files
+            shutil.copy("aiida.eig", "wannier90.eig")
+            shutil.copy("aiida.chk", "wannier90.chk")
+            shutil.copy("aiida.win", "wannier90.win")
+            shutil.copy("aiida.amn", "wannier90.amn")
+            self.copy_files()
 
     def vasp_run(self, dir):
         """
@@ -399,8 +574,8 @@ class Initialize:
 
     def siesta_run(self, dir):
         """
-		This method runs the initial siesta calculation.
-		"""
+	This method runs the initial siesta calculation.
+        """
         # wannier90 pre-processing
         if not self.lowdin:
             self.run_wan90_pp()
@@ -439,222 +614,7 @@ class Initialize:
             print("DFT calculation failed!\n")
             sys.exit()
 
-    def read_outcar(self, outcarpath):
-        """This function reads the OUTCAR file if exists from VASP calculations
-		"""
-        if os.path.exists(outcarpath + os.sep + "OUTCAR"):
-            return pychemia.code.vasp.VaspOutput(outcarpath + os.sep + "OUTCAR")
-        else:
-            print("OUTCAR not found.")
-            return False
-
-    def vasp_convergence(self):
-
-        """ NOT SUPPORTED IN THE PYTHON 2.X VERSION!
-
-            This function checks for convergence inside the DFT_relax directory
-            and copies CONTCAR as POSCAR to root directory. Otherwise it runs vasp for convergence.
-            If you want better convergence remember to copy an updated INCAR in the DFT_relax directory.
-            """
-
-        def check_relax(vaspout):
-            # Checks for convergence
-            ediffg = abs(pychemia.code.vasp.VaspInput("./DFT_relax/INCAR").EDIFFG)
-            avg_force = vaspout.relaxation_info()["avg_force"]
-            print("EDIFFG = %f and Average force = %f" % (ediffg, avg_force))
-            if avg_force <= ediffg:
-                print("Forces are converged.")
-                return True
-            else:
-                print("Forces are not converged.")
-                return False
-
-        if os.path.exists("DFT_relax"):
-            vaspout = self.read_outcar("DFT_relax")
-            if vaspout:
-                if vaspout.is_finished and check_relax(vaspout):
-                    print("Copying CONTCAR to root directory.\n")
-                    copyfile("./DFT_relax/CONTCAR", "POSCAR")
-                else:
-                    print("Recalculating...")
-                    self.vasp_run("./DFT_relax")
-                    vaspout = self.read_outcar("DFT_relax")
-                    if vaspout:
-                        if vaspout.is_finished and check_relax(vaspout):
-                            print("Copying CONTCAR to root directory.\n")
-                            copyfile("./DFT_relax/CONTCAR", "POSCAR")
-                        else:
-                            print("Update convergence parameters. Exiting.")
-                            sys.exit()
-            else:
-                if (
-                    os.path.isfile("./DFT_relax/INCAR")
-                    and os.path.isfile("./DFT_relax/POTCAR")
-                    and os.path.isfile("./DFT_relax/POSCAR")
-                    and os.path.isfile("./DFT_relax/KPOINTS")
-                ):
-                    print("DFT_relax directory exists. Recalculating...")
-                    self.vasp_run("./DFT_relax")
-                    vaspout = self.read_outcar("DFT_relax")
-                    if vaspout:
-                        if vaspout.is_finished and check_relax(vaspout):
-                            print("Copying CONTCAR to root directory.\n")
-                            copyfile("./DFT_relax/CONTCAR", "POSCAR")
-                        else:
-                            print("Update convergence parameters. Exiting.")
-                            sys.exit()
-                else:
-                    print("VASP input files missing. Exiting.")
-                    sys.exit()
-        else:
-            print("DFT_relax directory does not exist. Convergence failed.")
-            sys.exit()
-
-    def update_win(self):
-        """
-        This updates the wannier90.win file with the number of bands and fermi energy
-        from the initial DFT calculation.
-	"""
-        # Updating wannier90.win with the number of DFT bands
-        self.DFT.Read_NBANDS()
-        self.DFT.Read_EFERMI()
-        self.DFT.Update_win(
-            self.DFT.NBANDS,
-            self.DFT.EFERMI + p["ewin"][0],
-            self.DFT.EFERMI + p["ewin"][1],
-        )
-
-        if self.dft == "siesta":
-            shutil.copy("wannier90.win", self.structurename + ".win")
-
-        # Updating DFT_mu.out
-        np.savetxt("DFT_mu.out", [self.DFT.EFERMI])
-
-    def run_wan90_pp(self):
-        """
-		This function performs the wannier90 pre-processing required by some DFT codes like siesta.
-		Outputs a .nnkp file which is required for the DFT calculaiton.
-		"""
-        cmd = "wannier90.x -pp" + " " + self.structurename
-        out, err = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        ).communicate()
-        if err:
-            print(err.decode("utf-8"))
-            sys.exit()
-        else:
-            print(out.decode("utf-8"))
-
-    def run_wan90(self, filename="wannier90"):
-        """
-        Running wannier90.x to generate .chk and .eig files.
-        """
-
-        print("Running wannier90...")
-        cmd = "wannier90.x " + filename
-        out, err = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        ).communicate()
-        if err:
-            print("wannier90 calculation failed!")
-            print(err.decode("utf-8"))
-            sys.exit()
-        else:
-            print("wannier90 calculation complete.")
-            print(out.decode("utf-8"))
-
-    def gen_sig(self):
-        """
-		This method generates the initial self energy file sig.inp.
-		"""
-        cmd = "sigzero.py"
-        out, err = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        ).communicate()
-        if err:
-            print(err.decode("utf-8"))
-            sys.exit()
-        else:
-            print("Initial self-energy file generated.\n")
-
-    def copy_files(self):
-        """
-		This creates a directory DMFT or HF in the root directory
-		and copies all the necessary files.
-		"""
-
-        # creating directory for DMFT
-        if os.path.exists(self.type):
-            if os.path.exists(self.type + "/imp.0/"):
-                shutil.rmtree(self.type + "/imp.0/")
-                # os.makedirs("DMFT")
-        else:
-            os.makedirs(self.type)
-
-        # copying files into DMFT or HF directory
-        if self.structurename != None and self.dft != None:
-            cmd = (
-                "cd "
-                + self.type
-                + " && Copy_input.py ../ "
-                + "-structurename "
-                + self.structurename
-                + " -dft "
-                + self.dft
-            )
-        else:
-            cmd = "cd " + self.type + " && Copy_input.py ../ "
-        out, err = subprocess.Popen(cmd, shell=True).communicate()
-        if err:
-            print("File copy failed!\n")
-            print(err)
-            sys.exit()
-        else:
-            print(out)
-            print(
-                "\n"
-                + self.type
-                + " initialization complete. Ready to run calculation.\n"
-            )
-
-    def run_dft(self):
-        """
-		This function  calls the dft calculations and the wannier calculations
-		"""
-
-        # VASP
-        if self.dft == "vasp":
-            self.vasp_run(self.dir)
-            self.update_win()
-            self.run_wan90()
-            self.copy_files()
-
-        # Siesta
-        elif self.dft == "siesta":
-            self.siesta_run(self.dir)
-
-            # need to rename .eigW to .eig to run wannier90
-            shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
-
-            if not self.lowdin:
-                self.update_win()
-                self.run_wan90(self.structurename)
-
-            # renaming files
-            shutil.copy(self.structurename + ".eig", "wannier90.eig")
-            shutil.copy(self.structurename + ".chk", "wannier90.chk")
-            shutil.copy(self.structurename + ".win", "wannier90.win")
-            shutil.copy(self.structurename + ".amn", "wannier90.amn")
-            self.copy_files()
-
-        # aiida
-        if self.aiida:
-            # renaming files
-            shutil.copy("aiida.eig", "wannier90.eig")
-            shutil.copy("aiida.chk", "wannier90.chk")
-            shutil.copy("aiida.win", "wannier90.win")
-            shutil.copy("aiida.amn", "wannier90.amn")
-            self.copy_files()
+    # --------------------- DMFT -----------------------------------------------
 
     def run_dmft(self):
         """
@@ -991,12 +951,19 @@ if __name__ == "__main__":
         parser.add_argument(
             "-lowdin", action="store_true", help="Flag to use Siesta Lowdin version.",
         )
+
+        parser.add_argument(
+            "-nowin",
+            action="store_true",
+            help="Flag to disable automatic generation of .win file.",
+        )
+
         parser.add_argument(
             "-v", action="store_true", help="Enable verbosity.",
         )
 
         args = parser.parse_args()
-        Initialize(args)
+        DMFTLauncher(args)
 
     else:
         print("Usage: DMFT.py -h")

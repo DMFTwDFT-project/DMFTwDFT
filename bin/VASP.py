@@ -188,14 +188,14 @@ class VASP_class:
             fi = open(finame, "r")
             self.E = float(fi.readlines()[-1].split()[2])
             fi.close()
-            print ("Total energy read from VASP = %f eV" % self.E)
+            # print ("Total energy read from VASP = %f eV" % self.E)
 
         elif self.dft == "siesta":
             fi = open(self.structurename + ".out", "r")
             data = fi.read()
             fi.close()
             self.E = float(re.findall(r"Total\s=[\s0-9+-.]*", data)[0].split()[-1])
-            print ("Total energy read from Siesta = %f eV" % self.E)
+            # print ("Total energy read from Siesta = %f eV" % self.E)
 
         elif self.dft == "qe":
             if self.aiida:
@@ -207,7 +207,7 @@ class VASP_class:
                 )
                 # in QE this is in Ry. Converting to eV.
                 self.E = 13.60569 * total_energy
-                print ("Total energy read from Quantum Espresso = %f eV" % self.E)
+                # print ("Total energy read from Quantum Espresso = %f eV" % self.E)
 
     def Read_NBANDS(self):
         if self.dft == "vasp":

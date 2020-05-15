@@ -52,8 +52,11 @@ class WANNIER:
         header = fi_chk.readline()
         num_bands = int(fi_chk.readline())
         num_exclude_bands = int(fi_chk.readline())
+        excl_bands = []
         if num_exclude_bands > 0:
-            excl_bands = map(int, fi_chk.readline().split())
+            for i in range(num_exclude_bands):
+                excl_bands.append(int(fi_chk.readline().split()[0]))
+        print ("excl_bands=", excl_bands)
         real_latt = map(float, fi_chk.readline().split())
         print ("real_latt=", real_latt)
         real_latt = array(real_latt).reshape((3, 3), order="F")
@@ -131,9 +134,18 @@ class WANNIER:
                 num_band_max = nbmax - nbmin + 1
         self.num_band_max = num_band_max
         self.band_win = array(band_win)
-        self.WANU = zeros((num_kpts, num_wann, num_band_max), dtype=complex)
-        for i in range(num_kpts):
-            self.WANU[i] = u_matrix[i].dot(u_matrix_opt[i][:, :num_band_max])
+        self.num_exclude_bands = num_exclude_bands
+
+        if num_exclude_bands > 0:
+            self.WANU = zeros(
+                (num_kpts, num_wann, (num_band_max - num_exclude_bands)), dtype=complex
+            )
+            for i in range(num_kpts):
+                self.WANU[i] = u_matrix[i].dot(u_matrix_opt[i][:, :num_band_max])
+        else:
+            self.WANU = zeros((num_kpts, num_wann, num_band_max), dtype=complex)
+            for i in range(num_kpts):
+                self.WANU[i] = u_matrix[i].dot(u_matrix_opt[i][:, :num_band_max])
 
     def Compute_dU(self):
         ########## READ AMN file ##########
