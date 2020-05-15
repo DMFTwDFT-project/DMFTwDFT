@@ -16,6 +16,7 @@ skrams
 gaunt.so
 gutils.so
 maxent_routines.so
+siesta
 
 #sphinx
 _build/
