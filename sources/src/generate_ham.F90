@@ -44,7 +44,7 @@ contains
       allocate (HamR(nr,num_wann,num_wann), stat=ierr)
       if (ierr /= 0) call io_error('Error allocating HamR in generate_hamr')
     endif
-    if (lforce.eqv..true.) then
+    if (lforce.eq..true.) then
       if (.not. allocated(dHk)) then
         allocate (dHk(num_wann,num_wann), stat=ierr)
         if (ierr /= 0) call io_error('Error allocating Hk in generate_hamr')
@@ -70,18 +70,18 @@ contains
     !write(*,*) my_node_id, counts(my_node_id), displs(my_node_id)
 
     HamR=cmplx_0
-    if (lforce.eqv..true.) dHamR=cmplx_0
+    if (lforce.eq..true.) dHamR=cmplx_0
     do i=displs(my_node_id)+1,displs(my_node_id)+counts(my_node_id)
       nbmin=band_win(1,i)
       nbmax=band_win(2,i)
       num_band_max=nbmax-nbmin+1
       Hk=cmplx_0
-      if (lforce.eqv..true.) dHk=cmplx_0
+      if (lforce.eq..true.) dHk=cmplx_0
       do x=1,num_wann
         do y=1,num_wann
           do z=1,num_band_max
             Hk(x,y)=Hk(x,y)+dconjg(UMatrix(z,x,i))*UMatrix(z,y,i)*eigvals(nbmin+z-1,i)
-            if (lforce.eqv..true.) dHk(x,y)=dHk(x,y)+dconjg(UMatrix(z,x,i))*UMatrix(z,y,i)*deig(nbmin+z-1,i)
+            if (lforce.eq..true.) dHk(x,y)=dHk(x,y)+dconjg(UMatrix(z,x,i))*UMatrix(z,y,i)*deig(nbmin+z-1,i)
           enddo
         enddo
       enddo
@@ -92,19 +92,19 @@ contains
       do r=1,nR
         rdotk=-1*twopi*dot_product(kpt_latt(:,i),dfloat(tran(:,r)))
         HamR(r,:,:)=HamR(r,:,:)+Hk*exp(cmplx_i*rdotk)
-        if (lforce.eqv..true.) dHamR(r,:,:)=dHamR(r,:,:)+dHk*exp(cmplx_i*rdotk)
+        if (lforce.eq..true.) dHamR(r,:,:)=dHamR(r,:,:)+dHk*exp(cmplx_i*rdotk)
       enddo
     enddo
     call comms_allreduce(HamR,nR,num_wann,num_wann,'SUM')
     HamR=HamR/dfloat(num_kpts)
-    if (lforce.eqv..true.) then
+    if (lforce.eq..true.) then
       call comms_allreduce(dHamR,nR,num_wann,num_wann,'SUM')
       dHamR=dHamR/dfloat(num_kpts)
     endif
     !write(*,*) HamR(365,1,1)
     !if (allocated(tran)) deallocate (tran)
     if (allocated(Hk)) deallocate (Hk)
-    if ((lforce.eqv..true.) .and. (allocated(dHk))) deallocate (dHk)
+    if ((lforce.eq..true.) .and. (allocated(dHk))) deallocate (dHk)
 
   end subroutine generate_hamr
 

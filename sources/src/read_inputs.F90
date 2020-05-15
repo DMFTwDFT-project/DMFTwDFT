@@ -428,8 +428,8 @@ contains
 
     lforce=.false.
     inquire(file='wannier90.deig',exist=iffile)
-    if (iffile.eqv..true.) lforce=.true.
-    if (lforce.eqv..true.) then
+    if (iffile.eq..true.) lforce=.true.
+    if (lforce.eq..true.) then
       if (.not. allocated(deig)) then
         allocate (deig(num_tot_bands,num_kpts), stat=ierr)
         if (ierr /= 0) call io_error('Error allocating deig in Read_wan_win')

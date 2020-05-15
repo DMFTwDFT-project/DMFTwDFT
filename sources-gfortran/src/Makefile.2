@@ -1,0 +1,122 @@
+# -*- MakeFile -*- 
+#  Should be no need to change below this line
+#
+
+include ../../make.inc
+
+# Contains definition of OBJS, OBJSLIB, OBJS_POST, LIBRARY, DYNLIBRARY
+include ../Makefile.header
+
+
+
+POSTDIR = ../postw90/
+
+ifdef COMMS
+COMMS := $(strip $(COMMS))
+else
+COMMS = serial
+endif
+
+ifeq ($(COMMS),mpi)
+TEMP1 = -DMPI
+TEMP2 = $(MPIF90)
+else
+TEMP1 =
+TEMP2 = $(F90)
+endif
+
+
+dmft dos wannier libs dynlibs w90chk2chk serialobjs: POSTOPTS = $(TEMP1) 
+dmft dos wannier libs dynlibs w90chk2chk serialobjs: COMPILER = $(TEMP2)
+dmft: ../../dmft.x
+dos: ../../dmft_dos.x
+wannier: ../../wannier90.x 
+w90chk2chk: ../../w90chk2chk.x
+
+serialobjs: $(OBJS)
+
+../../dmft.x: $(OBJS) ../main.F90
+	$(COMPILER) ../main.F90 $(POSTOPTS) $(LDOPTS) $(OBJS) $(LIBS) -o ../../dmft.x
+../../dmft_dos.x: $(OBJS) ../dos.F90
+	$(COMPILER) ../dos.F90 $(POSTOPTS) $(LDOPTS) $(OBJS) $(LIBS) -o ../../dmft_dos.x
+
+../../w90chk2chk.x: $(OBJS) ../w90chk2chk.F90
+	$(COMPILER) ../w90chk2chk.F90 $(LDOPTS) $(OBJS) $(LIBS) -o ../../w90chk2chk.x
+
+../../wannier90.x: $(OBJS) ../wannier_prog.F90
+	$(COMPILER) ../wannier_prog.F90 $(POSTOPTS) $(LDOPTS) $(OBJS) $(LIBS) -o ../../wannier90.x
+
+post: POSTOPTS = $(TEMP1)
+post: COMPILER = $(TEMP2)
+post: mpi_test ../../postw90.x
+
+../../postw90.x: $(OBJS_POST) $(POSTDIR)postw90.F90
+	$(COMPILER) $(POSTDIR)postw90.F90 $(POSTOPTS) $(LDOPTS) $(OBJS_POST) $(LIBS) -o ../../postw90.x
+
+mpi_test :
+ifeq ($(COMMS),mpi)
+
+ifndef MPIF90
+
+	$(info  ) \
+	$(info ********************* STOP **********************) \
+	$(info *  COMMS=mpi but MPIF90 is not set in make.inc  *) \
+	$(info *  Set MPIF90 to your parallel fortran compiler *) \
+	$(info *  On many systems MPIF90=mpif90 will work      *) \
+	$(info ********************* STOP **********************) \
+	$(info  ) \
+	$(error MPIF90 is not set) 
+
+endif
+
+endif 
+
+
+
+libs:     $(LIBRARY)
+
+dynlibs: $(DYNLIBRARY)
+
+$(LIBRARY): $(OBJS) $(OBJSLIB) 
+	$(AR) $(ARFLAGS) $(LIBRARY) $(OBJSLIB) $(OBJS)
+
+$(DYNLIBRARY): $(OBJS) $(OBJSLIB)
+	echo $(COMPILER)
+	$(COMPILER) $(SHAREDLIBFLAGS) $(POSTOPTS) $(LDOPTS) $(OBJS) $(OBJSLIB) $(LIBS) -o $@
+
+clean:
+	rm -f *.o *.mod *.MOD *.obj
+
+constants.o: ../constants.F90
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../constants.F90
+
+io.o: ../io.F90 constants.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../io.F90
+
+utility.o: ../utility.F90  constants.o io.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../utility.F90
+
+parameters.o: ../parameters.F90 constants.o io.o utility.o comms.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../parameters.F90
+
+read_inputs.o: ../read_inputs.F90 constants.o io.o utility.o comms.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../read_inputs.F90
+
+generate_kpts.o: ../generate_kpts.F90 read_inputs.o comms.o constants.o io.o utility.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../generate_kpts.F90
+generate_ham.o: ../generate_ham.F90 read_inputs.o comms.o constants.o io.o utility.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../generate_ham.F90
+
+dmft_ksum.o: ../dmft_ksum.F90 read_inputs.o comms.o constants.o io.o utility.o generate_ham.o generate_kpts.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../dmft_ksum.F90
+
+comms.o: ../comms.F90 constants.o io.o
+	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../comms.F90
+
+dmft_lib.o: ./constants.o ./io.o ./comms.o\
+	../dmft_lib.F90
+	 $(COMPILER) $(FCOPTS) -c ../dmft_lib.F90
+
+
+.PHONY: wannier libs post clean mpi_test serialobjs
+
