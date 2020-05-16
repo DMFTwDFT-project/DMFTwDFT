@@ -1,6 +1,6 @@
 include ../make.inc
 
-all : gaunt.so gutils.so fort_kpt_tools.so
+all : fort_kpt_tools.so #gaunt.so gutils.so fort_kpt_tools.so
 
 gaunt.so: gaunt.f90
 	$(CMP) -c $? -m gaunt 
