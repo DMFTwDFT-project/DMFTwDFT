@@ -4,7 +4,7 @@
 #=====================================================
 F90 = gfortran 
 COMMS=mpi
-MPIF90=mpifort
+MPIF90=gfortran #mpifort
 CMP = f2py --fcompiler=intelem # fortran to python converter
 
 FCOPTS=-O2 #-check 

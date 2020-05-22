@@ -225,7 +225,7 @@ class DMFTLauncher:
 
         # Unit cell
         unit_cell_data = re.findall(
-            r"begin\s*unit\s*_cell_cart\s*[a-zA-Z]*([\s\d.]*)end", data
+            r"begin\s*unit\s*_cell_cart\s*[a-zA-Z]*([+-e\s\d.]*)end", data
         )
         unit_cell = np.array(unit_cell_data[0].split(), dtype="float64")
         unit_cell = unit_cell.reshape(3, 3)
