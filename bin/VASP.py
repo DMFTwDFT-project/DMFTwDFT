@@ -184,6 +184,8 @@ class VASP_class:
         return diff_chg
 
     def Read_OSZICAR(self, finame="OSZICAR"):
+        # Reading the Total energy from DFT calculations.
+
         if self.dft == "vasp":
             fi = open(finame, "r")
             self.E = float(fi.readlines()[-1].split()[2])
@@ -200,14 +202,17 @@ class VASP_class:
         elif self.dft == "qe":
             if self.aiida:
                 fi = open("aiida.out", "r")
-                data = fi.read()
-                fi.close()
-                total_energy = float(
-                    re.findall(r"total\senergy\s*=\s*([-\d.\s]*)Ry", data)[-1]
-                )
-                # in QE this is in Ry. Converting to eV.
-                self.E = 13.60569 * total_energy
-                # print ("Total energy read from Quantum Espresso = %f eV" % self.E)
+            else:
+                fi = open(self.structurename + ".scf.out", "r")
+            data = fi.read()
+            fi.close()
+            total_energy = float(
+                re.findall(r"total\senergy\s*=\s*([-\d.\s]*)Ry", data)[-1]
+            )
+            # in QE this is in Ry. Converting to eV.
+            self.E = 13.60569 * total_energy
+
+        print ("Total energy = %f eV" % self.E)
 
     def Read_NBANDS(self):
         if self.dft == "vasp":
@@ -227,6 +232,14 @@ class VASP_class:
                     -1
                 ]
             )
+        elif self.dft == "qe" and self.aiida == False:
+            fi = open(self.structurename + ".scf.out", "r")
+            data = fi.read()
+            fi.close()
+            self.NBANDS = int(
+                re.findall(r"\n\s*number\s*of\s*Kohn-Sham\s*states=([\s\d]*)", data)[0]
+            )
+
         print ("Number of bands = %d " % self.NBANDS)
 
     def Read_NELECT(self):
@@ -247,7 +260,7 @@ class VASP_class:
             # print val
             self.EFERMI = float(val.group(1))
             savetxt("DFT_mu.out", array([self.EFERMI]))
-            print ("Fermi energy read from VASP = %f eV" % self.EFERMI)
+            print ("Fermi energy = %f eV" % self.EFERMI)
 
         elif self.dft == "siesta":
             # Reading the Fermi energy from siesta output
@@ -256,17 +269,21 @@ class VASP_class:
             fi.close()
             self.EFERMI = float(re.findall(r"Fermi\s=[\s0-9+-.]*", data)[0].split()[-1])
             savetxt("DFT_mu.out", array([self.EFERMI]))
-            print ("Fermi energy read from Siesta = %f eV" % self.EFERMI)
+            print ("Fermi energy = %f eV" % self.EFERMI)
 
         elif self.dft == "qe":
+            # Reading the Fermi energy from QE outputs.
             if self.aiida:
                 fi = open("aiida.out", "r")
-                data = fi.read()
-                fi.close()
-                self.EFERMI = float(
-                    re.findall(r"the\s*Fermi\s*energy\s*is\s*([\s\d.]*)ev", data)[0]
-                )
-                print ("Fermi energy read from Quantum Espresso  = %f eV" % self.EFERMI)
+            else:
+                fi = open(self.structurename + ".scf.out", "r")
+            data = fi.read()
+            fi.close()
+            self.EFERMI = float(
+                re.findall(r"the\s*Fermi\s*energy\s*is\s*([\s\d.]*)ev", data)[0]
+            )
+            print ("Fermi energy = %f eV" % self.EFERMI)
+
             savetxt("DFT_mu.out", array([self.EFERMI]))
 
     def Read_EBAND(self):

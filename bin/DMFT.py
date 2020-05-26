@@ -103,6 +103,7 @@ class DMFTLauncher:
         elif self.dft == "qe":
             # Nothing to do here for now since we only have
             # QE aiida calculations.
+            self.qe_exec = "pw.x"
             pass
 
         # aiida calculation
@@ -215,6 +216,30 @@ class DMFTLauncher:
             )
         f.close()
 
+    def read_poscar(self, fname="POSCAR"):
+        "Reads a POSCAR and sets self.cell, self.symbols and self.positions."
+
+        file = open(fname, "r")
+        data = file.readlines()
+        file.close()
+
+        lattice_constant = float(data[1])
+        lattice_vec = np.array(
+            (
+                [float(x) for x in data[2].split()],
+                [float(x) for x in data[3].split()],
+                [float(x) for x in data[4].split()],
+            )
+        )
+        self.cell = lattice_constant * lattice_vec
+        num_atoms = np.sum([int(x) for x in data[6].split()])
+        full_structure = np.array((data[8 : 8 + num_atoms]), dtype="str")
+        self.positions = np.zeros((num_atoms, 3), dtype="float64")
+        self.symbols = []
+        for icount, i in enumerate(full_structure):
+            self.positions[icount] = i.split()[0:3]
+            self.symbols.append(i.split()[-1])
+
     def win_to_poscar(self, input="aiida.win"):
         """This function generates a POSCAR from a .win file.
         Used in aiida calculations where the .win file is provided."""
@@ -310,6 +335,22 @@ class DMFTLauncher:
                 + " initialization complete. Ready to run calculation.\n"
             )
 
+    def gen_pw2wannier90(self):
+        # Generates pw2wannier90 file for QE+wannier90 calculation.
+        fi = open(self.structurename + ".pw2wannier90.in", "wt")
+        fi.write("&inputpp\n")
+        fi.write("\toutdir = './'\n")
+        fi.write("\tprefix = '%s'\n" % self.structurename)
+        fi.write("\tseedname = '%s'\n" % self.structurename)
+        fi.write("\tspin_component = 'none'\n")
+        fi.write("\twrite_mmn = .true.\n")
+        fi.write("\twrite_amn = .true.\n")
+        fi.write("\twrite_unk = .false.\n")
+        fi.write("\twrite_dmn = .false.\n")
+        fi.write("\twan_mode = 'standalone'\n")
+        fi.write("/\n")
+        fi.close()
+
     # ----------------------------- WANNIER90 -------------------------------------------
 
     def gen_win(self):
@@ -343,6 +384,17 @@ class DMFTLauncher:
                     ].split()[-1]
                 )
                 print("Number of bands read from .fdf = %d " % self.DFT.NBANDS)
+
+            elif self.dft == "qe":
+                fi = open(self.structurename + ".scf.out", "r")
+                data = fi.read()
+                fi.close()
+                self.DFT.NBANDS = int(
+                    re.findall(
+                        r"\n\s*number\s*of\s*Kohn-Sham\s*states=([\s\d]*)", data
+                    )[0]
+                )
+                print("Number of bands read from .scf.out = %d " % self.DFT.NBANDS)
 
         except:
             self.DFT.NBANDS = 100
@@ -393,7 +445,7 @@ class DMFTLauncher:
 
         if self.dft == "siesta":
 
-            # Update wannier90.win file then rename it
+            # Update wannier90.win file.
             f = open("wannier90.win", "a")
             f.write("\nbegin unit_cell_cart\n")
             np.savetxt(f, self.cell)
@@ -428,7 +480,62 @@ class DMFTLauncher:
                 print(err.decode("utf-8"))
             f.write("end kpoints")
             f.close()
-        print(".win generated.")
+            print("wannier90.win generated.")
+
+        # Similar to Siesta, Quantum Espresso requires the generation
+        # of the .win file manually.
+        # self.cell, self.symbols and self.positions is set from
+        # read_poscar().
+
+        elif self.dft == "qe" and self.aiida == False:
+
+            # reading poscar that should be generated.
+            self.read_poscar()
+
+            # Update wannier90.win file then rename it
+            f = open("wannier90.win", "a")
+            f.write("\nbegin unit_cell_cart\n")
+            np.savetxt(f, self.cell)
+            f.write("end unit_cell_cart\n\n")
+
+            # writing the atoms cart block
+            f.write("begin atoms_frac\n")
+            aT = (np.array([self.symbols])).T
+            b = self.positions
+            atoms_cart = np.concatenate((aT, b), axis=1)
+            np.savetxt(f, atoms_cart, fmt="%s")
+            f.write("end atoms_frac\n\n")
+
+            # writing the mp_grid line
+            fi = open(self.structurename + ".scf.in")
+            data = fi.read()
+            fi.close()
+            self.grid = re.findall(r"K_POINTS\s*automatic\s*([\d\s]*)", data,)[
+                0
+            ].split()[0:3]
+            self.grid = [int(x) for x in self.grid]
+            f.write("mp_grid= %s %s %s \n" % (self.grid[0], self.grid[1], self.grid[2]))
+
+            # kpoints
+            f.write("\nbegin kpoints\n")
+            cmd = (
+                "kmesh.pl "
+                + str(self.grid[0])
+                + " "
+                + str(self.grid[1])
+                + " "
+                + str(self.grid[2])
+                + " wannier"
+            )
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+            f.write(out.decode("utf-8"))
+            if err:
+                print(err.decode("utf-8"))
+            f.write("end kpoints")
+            f.close()
+            print("wannier90.win generated.")
 
     def update_win(self):
         """
@@ -453,7 +560,7 @@ class DMFTLauncher:
                 self.DFT.EFERMI + p["ewin"][1],
             )
 
-        print(".win updated.")
+        print("wannier90.win updated.")
 
         # Updating DFT_mu.out
         np.savetxt("DFT_mu.out", [self.DFT.EFERMI])
@@ -495,8 +602,8 @@ class DMFTLauncher:
 
     def run_dft(self):
         """
-		This function  calls the dft calculations and the wannier calculations
-		"""
+        This function  calls the dft calculations and the wannier calculations
+        """
 
         # VASP
         if self.dft == "vasp":
@@ -518,6 +625,7 @@ class DMFTLauncher:
                 else:
                     self.updatewanbands = False
 
+            # Running Siesta
             self.siesta_run(self.dir)
 
             # need to rename .eigW to .eig to run wannier90
@@ -536,8 +644,92 @@ class DMFTLauncher:
             shutil.copy(self.structurename + ".amn", "wannier90.amn")
             self.copy_files()
 
+        # Quantum Espresso (Without aiida)
+        elif self.dft == "qe" and self.aiida == False:
+            if not self.nowin:
+                self.gen_win()  # Assume POSCAR is present.
+                shutil.copy("wannier90.win", self.structurename + ".win")
+            else:
+                self.updatewanbands = False
+
+            # Running Quantum Espresso for SCF
+            self.qe_run(cal_type="scf", dir=self.dir)
+
+            # Setting up NSCF run.
+            shutil.copy(self.structurename + ".scf.in", self.structurename + ".nscf.in")
+
+            # replacing calculation = 'scf' with calculation = 'nscf' in the .nscf.in file.
+            fi = open(self.structurename + ".nscf.in", "r")
+            data = fi.read()
+            fi.close()
+            data = data.replace("'scf'", "'nscf'")
+            fi = open(self.structurename + ".nscf.in", "w")
+            fi.write(data)
+            fi.close()
+
+            # Removing the last two lines:
+            # K_POINTS automatic
+            # <grid>
+            fi = open(self.structurename + ".nscf.in", "r")
+            data = fi.readlines()
+            fi.close()
+
+            fi = open(self.structurename + ".nscf.in", "w")
+            for i in data[0:-2]:
+                fi.write(i)
+            fi.close()
+
+            # Appending the K_POINTS crystal grid using
+            # kmesh.pl.
+            f = open(self.structurename + ".nscf.in", "a")
+            cmd = (
+                "kmesh.pl "
+                + str(self.grid[0])
+                + " "
+                + str(self.grid[1])
+                + " "
+                + str(self.grid[2])
+            )
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+            f.write(out.decode("utf-8"))
+            if err:
+                print(err.decode("utf-8"))
+            f.close()
+
+            # Save the Total energy from the SCF calculation.
+            # Number of bands and fermi energy are updated when
+            # update_win() is called.
+            self.DFT.Read_OSZICAR()
+
+            # Updating .win file.
+            if not self.nowin:
+                self.update_win()
+                shutil.copy("wannier90.win", self.structurename + ".win")
+
+            # Running Quantum Espresso for NSCF calculation.
+            self.qe_run(cal_type="nscf", dir=self.dir)
+
+            # Run wannier90 pre-processing.
+            self.run_wan90_pp()
+
+            # Run Quantum Espresso - wannier90 interface.
+            self.gen_pw2wannier90()
+            self.qe_run(cal_type="pw2wannier90", dir=self.dir)
+
+            # Running wannier90.x
+            self.run_wan90(self.structurename)
+
+            # renaming files
+            shutil.copy(self.structurename + ".eig", "wannier90.eig")
+            shutil.copy(self.structurename + ".chk", "wannier90.chk")
+            shutil.copy(self.structurename + ".win", "wannier90.win")
+            shutil.copy(self.structurename + ".amn", "wannier90.amn")
+            self.copy_files()
+
         # aiida
-        if self.aiida:
+        elif self.aiida:
             # renaming files
             shutil.copy("aiida.eig", "wannier90.eig")
             shutil.copy("aiida.chk", "wannier90.chk")
@@ -547,8 +739,8 @@ class DMFTLauncher:
 
     def vasp_run(self, dir):
         """
-		This method runs the inital VASP calculation.
-		"""
+	This method runs the inital VASP calculation.
+	"""
 
         # initial VASP run
         print("Running VASP in %s" % dir)
@@ -613,6 +805,106 @@ class DMFTLauncher:
         else:
             print("DFT calculation failed!\n")
             sys.exit()
+
+    def qe_run(self, cal_type="scf", dir=None):
+        """
+        This runs the Quantum Espresso SCF/NSCF calculation with pw.x.
+
+        """
+
+        def run_pwx(finname=None, foutname=None, cal_type="scf"):
+
+            print("\nRunning Quantum Espresso %s in %s" % (cal_type, dir))
+            cmd = (
+                "cd "
+                + dir
+                + " && "
+                + self.para_com_dft
+                + " "
+                + self.qe_exec
+                + " -in "
+                + finname
+                + " > "
+                + foutname
+            )
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+
+            if os.path.exists(foutname):
+
+                fi = open(foutname, "r")
+                done_word = re.search(r"JOB\s*DONE.", fi.read())
+                fi.close()
+
+                if done_word:
+                    print("Quantum Espresso %s  calculation complete.\n" % cal_type)
+
+                else:
+                    print("Quantum Espresso %s calculation failed!\n" % cal_type)
+                    sys.exit()
+
+            else:
+                print("Quantum Espresso %s calculation failed!\n" % cal_type)
+                sys.exit()
+
+        def run_pw2wannier90(finname=None, foutname=None):
+
+            print("Running Quantum Espresso pw2wannier90.x ...")
+            cmd = (
+                "cd "
+                + dir
+                + " && "
+                + self.para_com_dft
+                + " "
+                + "pw2wannier90.x"
+                + " -in "
+                + finname
+                + " > "
+                + foutname
+            )
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+
+            if os.path.exists(foutname):
+
+                fi = open(foutname, "r")
+                done_word = re.search(r"JOB\s*DONE.", fi.read())
+                fi.close()
+
+                if done_word:
+                    print("Quantum Espresso pw2wannier90.x calculation complete.\n")
+
+                else:
+                    print("Quantum Espresso pw2wannier90.x calculation failed!\n")
+                    sys.exit()
+
+            else:
+                print("Quantum Espresso pw2wannier90.x calculation failed!\n")
+                sys.exit()
+
+        # setting input and output file names
+        if cal_type == "scf":
+            finname = self.structurename + ".scf.in"
+            foutname = self.structurename + ".scf.out"
+
+        elif cal_type == "nscf":
+            finname = self.structurename + ".nscf.in"
+            foutname = self.structurename + ".nscf.out"
+
+        elif cal_type == "pw2wannier90":
+            finname = self.structurename + ".pw2wannier90.in"
+            foutname = self.structurename + ".pw2wannier90.out"
+
+        # Setting program to run
+        if cal_type == "scf" or cal_type == "nscf":
+            # Running pw.x
+            run_pwx(finname, foutname, cal_type)
+
+        elif cal_type == "pw2wannier90":
+            # Running pw2wannier90.x
+            run_pw2wannier90(finname, foutname)
 
     # --------------------- DMFT -----------------------------------------------
 

@@ -99,6 +99,7 @@ if __name__ == "__main__":
             ],
             "Siesta": [str(structure) + ".out", "para_com.dat", "POSCAR"],
             "aiida": ["aiida.out", "POSCAR"],
+            "Quantum Espresso": [str(structure) + ".scf.out", "para_com.dat", "POSCAR"],
         }
         Ldft = False
         for dft in DFTfiles:
