@@ -114,10 +114,13 @@ if __name__ == "__main__":
         main_out.write(
             "-----------Charge Self-consistent DFT+DMFT calculations-----------"
         )
+        print ("\nCalculation type : Charge self-consistent DFT+DMFT calculation\n")
+
     if p["Nit"] > 0 and p["Niter"] == 1:
         main_out.write(
             "----------Non-charge Self-consistent DFT+DMFT calculations-----------"
         )
+        print ("\nCalculation type : Non-charge self-consistent DFT+DMFT calculation\n")
     main_out.write("\n")
     main_out.flush()
 
@@ -237,10 +240,7 @@ if __name__ == "__main__":
 
         for it in range(p["Nit"]):
             main_out.write("--- Starting DMFT loop " + str(it + 1) + now() + "---")
-            print (
-                "\n----- Starting loop DFT: %s, DMFT: %s -----\n"
-                % (str(itt + 1), str(it + 1))
-            )
+            print ("\n----- Starting DMFT loop : %s -----\n" % (str(it + 1)))
             main_out.write("\n")
             main_out.flush()
 
@@ -413,6 +413,7 @@ if __name__ == "__main__":
                 main_out.write("--- Running vaspDMFT " + now() + "---")
                 main_out.write("\n")
                 main_out.flush()
+                print ("\n----- Starting DFT loop : %s -----\n" % (str(itt + 1)))
                 print ("\n--- Running vaspDMFT ---\n")
 
                 if itt == 0:
@@ -481,6 +482,7 @@ if __name__ == "__main__":
                 main_out.write("--- Running siesta " + now() + "---")
                 main_out.write("\n")
                 main_out.flush()
+                print ("\n----- Starting DFT loop : %s -----\n" % (str(itt + 1)))
                 print ("\n--- Running siesta ---\n")
 
                 # Renaming wannier90.win files to siesta files.

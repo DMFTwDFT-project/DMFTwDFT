@@ -104,7 +104,7 @@ class DMFTLauncher:
             # Nothing to do here for now since we only have
             # QE aiida calculations.
             self.qe_exec = "pw.x"
-            pass
+            self.qe_to_poscar()
 
         # aiida calculation
         if self.aiida:
@@ -212,6 +212,54 @@ class DMFTLauncher:
                         atomic_coordinates_lines[i].split()[-1],
                         "\n",
                     ]
+                )
+            )
+        f.close()
+
+    def qe_to_poscar(self):
+        """Creates a POSCAR from a Quantum Espressso scf input file.
+           CELL_PARAMETERS must be defined.
+        """
+        fname = self.structurename + ".scf.in"
+        file = open(fname, "r")
+        data = file.read()
+        file.close()
+        lattice_vec = re.findall(r"CELL_PARAMETERS\s*[a-zA-Z]*([e\d\s.+-]*)", data)
+        lattice_vec = [float(x) for x in lattice_vec[0].split()]
+        self.cell = np.array((lattice_vec), dtype="float64").reshape(3, 3)
+        nat = int(re.findall(r"nat\s*=\s*([\d]*)", data)[0])
+        raw_positions = re.findall(
+            r"ATOMIC_POSITIONS\s*crystal([e\d.+\sa-zA-Z]*)\n", data
+        )
+        full_structure = np.array(raw_positions[0].split()).reshape(nat, 4)
+        self.positions = np.zeros((nat, 3), dtype="float64")
+        self.symbols = []
+        for icount, i in enumerate(full_structure):
+            self.positions[icount] = i[1:]
+            self.symbols.append(i[0])
+        species = [i[0] for i in groupby(self.symbols)]
+        species_count = [len(list(group)) for key, group in groupby(self.symbols)]
+
+        # Writing to POSCAR
+        f = open("POSCAR", "w")
+        f.write(" ".join(str(x) for x in species))
+        f.write("\n%f\n" % 1.0)
+        for i in range(len(self.cell)):
+            f.write("%f %f %f\n" % (self.cell[i, 0], self.cell[i, 1], self.cell[i, 2]))
+        f.write(" ".join(str(x) for x in species))
+        f.write("\n")
+        f.write(" ".join(str(x) for x in species_count))
+        f.write("\n")
+        f.write("Direct\n")
+
+        for i in range(len(full_structure)):
+            f.write(
+                "%s %s %s %s\n"
+                % (
+                    full_structure[i, 1],
+                    full_structure[i, 2],
+                    full_structure[i, 3],
+                    full_structure[i, 0],
                 )
             )
         f.close()
