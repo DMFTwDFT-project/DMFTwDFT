@@ -48,4 +48,7 @@ if all(hermitiancheck):
     print("Hermitian condition of (i,j) matrix for all k-points is satisfied.")
 else:
     print("Hermitian condition of (i,j) matrix for all k-points is NOT satisfied!")
-    print(hermitiancheck)
+    print(
+        "Non-Hermitian arrays at k-points: %s "
+        % [index for index, value in enumerate(hermitiancheck) if value is False]
+    )
