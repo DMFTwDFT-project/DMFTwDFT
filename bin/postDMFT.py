@@ -10,11 +10,14 @@ import subprocess
 import sys
 from argparse import RawTextHelpFormatter
 
+import matplotlib
+
+matplotlib.use("ps")
+
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
-# import matplotlib
-# matplotlib.use('ps')
+
 from matplotlib.font_manager import FontProperties, fontManager
 from pylab import *
 from scipy import *
@@ -960,67 +963,110 @@ class PostProcess:
         (ymin, ymax) = (om[0][0], om[0][-1])
         (xmin, xmax) = (distk[0], distk[-1])
 
-        # subplots
-        # spin up
-        fig = plt.figure()
-        a = fig.add_subplot(1, 2, 1)
-        im = plt.imshow(
-            A_k,
-            cmap=cm.hot,
-            vmin=vmm[0],
-            vmax=vmm[1],
-            extent=[xmin, xmax, ymin, ymax],
-            aspect="auto",
-        )
-        a.set_title("Spin Up")
-        # colorbar(im,orientation='vertical',pad=0.05,shrink=1.0,ticks=arange(0,10.0,1.0))
-        xticks(SKP, SKPoints)
-        # xlabel('k-path',fontsize='xx-large')
-        # ylabel('Energy',fontsize='xx-large')
-        axhline(y=0, color="black", ls="--")
+        if args.sp and args.spinup is False and args.spindown is False:
+            # subplots
+            # spin up
+            fig = plt.figure()
+            a = fig.add_subplot(1, 2, 1)
+            im = plt.imshow(
+                A_k,
+                cmap=cm.hot,
+                vmin=vmm[0],
+                vmax=vmm[1],
+                extent=[xmin, xmax, ymin, ymax],
+                aspect="auto",
+            )
+            a.set_title("Spin Up")
+            xticks(SKP, SKPoints)
+            axhline(y=0, color="black", ls="--")
 
-        # spin down
-        a = fig.add_subplot(1, 2, 2)
-        im2 = plt.imshow(
-            A_k2,
-            cmap=cm.hot,
-            vmin=vmm[0],
-            vmax=vmm[1],
-            extent=[xmin, xmax, ymin, ymax],
-            aspect="auto",
-        )
-        a.set_title("Spin Down")
-        # colorbar(im2,orientation='vertical',pad=0.05,shrink=1.0,ticks=arange(0,10.0,1.0))
-        xticks(SKP, SKPoints)
-        # xlabel('k-path',fontsize='xx-large')
-        # ylabel('Energy',fontsize='xx-large')
-        axhline(y=0, color="black", ls="--")
+            # spin down
+            a = fig.add_subplot(1, 2, 2)
+            im2 = plt.imshow(
+                A_k2,
+                cmap=cm.hot,
+                vmin=vmm[0],
+                vmax=vmm[1],
+                extent=[xmin, xmax, ymin, ymax],
+                aspect="auto",
+            )
+            a.set_title("Spin Down")
+            xticks(SKP, SKPoints)
+            axhline(y=0, color="black", ls="--")
 
-        # ax1=subplot(111)
-        # for i in range(18,np.shape(eigval0)[1]):
-        #   ax1.plot(k_eig,eigval0[:,i]-7.22220722842 ,color='green')
-        ##ax1.plot([k_eig[319],k_eig[319]], [ymin,ymax], 'w-')
-        # xticks([0,1,2],['$\Gamma$','X','M'])
+            # Set common labels
+            fig.text(0.45, 0.04, "k-path", ha="center", va="center")
+            fig.text(0.06, 0.5, "Energy", ha="center", va="center", rotation="vertical")
 
-        # Set common labels
-        fig.text(0.45, 0.04, "k-path", ha="center", va="center")
-        fig.text(0.06, 0.5, "Energy", ha="center", va="center", rotation="vertical")
+            # common colorbar
+            fig.subplots_adjust(right=0.8)
+            cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            fig.colorbar(
+                im2,
+                orientation="vertical",
+                pad=0.05,
+                shrink=1.0,
+                ticks=np.arange(0, 10.0, 1.0),
+                cax=cbar_ax,
+            )
 
-        # common colorbar
-        fig.subplots_adjust(right=0.8)
-        cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-        fig.colorbar(
-            im2,
-            orientation="vertical",
-            pad=0.05,
-            shrink=1.0,
-            ticks=np.arange(0, 10.0, 1.0),
-            cax=cbar_ax,
-        )
+            savefig("./bands/A_k_sp.eps", format="eps", dpi=1200)
+            if args.show:
+                show()
 
-        savefig("./bands/A_k_sp.eps", format="eps", dpi=1200)
-        if args.show:
-            show()
+        elif args.sp and args.spinup and args.spindown is False:
+
+            # Plotting only spin up bands
+            im = plt.imshow(
+                A_k,
+                cmap=cm.hot,
+                vmin=vmm[0],
+                vmax=vmm[1],
+                extent=[xmin, xmax, ymin, ymax],
+                aspect="auto",
+            )
+            colorbar(
+                im,
+                orientation="vertical",
+                pad=0.05,
+                shrink=1.0,
+                ticks=np.arange(0, 10.0, 1.0),
+            )
+            xticks(SKP, SKPoints)
+            xlabel("k-path", fontsize="xx-large")
+            ylabel("Energy", fontsize="xx-large")
+            axhline(y=0, color="black", ls="--")
+            title("Spin up")
+            savefig("./bands/A_k_spinup.eps", format="eps", dpi=1200)
+            if args.show:
+                show()
+
+        elif args.sp and args.spindown and args.spinup is False:
+
+            # Plotting only spin up bands
+            im2 = plt.imshow(
+                A_k2,
+                cmap=cm.hot,
+                vmin=vmm[0],
+                vmax=vmm[1],
+                extent=[xmin, xmax, ymin, ymax],
+                aspect="auto",
+            )
+            colorbar(
+                im2,
+                orientation="vertical",
+                pad=0.05,
+                shrink=1.0,
+                ticks=np.arange(0, 10.0, 1.0),
+            )
+            xticks(SKP, SKPoints)
+            xlabel("k-path", fontsize="xx-large")
+            ylabel("Energy", fontsize="xx-large")
+            axhline(y=0, color="black", ls="--")
+            title("Spin down")
+            savefig("./bands/A_k_spindown.eps", format="eps", dpi=1200)
+            if args.show:
+                show()
 
     def oreo_call(self, args):
         """
@@ -1131,8 +1177,20 @@ if __name__ == "__main__":
         parser_bands.add_argument(
             "-sp",
             action="store_true",
-            help="Flag to plot spin-polarized band structure",
+            help="Flag to plot spin-polarized band structure. Default plots both spin up and spin down plots on the same figure.",
         )
+        parser_bands.add_argument(
+            "-spinup",
+            action="store_true",
+            help="Flag to plot spin up band structure separately.",
+        )
+
+        parser_bands.add_argument(
+            "-spindown",
+            action="store_true",
+            help="Flag to plot spin down band structure separately.",
+        )
+
         parser_bands.add_argument(
             "-plotpartial",
             action="store_true",

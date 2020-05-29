@@ -100,7 +100,7 @@ class DMFTLauncher:
             self.fdf_to_poscar()
 
         # QE calculation
-        elif self.dft == "qe":
+        elif self.dft == "qe" and self.aiida is False:
             # Nothing to do here for now since we only have
             # QE aiida calculations.
             self.qe_exec = "pw.x"

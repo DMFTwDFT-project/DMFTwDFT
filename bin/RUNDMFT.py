@@ -413,7 +413,7 @@ if __name__ == "__main__":
                 main_out.write("--- Running vaspDMFT " + now() + "---")
                 main_out.write("\n")
                 main_out.flush()
-                print ("\n----- Starting DFT loop : %s -----\n" % (str(itt + 1)))
+                print ("\n----- Starting DFT loop : %s -----\n" % (str(itt + 2)))
                 print ("\n--- Running vaspDMFT ---\n")
 
                 if itt == 0:
@@ -482,7 +482,7 @@ if __name__ == "__main__":
                 main_out.write("--- Running siesta " + now() + "---")
                 main_out.write("\n")
                 main_out.flush()
-                print ("\n----- Starting DFT loop : %s -----\n" % (str(itt + 1)))
+                print ("\n----- Starting DFT loop : %s -----\n" % (str(itt + 2)))
                 print ("\n--- Running siesta ---\n")
 
                 # Renaming wannier90.win files to siesta files.

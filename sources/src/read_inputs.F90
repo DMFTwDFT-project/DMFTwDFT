@@ -420,7 +420,8 @@ contains
     else
        open(unit=20,file='wannier90.eig',status='old',form='formatted')
        DO nkp=1,num_kpts
-         DO nb=1,num_tot_bands
+         !DO nb=1,num_tot_bands
+         Do nb=1,num_bands
            read(20,*) x,y,eigvals(nb,nkp)
          ENDDO
        ENDDO
