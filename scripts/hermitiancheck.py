@@ -18,8 +18,8 @@ hermitiancheck.py numberofbands numberofkpoints
 import numpy as np
 import sys
 
-numberofbands = sys.argv[1]
-numberofkpoints = sys.argv[2]
+numberofbands = int(sys.argv[1])
+numberofkpoints = int(sys.argv[2])
 
 fi = open("dmft-nkij.dat", "r")
 header = fi.readline()
