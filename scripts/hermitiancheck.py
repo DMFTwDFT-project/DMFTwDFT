@@ -39,15 +39,35 @@ for k in range(n_kij.shape[2]):
 
 # Check for Hermitivity for the (iband, jband) matrix for each
 # k-point.
-
 hermitiancheck = []
-for ll in range(n_kij.shape[2]):
-    hermitiancheck.append(np.allclose(n_kij[:, :, ll], np.conj(n_kij[:, :, ll]).T))
+diagonalcheck = []
+for kk in range(n_kij.shape[2]):
+    hermitiancheck.append(np.allclose(n_kij[:, :, kk], np.conj(n_kij[:, :, kk]).T))
+
+    # Check if diagonal of each (iband, jband) matrix for each k-points is real.
+    # Just a secondary check. Checking for Hermitian already satsifies this.
+    diagonalcheck_perkpoint = []
+    for jj in range(n_kij.shape[0]):
+        diagonalcheck_perkpoint.append(np.isclose(n_kij[jj, jj, kk].imag, 0))
+    if all(diagonalcheck_perkpoint):
+        diagonalcheck.append(True)
+    else:
+        diagonalcheck.append(False)
+
+if all(diagonalcheck):
+    print("\nThe diagonal of the  (i,j) matrix for each k-point is real.")
+else:
+    print("\nThe diagonal of the (i,j) matrix for each k-point is NOT real!")
+    print(
+        "Complex diagonal arrays at k-points: %s \n "
+        % [index for index, value in enumerate(diagonalcheck) if value is False]
+    )
 
 if all(hermitiancheck):
-    print("Hermitian condition of (i,j) matrix for all k-points is satisfied.")
+    print("Hermitian condition of the (i,j) matrix for all k-points is satisfied.")
+
 else:
-    print("Hermitian condition of (i,j) matrix for all k-points is NOT satisfied!")
+    print("Hermitian condition of the (i,j) matrix for all k-points is NOT satisfied!")
     print(
         "Non-Hermitian arrays at k-points: %s "
         % [index for index, value in enumerate(hermitiancheck) if value is False]
