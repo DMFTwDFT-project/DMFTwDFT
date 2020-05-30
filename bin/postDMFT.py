@@ -30,6 +30,19 @@ import Struct
 from INPUT import *
 from splash import welcome
 
+# Setting up plotting class
+plt.rcParams["mathtext.default"] = "regular"  # Roman ['rm', 'cal', 'it', 'tt', 'sf',
+#                                                   'bf', 'default', 'bb', 'frak',
+#                                                   'circled', 'scr', 'regular']
+plt.rcParams["font.family"] = "Georgia"
+plt.rc("font", size=22)  # controls default text sizes
+plt.rc("axes", titlesize=22)  # fontsize of the axes title
+plt.rc("axes", labelsize=22)  # fontsize of the x and y labels
+plt.rc("xtick", labelsize=22)  # fontsize of the tick labels
+plt.rc("ytick", labelsize=22)  # fontsize of the tick labels
+# plt.rc('legend', fontsize=22)    # legend fontsize
+# plt.rc('figure', titlesize=22)  # fontsize of the figure title
+
 
 class PostProcess:
     """DMFTwDFT post processing tool.
@@ -413,8 +426,8 @@ class PostProcess:
 
     def plot_dos(self, args):
         """
-		This method plots the density of states plot.
-		"""
+	This method plots the density of states plot.
+	"""
         if args.sp == False:
             print("Plotting DOS...")
             with open("./dos/G_loc.out", "r") as f:
@@ -439,16 +452,19 @@ class PostProcess:
             y_eg = [-1 * count / 3.14 for count in yg]
             y_t2g = [-1 * count / 3.14 for count in tg]
 
-            plt.figure(1)
-            plt.plot(x, y_eg, "r", label="$d-e_g$")
-            plt.plot(x, y_t2g, "b", label="$d-t_{2g}$")
-            plt.title("DMFT PDOS")
-            plt.xlabel("Energy (eV)")
-            plt.ylabel("DOS (states eV/cell)")
-            plt.xlim(args.elim)
-            plt.axvline(x=0, color="gray", linestyle="--")
+            # Plotting
+            fig = plt.figure(figsize=(13, 9))
+            ax = fig.add_subplot(111)
+
+            ax.plot(x, y_eg, "r", label="$d-e_g$")
+            ax.plot(x, y_t2g, "b", label="$d-t_{2g}$")
+            ax.set_title("DMFT PDOS")
+            ax.set_xlabel("Energy (eV)")
+            ax.set_ylabel("DOS (states eV/cell)")
+            ax.set_xlim(args.elim)
+            ax.axvline(x=0, color="gray", linestyle="--")
             plt.legend()
-            plt.savefig("./dos/DMFT-PDOS.png")
+            fig.savefig("./dos/DMFT-PDOS.png")
             if args.show:
                 plt.show()
             f.close()
@@ -501,19 +517,22 @@ class PostProcess:
             y_eg_dn = [1 * count / 3.14 for count in yg_dn]
             y_t2g_dn = [1 * count / 3.14 for count in tg_dn]
 
-            plt.figure(1)
-            plt.plot(x, y_eg, "r", label="$d-e_g$")
-            plt.plot(x, y_t2g, "b", label="$d-t_{2g}$")
-            plt.plot(x_dn, y_eg_dn, "r")
-            plt.plot(x_dn, y_t2g_dn, "b")
-            plt.title("DMFT PDOS")
-            plt.xlabel("Energy (eV)")
-            plt.ylabel("DOS (states eV/cell)")
-            plt.axvline(x=0, color="gray", linestyle="--")
-            plt.axhline(y=0, color="gray", linestyle="--")
-            plt.xlim(min(min(x), min(x_dn)), max(max(x), max(x_dn)))
+            # Plotting
+            fig = plt.figure(figsize=(13, 9))
+            ax = fig.add_subplot(111)
+
+            ax.plot(x, y_eg, "r", label="$d-e_g$")
+            ax.plot(x, y_t2g, "b", label="$d-t_{2g}$")
+            ax.plot(x_dn, y_eg_dn, "r")
+            ax.plot(x_dn, y_t2g_dn, "b")
+            ax.set_title("DMFT PDOS")
+            ax.set_xlabel("Energy (eV)")
+            ax.set_ylabel("DOS (states eV/cell)")
+            ax.axvline(x=0, color="gray", linestyle="--")
+            ax.axhline(y=0, color="gray", linestyle="--")
+            ax.set_xlim(min(min(x), min(x_dn)), max(max(x), max(x_dn)))
             plt.legend()
-            plt.savefig("./dos/DMFT-PDOS_sp.png")
+            fig.savefig("./dos/DMFT-PDOS_sp.png")
             if args.show:
                 plt.show()
             f.close()
@@ -553,7 +572,7 @@ class PostProcess:
         ############################# Generate sequence list ##################################
         sort_atm = sorted([atm for atms in cor_at for atm in atms])
         atm_sqn = self.Make_coor_list(sort_atm, cor_at)
-        print("atm_sqn:%s" % atm_sqn)
+        # print("atm_sqn : %s" % atm_sqn)
         orb_sqn = []
         for i in atm_sqn:
             len_sf = 0
@@ -562,7 +581,7 @@ class PostProcess:
             orb_idx = self.Make_coor_list(TB.TB_orbs[cor_at[i][0]], cor_orb[i])
             for idx in orb_idx:
                 orb_sqn.append(idx + len_sf)
-        print("orb_sqn:%s" % orb_sqn)
+        # print("orb_sqn : %s" % orb_sqn)
         ################################# Read sig.inp_real ####################################
 
         # non spin-polarized calculation
@@ -618,16 +637,15 @@ class PostProcess:
                 np.savetxt(filestr, SigMoo, fmt="%.10f")
                 ############################ Write SigMdc.out ########################
                 SigMdc = np.array([sigmdc_tmp[i] for i in orb_sqn])
-                print(sigmdc_tmp)
-                print(SigMdc)
+                # print(sigmdc_tmp)
+                # print(SigMdc)
                 filestr = "./bands/" + SigMdc_files[filecounter]
                 np.savetxt(filestr, SigMdc[None], fmt="%.12f")
 
         # ################################################################################################################
 
-        print("kpband=%s" % args.kpband)
-        print("kplist=%s" % args.kplist)
-        print("knames=%s" % args.knames)
+        print("kplist : %s" % args.kplist)
+        print("knames : %s" % args.knames)
 
         # generating k-path
         klist, dist_K, dist_SK = self.Create_kpath(args.kplist, args.kpband)
@@ -715,15 +733,11 @@ class PostProcess:
 
     def plot_plain_bands(self, args):
         """
-		This method plots the regular DMFT band structure.
-		"""
+        This method plots the regular DMFT band structure.
+        """
 
         print("Plotting plain band structure...")
 
-        if args.vlim:
-            vmm = [args.vlim[0], args.vlim[1]]
-        else:
-            vmm = [0, 10.0]
         nk = 0
         SKP = []
         SKPoints = []
@@ -741,9 +755,9 @@ class PostProcess:
 
         fi = open("./bands/ksum.input", "r")
         numk = int(fi.readline())
-        print("numk=%s" % numk)
+        print("numk = %s" % numk)
         nom = int(fi.readline())
-        print("nom=%s" % nom)
+        print("nom = %s" % nom)
         fi.close()
         A_k = []
         dist_k = []
@@ -766,42 +780,71 @@ class PostProcess:
         (ymin, ymax) = (om[0][0], om[0][-1])
         (xmin, xmax) = (distk[0], distk[-1])
 
-        im = plt.imshow(
+        # Setting spectral function ranges.
+
+        if args.vlim is None and args.normalize:
+            vmax = max([max(p) for p in A_k])
+            vmin = min([min(p) for p in A_k])
+            norm = cm.colors.Normalize(vmax=vmax, vmin=vmin)
+            print(
+                "Normalizing spectral function range to : [%.2f, %.2f]" % (vmin, vmax)
+            )
+
+        elif args.vlim and args.normalize:
+            vmax = args.vlim[1]
+            vmin = args.vlim[0]
+            norm = cm.colors.Normalize(vmax=vmax, vmin=vmin)
+            print(
+                "Normalizing spectral function range to : [%.2f, %.2f]" % (vmin, vmax)
+            )
+
+        elif args.vlim and args.normalize is False:
+            vmax = args.vlim[1]
+            vmin = args.vlim[0]
+            norm = None
+            print("Setting spectral function range to : [%.2f, %.2f]" % (vmin, vmax))
+
+        else:
+            vmax = 10.0
+            vmin = 0.0
+            norm = None
+            print("Setting spectral function range to : [%.2f, %.2f]" % (vmin, vmax))
+
+        # Plotting
+        fig = plt.figure(figsize=(13, 9))
+        ax = fig.add_subplot(111)
+
+        im = ax.imshow(
             A_k,
-            cmap=cm.hot,
-            vmin=vmm[0],
-            vmax=vmm[1],
+            cmap=plt.get_cmap(args.cmap),
+            vmin=vmin,
+            vmax=vmax,
+            norm=norm,
             extent=[xmin, xmax, ymin, ymax],
             aspect="auto",
         )
-        colorbar(
-            im,
-            orientation="vertical",
-            pad=0.05,
-            shrink=1.0,
-            ticks=np.arange(vmm[0], vmm[1], 1.0),
-        )
-        xticks(SKP, SKPoints)
-        xlabel("k-path", fontsize="xx-large")
-        ylabel("Energy", fontsize="xx-large")
-        axhline(y=0, color="black", ls="--")
+        cb = fig.colorbar(im, orientation="vertical", pad=0.05, shrink=1.0, ax=ax,)
+        cb.ax.tick_params()
 
-        savefig("./bands/A_k.eps", format="eps", dpi=1200)
+        ax.set_xticks(SKP)
+        ax.set_xticklabels(SKPoints)
+        ax.set_xlabel(r"$k$-path")
+        ax.set_ylabel(r"$E-E_F$ [eV]")
+        ax.axhline(y=0, color="black", ls="--")
+
+        fig.tight_layout()
         if args.show:
-            show()
+            plt.show()
+        fig.savefig("./bands/A_k.eps", format="eps", dpi=1200)
 
     def plot_partial_bands(self, args):
         """
-		This method plots partial bands for orbitals. The order of the orbitals is the Wannier orbital order.
-		"""
+        This method plots partial bands for orbitals. The order of the orbitals is the Wannier orbital order.
+        """
 
         print("Plotting projected band structure...")
         print("Wannier orbitals list:", args.wanorbs)
 
-        if args.vlim:
-            vmm = [args.vlim[0], args.vlim[1]]
-        else:
-            vmm = [0, 10.0]
         SKP = []
         SKPoints = []
         distk = []
@@ -818,9 +861,9 @@ class PostProcess:
 
         fi = open("./bands/ksum.input", "r")
         numk = int(fi.readline())
-        print("numk=%s" % numk)
+        print("numk = %s" % numk)
         nom = int(fi.readline())
-        print("nom=%s" % nom)
+        print("nom = %s" % nom)
         fi.close()
 
         A_k = []
@@ -867,42 +910,70 @@ class PostProcess:
         (ymin, ymax) = (om[0][0], om[0][-1])  # 500x100 energy matrix
         (xmin, xmax) = (distk[0], distk[-1])
 
-        im = plt.imshow(
+        # Setting spectral function ranges.
+
+        if args.vlim is None and args.normalize:
+            vmax = max([max(p) for p in A_k])
+            vmin = min([min(p) for p in A_k])
+            norm = cm.colors.Normalize(vmax=vmax, vmin=vmin)
+            print(
+                "Normalizing spectral function range to : [%.2f, %.2f]" % (vmin, vmax)
+            )
+
+        elif args.vlim and args.normalize:
+            vmax = args.vlim[1]
+            vmin = args.vlim[0]
+            norm = cm.colors.Normalize(vmax=vmax, vmin=vmin)
+            print(
+                "Normalizing spectral function range to : [%.2f, %.2f]" % (vmin, vmax)
+            )
+
+        elif args.vlim and args.normalize is False:
+            vmax = args.vlim[1]
+            vmin = args.vlim[0]
+            norm = None
+            print("Setting spectral function range to : [%.2f, %.2f]" % (vmin, vmax))
+
+        else:
+            vmax = 10.0
+            vmin = 0.0
+            norm = None
+            print("Setting spectral function range to : [%.2f, %.2f]" % (vmin, vmax))
+
+        # Plotting
+        fig = plt.figure(figsize=(13, 9))
+        ax = fig.add_subplot(111)
+
+        im = ax.imshow(
             A_ktotal,
-            cmap=cm.hot,
+            cmap=plt.get_cmap(args.cmap),
+            vmin=vmin,
+            vmax=vmax,
+            norm=norm,
             extent=[xmin, xmax, ymin, ymax],
             aspect="auto",
-            vmin=vmm[0],
-            vmax=vmm[1],
         )
+        cb = fig.colorbar(im, orientation="vertical", pad=0.05, shrink=1.0, ax=ax,)
+        cb.ax.tick_params()
 
-        colorbar(
-            im,
-            orientation="vertical",
-            pad=0.05,
-            shrink=1.0,
-            ticks=np.arange(vmm[0], vmm[1], 1.0),
-        )
-        xticks(SKP, SKPoints)
-        xlabel("k-path", fontsize="xx-large")
-        ylabel("Energy", fontsize="xx-large")
-        axhline(y=0, color="black", ls="--")
+        ax.set_xticks(SKP)
+        ax.set_xticklabels(SKPoints)
+        ax.set_xlabel(r"$k$-path")
+        ax.set_ylabel(r"$E-E_F$ [eV]")
+        ax.axhline(y=0, color="black", ls="--")
 
-        plt.savefig("./bands/A_k_partial.eps", format="eps", dpi=1200)
+        fig.tight_layout()
         if args.show:
-            show()
+            plt.show()
+        fig.savefig("./bands/A_k_partial.eps", format="eps", dpi=1200)
 
     def plot_sp_bands(self, args):
         """
-		This method plots spin-polarized bands.
-		"""
+	This method plots spin-polarized bands.
+	"""
 
         print("Plotting spin-polarized band structure...")
 
-        if args.vlim:
-            vmm = [args.vlim[0], args.vlim[1]]
-        else:
-            vmm = [0, 10.0]
         nk = 0
         SKP = []
         SKPoints = []
@@ -921,9 +992,9 @@ class PostProcess:
         # Spin up dataset
         fi = open("./bands/ksum.input", "r")
         numk = int(fi.readline())
-        print("numk=%s" % numk)
+        print("numk = %s" % numk)
         nom = int(fi.readline())
-        print("nom=%s" % nom)
+        print("nom = %s" % nom)
         fi.close()
         A_k = []
         dist_k = []
@@ -963,110 +1034,175 @@ class PostProcess:
         (ymin, ymax) = (om[0][0], om[0][-1])
         (xmin, xmax) = (distk[0], distk[-1])
 
+        # Setting spectral function ranges.
+
+        if args.vlim is None and args.normalize:
+            vmax1 = max([max(p) for p in A_k])
+            vmin1 = min([min(p) for p in A_k])
+            vmax2 = max([max(p) for p in A_k2])
+            vmin2 = min([min(p) for p in A_k2])
+            vmax = max([vmax1, vmax2])
+            vmin = min([vmin1, vmin2])
+            norm = cm.colors.Normalize(vmax=vmax, vmin=vmin)
+            print(
+                "Normalizing spectral function range to : [%.2f, %.2f]" % (vmin, vmax)
+            )
+
+        elif args.vlim and args.normalize:
+            vmax = args.vlim[1]
+            vmin = args.vlim[0]
+            norm = cm.colors.Normalize(vmax=vmax, vmin=vmin)
+            print(
+                "Normalizing spectral function range to : [%.2f, %.2f]" % (vmin, vmax)
+            )
+
+        elif args.vlim and args.normalize is False:
+            vmax = args.vlim[1]
+            vmin = args.vlim[0]
+            norm = None
+            print("Setting spectral function range to : [%.2f, %.2f]" % (vmin, vmax))
+
+        else:
+            vmax = 10.0
+            vmin = 0.0
+            norm = None
+            print("Setting spectral function range to : [%.2f, %.2f]" % (vmin, vmax))
+
+        # Plotting
+        fig = plt.figure(figsize=(13, 9))
+
         if args.sp and args.spinup is False and args.spindown is False:
             # subplots
+
+            # Big subplot
+            ax = fig.add_subplot(111)
+            # Turn off axis lines and ticks of the big subplot
+            ax.spines["top"].set_color("none")
+            ax.spines["bottom"].set_color("none")
+            ax.spines["left"].set_color("none")
+            ax.spines["right"].set_color("none")
+            ax.tick_params(
+                labelcolor="w", top=False, bottom=False, left=False, right=False
+            )
+
             # spin up
-            fig = plt.figure()
-            a = fig.add_subplot(1, 2, 1)
-            im = plt.imshow(
+            ax1 = fig.add_subplot(1, 2, 1)
+            im1 = ax1.imshow(
                 A_k,
-                cmap=cm.hot,
-                vmin=vmm[0],
-                vmax=vmm[1],
+                cmap=plt.get_cmap(args.cmap),
+                vmin=vmin,
+                vmax=vmax,
+                norm=norm,
                 extent=[xmin, xmax, ymin, ymax],
                 aspect="auto",
             )
-            a.set_title("Spin Up")
-            xticks(SKP, SKPoints)
-            axhline(y=0, color="black", ls="--")
+            cb1 = fig.colorbar(
+                im1, orientation="vertical", pad=0.05, shrink=1.0, ax=ax1,
+            )
+            cb1.ax.tick_params()
+            ax1.set_title("Spin Up")
+            ax1.set_xticks(SKP)
+            ax1.set_xticklabels(SKPoints)
+            ax1.axhline(y=0, color="black", ls="--")
 
             # spin down
-            a = fig.add_subplot(1, 2, 2)
-            im2 = plt.imshow(
+            ax2 = fig.add_subplot(1, 2, 2)
+            im2 = ax2.imshow(
                 A_k2,
-                cmap=cm.hot,
-                vmin=vmm[0],
-                vmax=vmm[1],
+                cmap=plt.get_cmap(args.cmap),
+                vmin=vmin,
+                vmax=vmax,
+                norm=norm,
                 extent=[xmin, xmax, ymin, ymax],
                 aspect="auto",
             )
-            a.set_title("Spin Down")
-            xticks(SKP, SKPoints)
-            axhline(y=0, color="black", ls="--")
+            cb2 = fig.colorbar(
+                im2, orientation="vertical", pad=0.05, shrink=1.0, ax=ax2,
+            )
+            cb2.ax.tick_params()
+            ax2.set_title("Spin Down")
+            ax2.set_xticks(SKP)
+            ax2.set_xticklabels(SKPoints)
+            ax2.axhline(y=0, color="black", ls="--")
 
             # Set common labels
-            fig.text(0.45, 0.04, "k-path", ha="center", va="center")
-            fig.text(0.06, 0.5, "Energy", ha="center", va="center", rotation="vertical")
+            ax.set_xlabel(r"$k$-path")
+            ax.set_ylabel(r"$E-E_F$")
+
+            # Set common labels
+            # fig.text(0.2, 0.04, "$k$-path", ha="center", va="center")
+            # fig.text(0.5, 0.2, "$E-E_F$", ha="center", va="center", rotation="vertical")
 
             # common colorbar
-            fig.subplots_adjust(right=0.8)
-            cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
-            fig.colorbar(
-                im2,
-                orientation="vertical",
-                pad=0.05,
-                shrink=1.0,
-                ticks=np.arange(vmm[0], vmm[1], 1.0),
-                cax=cbar_ax,
-            )
+            # fig.subplots_adjust(right=0.8)
+            # cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+            # cb = fig.colorbar(
+            #     im, orientation="vertical", pad=0.05, shrink=1.0, cax=cbar_ax,
+            # )
+            # cb.ax.tick_params()
 
-            savefig("./bands/A_k_sp.eps", format="eps", dpi=1200)
+            fig.tight_layout()
             if args.show:
                 show()
+            fig.savefig("./bands/A_k_sp.eps", format="eps", dpi=1200)
 
         elif args.sp and args.spinup and args.spindown is False:
 
             # Plotting only spin up bands
-            im = plt.imshow(
+            ax = fig.add_subplot(111)
+
+            im = ax.imshow(
                 A_k,
-                cmap=cm.hot,
-                vmin=vmm[0],
-                vmax=vmm[1],
+                cmap=plt.get_cmap(args.cmap),
+                vmin=vmin,
+                vmax=vmax,
+                norm=norm,
                 extent=[xmin, xmax, ymin, ymax],
                 aspect="auto",
             )
-            colorbar(
-                im,
-                orientation="vertical",
-                pad=0.05,
-                shrink=1.0,
-                ticks=np.arange(vmm[0], vmm[1], 1.0),
-            )
-            xticks(SKP, SKPoints)
-            xlabel("k-path", fontsize="xx-large")
-            ylabel("Energy", fontsize="xx-large")
-            axhline(y=0, color="black", ls="--")
-            title("Spin up")
-            savefig("./bands/A_k_spinup.eps", format="eps", dpi=1200)
+            cb = fig.colorbar(im, orientation="vertical", pad=0.05, shrink=1.0, ax=ax,)
+            cb.ax.tick_params()
+
+            ax.set_title("Spin Up")
+            ax.set_xticks(SKP)
+            ax.set_xticklabels(SKPoints)
+            ax.set_xlabel(r"$k$-path")
+            ax.set_ylabel(r"$E-E_F$ [eV]")
+            ax.axhline(y=0, color="black", ls="--")
+
+            fig.tight_layout()
             if args.show:
-                show()
+                plt.show()
+            fig.savefig("./bands/A_k_spinup.eps", format="eps", dpi=1200)
 
         elif args.sp and args.spindown and args.spinup is False:
 
-            # Plotting only spin up bands
-            im2 = plt.imshow(
+            # Plotting only spin down bands
+            ax = fig.add_subplot(111)
+
+            im = ax.imshow(
                 A_k2,
-                cmap=cm.hot,
-                vmin=vmm[0],
-                vmax=vmm[1],
+                cmap=plt.get_cmap(args.cmap),
+                vmin=vmin,
+                vmax=vmax,
+                norm=norm,
                 extent=[xmin, xmax, ymin, ymax],
                 aspect="auto",
             )
-            colorbar(
-                im2,
-                orientation="vertical",
-                pad=0.05,
-                shrink=1.0,
-                ticks=np.arange(vmm[0], vmm[1], 1.0),
-            )
-            xticks(SKP, SKPoints)
-            xlabel("k-path", fontsize="xx-large")
-            ylabel("Energy", fontsize="xx-large")
-            axhline(y=0, color="black", ls="--")
-            title("Spin down")
-            savefig("./bands/A_k_spindown.eps", format="eps", dpi=1200)
+            cb = fig.colorbar(im, orientation="vertical", pad=0.05, shrink=1.0, ax=ax,)
+            cb.ax.tick_params()
+
+            ax.set_title("Spin Down")
+            ax.set_xticks(SKP)
+            ax.set_xticklabels(SKPoints)
+            ax.set_xlabel(r"$k$-path")
+            ax.set_ylabel(r"$E-E_F$ [eV]")
+            ax.axhline(y=0, color="black", ls="--")
+
+            fig.tight_layout()
             if args.show:
-                show()
+                plt.show()
+            fig.savefig("./bands/A_k_spindown.eps", format="eps", dpi=1200)
 
     def oreo_call(self, args):
         """
@@ -1172,6 +1308,12 @@ if __name__ == "__main__":
             help="List of k-points as an array",
         )
         parser_bands.add_argument(
+            "-cmap",
+            default="hot",
+            type=str,
+            help="Colormap to use for plotting spectral function.",
+        )
+        parser_bands.add_argument(
             "-plotplain", action="store_true", help="Flag to plot plain band structure"
         )
         parser_bands.add_argument(
@@ -1205,7 +1347,16 @@ if __name__ == "__main__":
             help="List of Wannier orbitals to project",
         )
         parser_bands.add_argument(
-            "-vlim", type=float, nargs=2, help="Spectral intensity range"
+            "-vlim",
+            type=float,
+            nargs=2,
+            help="Spectral intensity range. If -normalize flag is set,\
+            this will correspond to the min and max values of the normalization range.",
+        )
+        parser_bands.add_argument(
+            "-normalize",
+            action="store_true",
+            help="Normalize spectral intensity range. -vlim sets range.",
         )
         parser_bands.add_argument(
             "-show", action="store_true", help="Display the bands"
