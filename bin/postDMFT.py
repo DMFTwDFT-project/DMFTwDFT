@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 from argparse import RawTextHelpFormatter
+import itertools
 
 import matplotlib
 
@@ -651,6 +652,9 @@ class PostProcess:
 
         # ################################################################################################################
 
+        if args.autokp or args.compare:
+            args.knames, ticks, discontinuities, args.kplist = self.readKPOINTS(args)
+
         print("kplist : %s" % args.kplist)
         print("knames : %s" % args.knames)
 
@@ -1265,65 +1269,8 @@ class PostProcess:
         fermi = float(fi.readline())
         fi.close
 
-        ##### Reading the KPOINTS file #####
-
-        # Getting the high symmetry point names from KPOINTS file
-        f = open("KPOINTS", "r")
-        KPread = f.read()
-        f.close()
-
-        KPmatrix = re.findall("reciprocal[\s\S]*", KPread)
-        tick_labels = np.array(re.findall("!\s*(.*)", KPmatrix[0]))
-        knames = []
-        knames = [tick_labels[0]]
-
-        # Checking for discontinuities
-        discont_indx = []
-        icounter = 1
-        while icounter < len(tick_labels) - 1:
-            if tick_labels[icounter] == tick_labels[icounter + 1]:
-                knames.append(tick_labels[icounter])
-                icounter = icounter + 2
-            else:
-                discont_indx.append(icounter)
-                knames.append(tick_labels[icounter] + "|" + tick_labels[icounter + 1])
-                icounter = icounter + 2
-        knames.append(tick_labels[-1])
-        discont_indx = list(dict.fromkeys(discont_indx))
-
-        # End of discontinuity check
-
-        # Improve latex rendering
-        for i in range(len(knames)):
-            if knames[i] == "GAMMA":
-                knames[i] = "\Gamma"
-            else:
-                pass
-        knames = [str("$" + latx + "$") for latx in knames]
-
-        # getting the number of grid points from the KPOINTS file
-        f2 = open("KPOINTS", "r")
-        KPreadlines = f2.readlines()
-        f2.close()
-        numgridpoints = int(KPreadlines[1].split()[0])
-
-        kticks = [0]
-        gridpoint = 0
-        for kt in range(len(knames) - 1):
-            gridpoint = gridpoint + numgridpoints
-            kticks.append(gridpoint - 1)
-
-        # creating an array for discontunuity k-points. These are the indexes
-        # of the discontinuity k-points.
-        discontinuities = []
-        for k in discont_indx:
-            discontinuities.append(kticks[int(k / 2) + 1])
-        if discontinuities:
-            print("discont. list  : ", discontinuities)
-
-        # rename kticks and knames to ticks and ticksNames
-        ticks = kticks
-        ticksNames = knames
+        # get knames and kticks from readKPOINTS()
+        ticksNames, ticks, discontinuities = self.readKPOINTS(args)
 
         ##### Plotting bands #####
 
@@ -1382,6 +1329,74 @@ class PostProcess:
         # ax.axhline(color="black", linestyle="--")
 
         return fig, ax
+
+    def readKPOINTS(self, args):
+        """Reads KPOINTS file to get knames and kticks."""
+
+        ##### Reading the KPOINTS file #####
+
+        # Getting the high symmetry point names from KPOINTS file
+        f = open("KPOINTS", "r")
+        KPread = f.read()
+        f.close()
+
+        KPmatrix = re.findall("reciprocal[\s\S]*", KPread)
+        tick_labels = np.array(re.findall("!\s*(.*)", KPmatrix[0]))
+        knames = []
+        knames = [tick_labels[0]]
+
+        # Creating kplist
+        splitarray = KPmatrix[0].split("!")
+        kplist = []
+        for i in splitarray[0:-1]:
+            kplist.append([float(x) for x in i.split()[-3:]])
+        kplist = list(kplist for kplist, _ in itertools.groupby(kplist))
+
+        # Checking for discontinuities
+        discont_indx = []
+        icounter = 1
+        while icounter < len(tick_labels) - 1:
+            if tick_labels[icounter] == tick_labels[icounter + 1]:
+                knames.append(tick_labels[icounter])
+                icounter = icounter + 2
+            else:
+                discont_indx.append(icounter)
+                knames.append(tick_labels[icounter] + "|" + tick_labels[icounter + 1])
+                icounter = icounter + 2
+        knames.append(tick_labels[-1])
+        discont_indx = list(dict.fromkeys(discont_indx))
+
+        # End of discontinuity check
+
+        # Improve latex rendering
+        for i in range(len(knames)):
+            if knames[i] == "GAMMA":
+                knames[i] = "\Gamma"
+            else:
+                pass
+        knames = [str("$" + latx + "$") for latx in knames]
+
+        # getting the number of grid points from the KPOINTS file
+        f2 = open("KPOINTS", "r")
+        KPreadlines = f2.readlines()
+        f2.close()
+        numgridpoints = int(KPreadlines[1].split()[0])
+
+        kticks = [0]
+        gridpoint = 0
+        for kt in range(len(knames) - 1):
+            gridpoint = gridpoint + numgridpoints
+            kticks.append(gridpoint - 1)
+
+        # creating an array for discontunuity k-points. These are the indexes
+        # of the discontinuity k-points.
+        discontinuities = []
+        for k in discont_indx:
+            discontinuities.append(kticks[int(k / 2) + 1])
+        if discontinuities:
+            print("discont. list  : ", discontinuities)
+
+        return knames, kticks, discontinuities, kplist
 
 
 if __name__ == "__main__":
@@ -1458,6 +1473,11 @@ if __name__ == "__main__":
             nargs="+",
             action="append",
             help="List of k-points as an array",
+        )
+        parser_bands.add_argument(
+            "-autokp",
+            action="store_true",
+            help="Flag to use KPOINTS file to obtain k-path.",
         )
         parser_bands.add_argument(
             "-cmap",
