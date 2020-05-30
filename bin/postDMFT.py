@@ -779,7 +779,7 @@ class PostProcess:
             orientation="vertical",
             pad=0.05,
             shrink=1.0,
-            ticks=np.arange(0, 10.0, 1.0),
+            ticks=np.arange(vmm[0], vmm[1], 1.0),
         )
         xticks(SKP, SKPoints)
         xlabel("k-path", fontsize="xx-large")
@@ -881,7 +881,7 @@ class PostProcess:
             orientation="vertical",
             pad=0.05,
             shrink=1.0,
-            ticks=np.arange(0, 10.0, 1.0),
+            ticks=np.arange(vmm[0], vmm[1], 1.0),
         )
         xticks(SKP, SKPoints)
         xlabel("k-path", fontsize="xx-large")
@@ -1006,7 +1006,7 @@ class PostProcess:
                 orientation="vertical",
                 pad=0.05,
                 shrink=1.0,
-                ticks=np.arange(0, 10.0, 1.0),
+                ticks=np.arange(vmm[0], vmm[1], 1.0),
                 cax=cbar_ax,
             )
 
@@ -1030,7 +1030,7 @@ class PostProcess:
                 orientation="vertical",
                 pad=0.05,
                 shrink=1.0,
-                ticks=np.arange(0, 10.0, 1.0),
+                ticks=np.arange(vmm[0], vmm[1], 1.0),
             )
             xticks(SKP, SKPoints)
             xlabel("k-path", fontsize="xx-large")
@@ -1057,7 +1057,7 @@ class PostProcess:
                 orientation="vertical",
                 pad=0.05,
                 shrink=1.0,
-                ticks=np.arange(0, 10.0, 1.0),
+                ticks=np.arange(vmm[0], vmm[1], 1.0),
             )
             xticks(SKP, SKPoints)
             xlabel("k-path", fontsize="xx-large")
