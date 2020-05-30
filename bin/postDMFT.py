@@ -91,8 +91,8 @@ class PostProcess:
 
     def interpol(self, emin, emax, rom, broaden, dest_dir, sp=False):
         """
-		This performs the interpolation of points on the real axis.
-		"""
+	This performs the interpolation of points on the real axis.
+	"""
         print("\nInterpolating points on real axis...")
         headerline = 2
         om, Sig = Fileio.Read_complex_multilines("./ac/Sig.out", headerline)
@@ -539,8 +539,15 @@ class PostProcess:
 
     def bands(self, args):
         """
-		This method performs the band structure calculations.
-		"""
+	This method performs the band structure calculations.
+	"""
+        if args.elim:
+            self.emin = args.elim[0]
+            self.emax = args.elim[1]
+        else:
+            self.emin = -6.0
+            self.emax = 6.0
+
         dest_dir = "bands"
         dummy_broaden = 1.0
 
@@ -560,7 +567,7 @@ class PostProcess:
             sys.exit()
 
         # interpolating
-        self.interpol(args.emin, args.emax, args.rom, dummy_broaden, dest_dir, sp)
+        self.interpol(self.emin, self.emax, args.rom, dummy_broaden, dest_dir, sp)
 
         #############################Xingu's contribution###################################################################################
 
@@ -833,6 +840,10 @@ class PostProcess:
         ax.axhline(y=0, color="black", ls="--")
 
         fig.tight_layout()
+
+        if args.compare:
+            fig, ax = self.plotDFTBands(args, fig=fig, ax=ax)
+
         if args.show:
             plt.show()
         fig.savefig("./bands/A_k.eps", format="eps", dpi=1200)
@@ -963,6 +974,10 @@ class PostProcess:
         ax.axhline(y=0, color="black", ls="--")
 
         fig.tight_layout()
+
+        if args.compare:
+            fig, ax = self.plotDFTBands(args, fig=fig, ax=ax)
+
         if args.show:
             plt.show()
         fig.savefig("./bands/A_k_partial.eps", format="eps", dpi=1200)
@@ -1142,6 +1157,11 @@ class PostProcess:
             # cb.ax.tick_params()
 
             fig.tight_layout()
+
+            if args.compare:
+                fig, ax1 = self.plotDFTBands(args, fig=fig, ax=ax1)
+                fig, ax2 = self.plotDFTBands(args, fig=fig, ax=ax2)
+
             if args.show:
                 show()
             fig.savefig("./bands/A_k_sp.eps", format="eps", dpi=1200)
@@ -1171,6 +1191,10 @@ class PostProcess:
             ax.axhline(y=0, color="black", ls="--")
 
             fig.tight_layout()
+
+            if args.compare:
+                fig, ax = self.plotDFTBands(args, fig=fig, ax=ax)
+
             if args.show:
                 plt.show()
             fig.savefig("./bands/A_k_spinup.eps", format="eps", dpi=1200)
@@ -1200,33 +1224,164 @@ class PostProcess:
             ax.axhline(y=0, color="black", ls="--")
 
             fig.tight_layout()
+
+            if args.compare:
+                fig, ax = self.plotDFTBands(args, fig=fig, ax=ax)
+
             if args.show:
                 plt.show()
             fig.savefig("./bands/A_k_spindown.eps", format="eps", dpi=1200)
 
-    def oreo_call(self, args):
-        """
-		This calls oreo.py
-		"""
-        oreo.oreo(args.trigger, args.trig1, args.bands, args.flag, args.begin, args.kpt)
+    def plotDFTBands(self, args, fig=None, ax=None):
+        """This function plots DFT bands using the
+        EIGENVAL file."""
 
-    def re_wt_call(self, args):
-        """
-		This calls Re_wt.py
-		"""
-        Re_wt.re_wt(
-            args.trigger,
-            args.count,
-            args.bands,
-            args.trig1,
-            args.dof,
-            args.xwt,
-            args.ywt,
-            args.zwt,
-            args.strang,
-            args.begin,
-            args.kpt,
-        )
+        ##### Reading the EIGENVAL file #####
+
+        fi = open("EIGENVAL", "r")
+        for i in range(5):
+            skip = fi.readline()
+        header = fi.readline()
+        skip = fi.readline()
+        data = fi.readlines()
+        fi.close()
+
+        numkpoints = int(header.split()[1])
+        numbands = int(header.split()[2])
+
+        kpoints = np.zeros((numkpoints, 3), dtype="float64")
+        bands = np.zeros((numkpoints, numbands), dtype="float64")
+
+        kpointscounter = 0
+        for i in data:
+            if len(i.split()) == 4:
+                kpoints[kpointscounter, :] = [float(x) for x in i.split()[0:3]]
+                kpointscounter += 1
+            if len(i.split()) == 3:
+                bands[kpointscounter - 1, int(i.split()[0]) - 1] = float(i.split()[1])
+
+        ##### Reading DFT_mu.out to get Fermi energy #####
+        fi = open("DFT_mu.out", "r")
+        fermi = float(fi.readline())
+        fi.close
+
+        ##### Reading the KPOINTS file #####
+
+        # Getting the high symmetry point names from KPOINTS file
+        f = open("KPOINTS", "r")
+        KPread = f.read()
+        f.close()
+
+        KPmatrix = re.findall("reciprocal[\s\S]*", KPread)
+        tick_labels = np.array(re.findall("!\s*(.*)", KPmatrix[0]))
+        knames = []
+        knames = [tick_labels[0]]
+
+        # Checking for discontinuities
+        discont_indx = []
+        icounter = 1
+        while icounter < len(tick_labels) - 1:
+            if tick_labels[icounter] == tick_labels[icounter + 1]:
+                knames.append(tick_labels[icounter])
+                icounter = icounter + 2
+            else:
+                discont_indx.append(icounter)
+                knames.append(tick_labels[icounter] + "|" + tick_labels[icounter + 1])
+                icounter = icounter + 2
+        knames.append(tick_labels[-1])
+        discont_indx = list(dict.fromkeys(discont_indx))
+
+        # End of discontinuity check
+
+        # Improve latex rendering
+        for i in range(len(knames)):
+            if knames[i] == "GAMMA":
+                knames[i] = "\Gamma"
+            else:
+                pass
+        knames = [str("$" + latx + "$") for latx in knames]
+
+        # getting the number of grid points from the KPOINTS file
+        f2 = open("KPOINTS", "r")
+        KPreadlines = f2.readlines()
+        f2.close()
+        numgridpoints = int(KPreadlines[1].split()[0])
+
+        kticks = [0]
+        gridpoint = 0
+        for kt in range(len(knames) - 1):
+            gridpoint = gridpoint + numgridpoints
+            kticks.append(gridpoint - 1)
+
+        # creating an array for discontunuity k-points. These are the indexes
+        # of the discontinuity k-points.
+        discontinuities = []
+        for k in discont_indx:
+            discontinuities.append(kticks[int(k / 2) + 1])
+        if discontinuities:
+            print("discont. list  : ", discontinuities)
+
+        # rename kticks and knames to ticks and ticksNames
+        ticks = kticks
+        ticksNames = knames
+
+        ##### Plotting bands #####
+
+        bands = (bands.transpose() - np.array(fermi)).transpose()
+        bands = bands.transpose()
+
+        marker = "o"
+        markersize = 0.01
+        color = "green"
+
+        if kpoints is not None:
+            xaxis = [0]
+
+            #### MODIFIED FOR DISCONTINOUS BANDS ####
+            if ticks:
+
+                # counters for number of discontinuities
+                icounter = 1
+                ii = 0
+
+                for i in range(1, len(kpoints) - len(discontinuities)):
+                    d = kpoints[icounter] - kpoints[icounter - 1]
+                    d = np.sqrt(np.dot(d, d))
+                    xaxis.append(d + xaxis[-1])
+                    icounter += 1
+                    ii += 1
+                    if ii in discontinuities:
+                        icounter += 1
+                        ii += 1
+                        xaxis.append(xaxis[-1])
+                xaxis = np.array(xaxis)
+
+                # plotting
+                for i_tick in range(len(ticks) - 1):
+                    x = xaxis[ticks[i_tick] : ticks[i_tick + 1] + 1]
+                    y = bands.transpose()[ticks[i_tick] : ticks[i_tick + 1] + 1, :]
+                    ax.plot(
+                        x, y, "r-", marker=marker, markersize=markersize, color=color,
+                    )
+
+            #### END  OF MODIFIED DISCONTINUOUS BANDS ####
+
+        ax.set_xlim(xaxis.min(), xaxis.max())
+
+        # Handling ticks
+        if ticks:
+            # added for meta-GGA calculations
+            if ticks[0] > 0:
+                ax.set_xlim(left=xaxis[ticks[0]])
+            ticks = [xaxis[x] for x in ticks]
+            ax.set_xticks(ticks)
+            ax.set_xticklabels(ticksNames)
+            ax.set_ylim([self.emin, self.emax])
+            # for xc in ticks:
+            #    ax.axvline(x=xc, color="k")
+        # ax.axhline(color="black", linestyle="--")
+
+        return fig, ax
 
 
 if __name__ == "__main__":
@@ -1276,10 +1431,7 @@ if __name__ == "__main__":
         # parser for bands
         parser_bands = subparsers.add_parser("bands", help="DMFT Bandstructure")
         parser_bands.add_argument(
-            "-emin", default=-5.0, type=float, help="Minimum value for interpolation"
-        )
-        parser_bands.add_argument(
-            "-emax", default=5.0, type=float, help="Maximum value for interpolation"
+            "-elim", type=float, nargs=2, help="Energy range to plot"
         )
         parser_bands.add_argument(
             "-rom", default=1000, type=int, help="Matsubara Frequency (omega) points"
@@ -1293,7 +1445,7 @@ if __name__ == "__main__":
         parser_bands.add_argument(
             "-kn",
             "--knames",
-            default=["$\Gamma$", "X", "M", "$\Gamma$", "R"],
+            default=["$\Gamma$", "$X$", "$M$", "$\Gamma$", "$R$"],
             type=str,
             nargs="+",
             help="Names of the k-points",
@@ -1332,6 +1484,11 @@ if __name__ == "__main__":
             action="store_true",
             help="Flag to plot spin down band structure separately.",
         )
+        parser_bands.add_argument(
+            "-compare",
+            action="store_true",
+            help="Compare with DFT band structure (requires KPOINTS and EIGENVAL).",
+        )
 
         parser_bands.add_argument(
             "-plotpartial",
@@ -1362,40 +1519,6 @@ if __name__ == "__main__":
             "-show", action="store_true", help="Display the bands"
         )
         parser_bands.set_defaults(func=PostProcess().bands)
-
-        # parser for oreo
-        parser_oreo = subparsers.add_parser("oreo", help="Runs oreo.py")
-        parser_oreo.add_argument("-trigger", default="Degree", type=str, help="trigger")
-        parser_oreo.add_argument("-trig1", default="band No.", type=str, help="trig1")
-        parser_oreo.add_argument("-bands", default=5, type=int, help="No. of bands")
-        parser_oreo.add_argument("-flag", default="-1", type=str, help="flag")
-        parser_oreo.add_argument("-begin", default=1000, type=int, help="begin")
-        parser_oreo.add_argument("-kpt", default=1, type=int, help="kpt")
-        parser_oreo.set_defaults(func=PostProcess().oreo_call)
-
-        # parser for Re_wt
-        parser_re_wt = subparsers.add_parser("Re_wt", help="Runs Re_wt.py")
-        parser_re_wt.add_argument(
-            "-trigger",
-            default="Degree",
-            type=str,
-            help="Which deg. of fredom do you want from OUTCAR?\n (Please mind your whitespace and if mode is imaginary):",
-        )
-        parser_re_wt.add_argument(
-            "-count", default=1, type=int, help="How many atoms are there:"
-        )
-        parser_re_wt.add_argument(
-            "-bands", default=5, type=int, help="How many Bloch bands did you use:"
-        )
-        parser_re_wt.add_argument("-trig1", default="band No.", type=str, help="trig1")
-        parser_re_wt.add_argument("-dof", default=1, type=int, help="dof")
-        parser_re_wt.add_argument("-xwt", default=0, type=float, help="xwt")
-        parser_re_wt.add_argument("-ywt", default=0, type=float, help="ywt")
-        parser_re_wt.add_argument("-zwt", default=0, type=float, help="zwt")
-        parser_re_wt.add_argument("-strang", default="", type=str, help="strang")
-        parser_re_wt.add_argument("-begin", default=1000, type=int, help="begin")
-        parser_re_wt.add_argument("-kpt", default=1, type=int, help="kpt")
-        parser_re_wt.set_defaults(func=PostProcess().re_wt_call)
 
         args = parser.parse_args()
         args.func(args)
