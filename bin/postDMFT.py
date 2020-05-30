@@ -664,6 +664,7 @@ class PostProcess:
         for i in range(args.kpband):
             kcheck = 0
             for j, d in enumerate(dist_SK):
+                print(abs(dist_K[i] - d))
                 if abs(dist_K[i] - d) < 1e-15:
                     fi.write(
                         "%.14f  %.14f  %.14f  %.14f  %s \n"
