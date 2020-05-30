@@ -1270,7 +1270,7 @@ class PostProcess:
         fi.close
 
         # get knames and kticks from readKPOINTS()
-        ticksNames, ticks, discontinuities = self.readKPOINTS(args)
+        ticksNames, ticks, discontinuities, kplist = self.readKPOINTS(args)
 
         ##### Plotting bands #####
 
