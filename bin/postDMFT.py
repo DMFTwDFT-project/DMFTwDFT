@@ -1240,6 +1240,13 @@ class PostProcess:
         """This function plots DFT bands using the
         EIGENVAL file."""
 
+        # plotting style
+        marker = "."
+        markersize = 0.01
+        color = "lawngreen"
+        linewidth = 0.25
+        linestyle = "dashed"
+
         ##### Reading the EIGENVAL file #####
 
         fi = open("EIGENVAL", "r")
@@ -1277,10 +1284,6 @@ class PostProcess:
         bands = (bands.transpose() - np.array(fermi)).transpose()
         bands = bands.transpose()
 
-        marker = "o"
-        markersize = 0.01
-        color = "green"
-
         if kpoints is not None:
             xaxis = [0]
 
@@ -1308,7 +1311,13 @@ class PostProcess:
                     x = xaxis[ticks[i_tick] : ticks[i_tick + 1] + 1]
                     y = bands.transpose()[ticks[i_tick] : ticks[i_tick + 1] + 1, :]
                     ax.plot(
-                        x, y, "r-", marker=marker, markersize=markersize, color=color,
+                        x,
+                        y,
+                        marker=marker,
+                        markersize=markersize,
+                        color=color,
+                        linewidth=linewidth,
+                        linestyle=linestyle,
                     )
 
             #### END  OF MODIFIED DISCONTINUOUS BANDS ####
@@ -1394,7 +1403,7 @@ class PostProcess:
         for k in discont_indx:
             discontinuities.append(kticks[int(k / 2) + 1])
         if discontinuities:
-            print("discont. list  : ", discontinuities)
+            print("discont. list  : %s " % str(discontinuities))
 
         return knames, kticks, discontinuities, kplist
 
