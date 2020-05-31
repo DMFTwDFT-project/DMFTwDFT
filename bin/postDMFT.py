@@ -856,9 +856,7 @@ class PostProcess:
         """
         This method plots partial bands for orbitals. The order of the orbitals is the Wannier orbital order.
         """
-
-        print("Plotting projected band structure...")
-        print("Wannier orbitals list:", args.wanorbs)
+        print("Wannier orbitals list : %s" % str(args.wanorbs))
 
         SKP = []
         SKPoints = []
@@ -928,8 +926,8 @@ class PostProcess:
         # Setting spectral function ranges.
 
         if args.vlim is None and args.normalize:
-            vmax = max([max(p) for p in A_k])
-            vmin = min([min(p) for p in A_k])
+            vmax = max([max(p) for p in A_ktotal])
+            vmin = min([min(p) for p in A_ktotal])
             norm = cm.colors.Normalize(vmax=vmax, vmin=vmin)
             print(
                 "Normalizing spectral function range to : [%.2f, %.2f]" % (vmin, vmax)
@@ -1527,10 +1525,10 @@ if __name__ == "__main__":
         parser_bands.add_argument(
             "-wo",
             "--wanorbs",
-            default=[4, 5, 6, 7, 8],
+            default=[1, 4],
             type=int,
             nargs="+",
-            help="List of Wannier orbitals to project",
+            help="List of Wannier orbitals to project. Ordering folows atom order in structure and the Wannier orbital order. Starts from 1.",
         )
         parser_bands.add_argument(
             "-vlim",
