@@ -658,13 +658,12 @@ class PostProcess:
         print("kplist : %s" % args.kplist)
         print("knames : %s" % args.knames)
 
-        # generating k-path
-        klist, dist_K, dist_SK = self.Create_kpath(args.kplist, args.kpband)
-        fi = open("./bands/klist.dat", "w")
-
-        # Put within try, exception to select correct kpband value.
-
         try:
+            # generating k-path
+            klist, dist_K, dist_SK = self.Create_kpath(args.kplist, args.kpband)
+            fi = open("./bands/klist.dat", "w")
+
+            # Put within try, exception to select correct kpband value.
             print("Trying kpband = %d" % args.kpband)
             for i in range(args.kpband):
                 kcheck = 0
@@ -687,7 +686,7 @@ class PostProcess:
                         "%.14f  %.14f  %.14f  %.14f \n"
                         % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
                     )
-        except:
+        except IndexError:
             # Iterating args.kpband by 1.
             args.kpband += 1
 
