@@ -687,7 +687,7 @@ class PostProcess:
                         "%.14f  %.14f  %.14f  %.14f \n"
                         % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
                     )
-        except IndexError:
+        except:
             # Iterating args.kpband by 1.
             args.kpband += 1
 
