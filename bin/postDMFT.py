@@ -661,27 +661,36 @@ class PostProcess:
         # generating k-path
         klist, dist_K, dist_SK = self.Create_kpath(args.kplist, args.kpband)
         fi = open("./bands/klist.dat", "w")
-        for i in range(args.kpband):
-            kcheck = 0
-            for j, d in enumerate(dist_SK):
-                if abs(dist_K[i] - d) < 1e-10:
-                    fi.write(
-                        "%.14f  %.14f  %.14f  %.14f  %s \n"
-                        % (
-                            dist_K[i],
-                            klist[i][0],
-                            klist[i][1],
-                            klist[i][2],
-                            args.knames[j],
+
+        # Put within try, exception to select correct kpband value.
+
+        try:
+            print("Trying kpband = %d" % args.kpband)
+            for i in range(args.kpband):
+                kcheck = 0
+                for j, d in enumerate(dist_SK):
+                    if abs(dist_K[i] - d) < 1e-10:
+                        fi.write(
+                            "%.14f  %.14f  %.14f  %.14f  %s \n"
+                            % (
+                                dist_K[i],
+                                klist[i][0],
+                                klist[i][1],
+                                klist[i][2],
+                                args.knames[j],
+                            )
                         )
+                        kcheck = 1
+                        break
+                if kcheck == 0:
+                    fi.write(
+                        "%.14f  %.14f  %.14f  %.14f \n"
+                        % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
                     )
-                    kcheck = 1
-                    break
-            if kcheck == 0:
-                fi.write(
-                    "%.14f  %.14f  %.14f  %.14f \n"
-                    % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
-                )
+        except IndexError:
+            # Iterating args.kpband by 1.
+            args.kpband += 1
+
         print("k-path generated.")
         fi.close()
 
@@ -1528,7 +1537,7 @@ if __name__ == "__main__":
             default=[1, 4],
             type=int,
             nargs="+",
-            help="List of Wannier orbitals to project. Ordering folows atom order in structure and the Wannier orbital order. Starts from 1.",
+            help="List of Wannier orbitals to project. Ordering follows atom order in structure and the Wannier orbital order. Starts from 1.",
         )
         parser_bands.add_argument(
             "-vlim",
