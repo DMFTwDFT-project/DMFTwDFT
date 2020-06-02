@@ -658,40 +658,49 @@ class PostProcess:
         print("kplist : %s" % args.kplist)
         print("knames : %s" % args.knames)
 
-        try:
-            # generating k-path
-            klist, dist_K, dist_SK = self.Create_kpath(args.kplist, args.kpband)
-            fi = open("./bands/klist.dat", "w")
+        # Iterating args.kpband to get correct k-list.
+        indexerror = True
 
-            # Put within try, exception to select correct kpband value.
-            print("Trying kpband = %d" % args.kpband)
-            for i in range(args.kpband):
-                kcheck = 0
-                for j, d in enumerate(dist_SK):
-                    if abs(dist_K[i] - d) < 1e-10:
-                        fi.write(
-                            "%.14f  %.14f  %.14f  %.14f  %s \n"
-                            % (
-                                dist_K[i],
-                                klist[i][0],
-                                klist[i][1],
-                                klist[i][2],
-                                args.knames[j],
+        while indexerror:
+
+            try:
+                # generating k-path
+                klist, dist_K, dist_SK = self.Create_kpath(args.kplist, args.kpband)
+                fi = open("./bands/klist.dat", "w")
+
+                # Put within try, exception to select correct kpband value.
+                print("Trying number of k-points (kpband) = %d" % args.kpband)
+                for i in range(args.kpband):
+                    kcheck = 0
+                    for j, d in enumerate(dist_SK):
+                        if abs(dist_K[i] - d) < 1e-10:
+                            fi.write(
+                                "%.14f  %.14f  %.14f  %.14f  %s \n"
+                                % (
+                                    dist_K[i],
+                                    klist[i][0],
+                                    klist[i][1],
+                                    klist[i][2],
+                                    args.knames[j],
+                                )
                             )
+                            kcheck = 1
+                            break
+                    if kcheck == 0:
+                        fi.write(
+                            "%.14f  %.14f  %.14f  %.14f \n"
+                            % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
                         )
-                        kcheck = 1
-                        break
-                if kcheck == 0:
-                    fi.write(
-                        "%.14f  %.14f  %.14f  %.14f \n"
-                        % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
-                    )
-        except:
-            # Iterating args.kpband by 1.
-            args.kpband += 1
 
-        print("k-path generated.")
-        fi.close()
+                fi.close()
+                indexerror = False
+
+            except IndexError:
+                # Iterating args.kpband by 1.
+                args.kpband += 1
+                indexerror = True
+
+        print("k-path generated.\n")
 
         # copying files from DMFT directory to dos directory
         cmd = "cd bands && Copy_input.py ../ -post bands"
