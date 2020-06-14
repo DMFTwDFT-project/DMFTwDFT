@@ -200,3 +200,10 @@ if __name__ == "__main__":
         else:
             print("DMFT_mu.out file does not exist! Copying from DFT_mu.out")
             shutil.copy2("./DFT_mu.out", "./DMFT_mu.out")
+
+        if os.path.exists(cpdr + "/para_com_dft.dat"):
+            print("Copying DFT file para_com_dft.dat to the current directory")
+            shutil.copy2(cpdr + "/para_com_dft.dat", ".")
+        else:
+            print("para_com_dft.dat file does not exist! Copying from para_com.dat")
+            shutil.copy2("./para_com.dat", "./para_com_dft.dat")
