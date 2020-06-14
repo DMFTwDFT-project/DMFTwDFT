@@ -826,6 +826,8 @@ class DMFTLauncher:
             "cd "
             + dir
             + " && "
+            + self.para_com_dft
+            + " "
             + self.siesta_exec
             + "<"
             + self.structurename

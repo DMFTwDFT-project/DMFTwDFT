@@ -2,6 +2,7 @@
 import argparse
 import copy
 import glob
+import itertools
 import math
 import os
 import re
@@ -9,16 +10,11 @@ import shutil
 import subprocess
 import sys
 from argparse import RawTextHelpFormatter
-import itertools
 
 import matplotlib
-
-matplotlib.use("ps")
-
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
-
 from matplotlib.font_manager import FontProperties, fontManager
 from pylab import *
 from scipy import *
@@ -30,6 +26,11 @@ import Re_wt
 import Struct
 from INPUT import *
 from splash import welcome
+
+matplotlib.use("pdf")
+
+
+
 
 # Setting up plotting class
 plt.rcParams["mathtext.default"] = "regular"  # Roman ['rm', 'cal', 'it', 'tt', 'sf',
@@ -673,6 +674,10 @@ class PostProcess:
                 for i in range(args.kpband):
                     kcheck = 0
                     for j, d in enumerate(dist_SK):
+                        # print(
+                        #     "i:%d dist_K: %s dist_SK: %s abs: %f"
+                        #     % (i, str(dist_K[i]), str(d), float(dist_K[i] - d))
+                        # )
                         if abs(dist_K[i] - d) < 1e-10:
                             fi.write(
                                 "%.14f  %.14f  %.14f  %.14f  %s \n"

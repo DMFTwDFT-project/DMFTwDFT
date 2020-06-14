@@ -92,7 +92,15 @@ if __name__ == "__main__":
         para_com = str(fipa.readline())[:-1]
         fipa.close()
     else:
-        para_com = "mpirun -np 4"
+        para_com = "mpirun -np 1"
+
+    if os.path.exists("para_com_dft.dat"):
+        fid = open("para_com_dft.dat")
+        para_com_dft = str(fid.readline())[:-1]
+        fid.close()
+    else:
+        para_com_dft = para_com
+
     if os.path.exists("para_com2.dat"):
         fipa = open("para_com2.dat", "r")
         para_com2 = str(fipa.readline())[:-1]
@@ -506,7 +514,9 @@ if __name__ == "__main__":
 
                 # Running siesta
                 cmd = (
-                    p["path_bin"]
+                    para_com_dft
+                    + " "
+                    + p["path_bin"]
                     + "siesta"
                     + "<"
                     + args.structurename
