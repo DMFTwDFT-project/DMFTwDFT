@@ -51,6 +51,7 @@ if __name__ == "__main__":
         dosfiles = [
             "wannier90.chk",
             "wannier90.eig",
+            "DFT_mu.out",
             "DMFT_mu.out",
             "dmft_params.dat",
             "INPUT.py",
