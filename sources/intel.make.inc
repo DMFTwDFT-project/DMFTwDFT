@@ -17,9 +17,3 @@ LDOPTS=-O2
 LIBDIR = $(MKLROOT)/lib/intel64
 LIBS   =  -L$(LIBDIR) -lmkl_core -lmkl_intel_lp64 -lmkl_sequential -lpthread
 
-#=======================
-# ATLAS Blas and LAPACK
-#=======================
-#LIBDIR = /usr/local/lib
-#LIBS = -L$(LIBDIR)  -llapack -lf77blas -lcblas -latlas
-
