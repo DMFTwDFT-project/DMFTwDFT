@@ -358,9 +358,9 @@ class DMFT_class:
                     / 4.0
                 )
             elif dc_type == 3:
-                self.Vdc[i] = U[i] * (self.Nf[i] - 0.5) - J[i] / 2 * (self.Nf[i] - 1)
-                self.Vdc_imp[i] = U[i] * (self.Nf[i] - 0.5) - J[i] / 2 * (
-                    self.Nf[i] - 1
+                self.Vdc[i] = U[i] * (self.Nd_latt[i] - 0.5) - J[i] / 2 * (self.Nd_latt[i] - 1)
+                self.Vdc_imp[i] = U[i] * (self.Nd_latt[i] - 0.5) - J[i] / 2 * (
+                    self.Nd_latt[i] - 1
                 )
             else:
                 print "This dc type is not supported!"
