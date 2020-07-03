@@ -96,22 +96,27 @@ io.o: ../io.F90 constants.o
 utility.o: ../utility.F90  constants.o io.o
 	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../utility.F90
 
+
 parameters.o: ../parameters.F90 constants.o io.o utility.o comms.o
 	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../parameters.F90
 
 read_inputs.o: ../read_inputs.F90 constants.o io.o utility.o comms.o
 	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../read_inputs.F90
 
+tetrahedron.o: ../tetrahedron.F90 constants.o io.o read_inputs.o
+	$(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../tetrahedron.F90
+
 generate_kpts.o: ../generate_kpts.F90 read_inputs.o comms.o constants.o io.o utility.o
 	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../generate_kpts.F90
 generate_ham.o: ../generate_ham.F90 read_inputs.o comms.o constants.o io.o utility.o
 	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../generate_ham.F90
 
-dmft_ksum.o: ../dmft_ksum.F90 read_inputs.o comms.o constants.o io.o utility.o generate_ham.o generate_kpts.o
+dmft_ksum.o: ../dmft_ksum.F90 tetrahedron.o read_inputs.o comms.o constants.o io.o utility.o generate_ham.o generate_kpts.o
 	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../dmft_ksum.F90
 
 comms.o: ../comms.F90 constants.o io.o
 	 $(COMPILER) $(POSTOPTS) $(FCOPTS) -c ../comms.F90
+
 
 dmft_lib.o: ./constants.o ./io.o ./comms.o\
 	../dmft_lib.F90

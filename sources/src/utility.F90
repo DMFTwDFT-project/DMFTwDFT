@@ -22,6 +22,7 @@ module utility
   private
 
   public :: quicksort_cmplx
+  public :: quicksort
   public :: SVD    
   public :: fermi    
   public :: EIGENVAL 
@@ -60,6 +61,39 @@ module utility
   public :: utility_diagonalize
 
 contains
+
+  recursive subroutine quicksort(a)
+    use constants, only: dp 
+
+    implicit none
+
+    real(kind=dp), intent(inout) :: a(:)
+    real(kind=dp) :: x
+    real(kind=dp) :: t
+    integer :: first = 1, last
+    integer :: i, j
+  
+    last = size(a)
+    x = a( (first+last) / 2 )
+    i = first
+    j = last
+    
+    do
+       do while (a(i) < x)
+          i=i+1
+       end do
+       do while (x < a(j))
+          j=j-1
+       end do
+       if (i >= j) exit
+       t = a(i);  a(i) = a(j);  a(j) = t
+       i=i+1
+       j=j-1
+    end do
+    
+    if (first < i - 1) call quicksort(a(first : i - 1))
+    if (j + 1 < last)  call quicksort(a(j + 1 : last))
+  end subroutine quicksort
 
   recursive subroutine quicksort_cmplx(a)
     use constants, only: cmplx_0, cmplx_1

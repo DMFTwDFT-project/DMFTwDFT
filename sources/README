@@ -1,0 +1,15 @@
+-------------------------
+Building DMFTwDFT sources
+-------------------------
+
+Copy intel.make.inc or gfortran.make.inc to make.inc and do:
+
+$ make all
+
+If only libdmft.a is needed do:
+
+$ make lib
+
+The executables will automatically be copied to the /bin directory.
+
+For the gfortran version, LAPACK and BLAS libraries are required.

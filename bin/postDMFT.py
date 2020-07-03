@@ -12,6 +12,8 @@ import sys
 from argparse import RawTextHelpFormatter
 
 import matplotlib
+
+matplotlib.use("pdf")
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate
@@ -26,10 +28,6 @@ import Re_wt
 import Struct
 from INPUT import *
 from splash import welcome
-
-matplotlib.use("pdf")
-
-
 
 
 # Setting up plotting class
