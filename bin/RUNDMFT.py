@@ -315,12 +315,13 @@ if __name__ == "__main__":
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
             else:
-                print ("Running XHF...")
+                # print ("Running XHF...")
+                print ("Running dmft.x for HF...")
                 cmd = (
                     para_com
                     + " "
                     + p["path_bin"]
-                    + "XHF.py > ksum_output_XHF 2> ksum_error_XHF"  # should it be XHF0.py?
+                    + "dmft.x > ksum_output_dmft.x_HF 2> ksum_error_dmft.x_HF"  # should it be XHF0.py?
                 )
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE

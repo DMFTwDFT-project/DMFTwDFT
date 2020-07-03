@@ -2,13 +2,13 @@
 #=====================================================
 # For Linux with intel version 11/12 on 64bit machines
 #=====================================================
-F90 = gfortran 
+F90 = gfortran
 COMMS=mpi
-MPIF90=gfortran #mpifort
+MPIF90=mpif90
 CMP = f2py --fcompiler=intelem # fortran to python converter
 
-FCOPTS=-O2 #-check 
-LDOPTS=-O2 
+FCOPTS=-O2 -ffree-line-length-none #-check
+LDOPTS=-O2
 
 #========================================================
 # Intel mkl libraries. Set LIBPATH if not in default path
@@ -17,12 +17,8 @@ LDOPTS=-O2
 #LIBDIR = $(MKLROOT)/lib/intel64
 #LIBS   =  -L$(LIBDIR) -lmkl_core -lmkl_intel_lp64 -lmkl_sequential -lpthread
 
-#LIBDIR = /opt/intel/mkl/lib/intel64
-#LIBS   =  -L$(LIBDIR) -lmkl_core -lmkl_intel_lp64 -lmkl_sequential -lpthread
-
 #=======================
-# ATLAS Blas and LAPACK
+# Blas and LAPACK
 #=======================
-#LIBDIR = /usr/local/lib
-#LIBS = -L$(LIBDIR)  -llapack -lf77blas -lcblas -latlas
-
+LIBDIR = /home/uthpala/lib
+LIBS = -L$(LIBDIR)  -llapack -lblas
