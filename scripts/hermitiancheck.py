@@ -12,16 +12,22 @@ the slowest index.
 
 Usage:
 
-hermitiancheck.py numberofbands numberofkpoints
+hermitiancheck.py numberofbands numberofkpoints <optional: filename>
 
 """
 import numpy as np
 import sys
+import scipy.linalg as la
 
 numberofbands = int(sys.argv[1])
 numberofkpoints = int(sys.argv[2])
 
-fi = open("dmft-nkij.dat", "r")
+if len(sys.argv)>3:
+    fname = sys.argv[3]
+else:
+    fname = "dmft-nkij.dat"
+
+fi = open(fname, "r")
 header = fi.readline()
 data = fi.readlines()
 fi.close()
@@ -32,10 +38,20 @@ row_counter = 0
 for k in range(n_kij.shape[2]):
     for i in range(n_kij.shape[0]):
         for j in range(n_kij.shape[1]):
-            n_kij[i, j, k] = float(data[row_counter].split()[4]) + 1j * float(
+            n_kij[i, j, k] = float(data[row_counter].split()[5]) + 1j * float(
                 data[row_counter].split()[-1].split(")")[0]
             )
             row_counter += 1
+
+# printing the eigen values for the (iband, jband) array at each k-point
+
+print("\nEigenvalues for each k-point : ")
+
+for ik in range(n_kij.shape[2]):
+    eigenvalues = la.eig(n_kij[:,:,ik])
+    print("\nkpoint : %s" %(ik+1))
+    print(eigenvalues[0])
+
 
 # Check for Hermitivity for the (iband, jband) matrix for each
 # k-point.
