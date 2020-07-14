@@ -299,6 +299,10 @@ class DMFT_class:
         # self.EHF_cor=zeros(len(self.cor_at),dtype=float)
         #      self.SigMdc=zeros(TB.ncor_orb,dtype=float)
         #      if nspin==2: self.SigMdc_dn=zeros(TB.ncor_orb,dtype=float)
+
+        # For dc type = 3
+        self.Nf = [0.5]
+
         for i, ats in enumerate(self.cor_at):
             d_orb = TB.TB_orbs[ats[0]]
             fi = open("UC" + str(i + 1) + ".dat", "r")
@@ -313,6 +317,7 @@ class DMFT_class:
             self.Sigoo[i, : 2 * len(d_orb)] = dot(UC, OCC)
             OCC = Compute_OCC(self.N_imp[i], self.MOM_imp[i], d_orb)
             self.Sigoo_imp[i, : 2 * len(d_orb)] = dot(UC, OCC)
+
 
             ###### Compute VDC & EDC #######
             if dc_type == 1:
@@ -358,9 +363,9 @@ class DMFT_class:
                     / 4.0
                 )
             elif dc_type == 3:
-                self.Vdc[i] = U[i] * (self.Nd_latt[i] - 0.5) - J[i] / 2 * (self.Nd_latt[i] - 1)
-                self.Vdc_imp[i] = U[i] * (self.Nd_latt[i] - 0.5) - J[i] / 2 * (
-                    self.Nd_latt[i] - 1
+                self.Vdc[i] = U[i] * (self.Nf[i] - 0.5) - J[i] / 2 * (self.Nf[i] - 1)
+                self.Vdc_imp[i] = U[i] * (self.Nf[i] - 0.5) - J[i] / 2 * (
+                    self.Nf[i] - 1
                 )
             else:
                 print "This dc type is not supported!"

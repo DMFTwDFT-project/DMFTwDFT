@@ -288,3 +288,22 @@ subroutine Compute_DMFT_from_amn(n_kpts_loc,n_wann,kpt_dft,wght_dft,band_win_loc
   call zcopy(n_wann**2*n_kpts_loc,DMFT_evec_loc,1,DMFT_evec,1)
 
 end subroutine Compute_DMFT_from_amn
+
+! subroutine EIGENVALNKIJ(mat, dim, eig)
+
+!     USE constants
+!     USE utility 
+
+!     implicit none
+
+!     integer, intent(in) :: dim
+!     complex(kind=dp), intent(in) :: mat(dim,dim)
+!     real(kind=dp), intent(out) :: eig(dim)
+
+!     call EIGENVALH(mat, dim, eig)
+
+
+! end subroutine EIGENVALNKIJ
+
+
+
