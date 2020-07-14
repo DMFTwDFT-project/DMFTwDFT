@@ -288,3 +288,29 @@ subroutine Compute_DMFT_from_amn(n_kpts_loc,n_wann,kpt_dft,wght_dft,band_win_loc
   call zcopy(n_wann**2*n_kpts_loc,DMFT_evec_loc,1,DMFT_evec,1)
 
 end subroutine Compute_DMFT_from_amn
+
+subroutine EIGENVALNKIJ(mat, dimen, eig)
+
+    use constants
+    use utility, only: EIGENVALH
+
+    implicit none
+
+    integer, intent(in) :: dimen
+    complex(kind=dp), intent(in) :: mat(dimen,dimen)
+    real(kind=dp), intent(out) :: eig(dimen)
+
+    complex(kind=dp), allocatable :: mat_copy(:,:)
+
+! If copy is not made calling EIGENVALNKIJ changes the values of
+! n_kij.
+
+    allocate(mat_copy(dimen,dimen))
+    mat_copy = (0.0_dp, 0.0_dp)
+    mat_copy = mat
+
+    call EIGENVALH(mat_copy, dimen, eig)
+
+    deallocate(mat_copy)
+
+end subroutine EIGENVALNKIJ
