@@ -434,23 +434,36 @@ class PostProcess:
                 lines = f.readlines()
                 x = [float(line.split()[0]) for line in lines]
 
-                y_dz2 = [float(line.split()[2]) for line in lines]  # eg
-                y_x2y2 = [float(line.split()[8]) for line in lines]
+                # px, px, pz
+                y_p_sum = [
+                    float(line.split()[12])
+                    + float(line.split()[14])
+                    + float(line.split()[16])
+                    + float(line.split()[18])
+                    + float(line.split()[20])
+                    + float(line.split()[22])
+                    + float(line.split()[24])
+                    + float(line.split()[26])
+                    + float(line.split()[28])
+                    for line in lines
+                ]
 
-                y_dxz = [float(line.split()[4]) for line in lines]
-                y_dyz = [float(line.split()[6]) for line in lines]  # t2g
-                y_dxy = [float(line.split()[10]) for line in lines]
+                # d-eg
+                y_eg_sum = [
+                    float(line.split()[2]) + float(line.split()[8]) for line in lines
+                ]
 
-                yg = [float(line.split()[2]) + float(line.split()[8]) for line in lines]
-                tg = [
+                # d-t2g
+                y_t2g_sum = [
                     float(line.split()[4])
                     + float(line.split()[6])
                     + float(line.split()[10])
                     for line in lines
                 ]
 
-            y_eg = [-1 * count / 3.14 for count in yg]
-            y_t2g = [-1 * count / 3.14 for count in tg]
+            y_p = [-1 * count / 3.14 for count in y_p_sum]
+            y_eg = [-1 * count / 3.14 for count in y_eg_sum]
+            y_t2g = [-1 * count / 3.14 for count in y_t2g_sum]
 
             # Plotting
             fig = plt.figure(figsize=(13, 9))
@@ -458,6 +471,7 @@ class PostProcess:
 
             ax.plot(x, y_eg, "r", label="$d-e_g$")
             ax.plot(x, y_t2g, "b", label="$d-t_{2g}$")
+            ax.plot(x, y_p, "g", label="$p_{x}+p_{y}+p_{z}$")
             ax.set_title("DMFT PDOS")
             ax.set_xlabel("Energy (eV)")
             ax.set_ylabel("DOS (states eV/cell)")
@@ -476,46 +490,42 @@ class PostProcess:
                 lines = f.readlines()
                 x = [float(line.split()[0]) for line in lines]
 
-                y_dz2 = [float(line.split()[2]) for line in lines]  # eg
-                y_x2y2 = [float(line.split()[8]) for line in lines]
+                # d-eg spin up
+                y_eg_sum = [
+                    float(line.split()[2]) + float(line.split()[8]) for line in lines
+                ]
 
-                y_dxz = [float(line.split()[4]) for line in lines]
-                y_dyz = [float(line.split()[6]) for line in lines]  # t2g
-                y_dxy = [float(line.split()[10]) for line in lines]
-
-                yg = [float(line.split()[2]) + float(line.split()[8]) for line in lines]
-                tg = [
+                # d-t2g spin up
+                y_t2g_sum = [
                     float(line.split()[4])
                     + float(line.split()[6])
                     + float(line.split()[10])
                     for line in lines
                 ]
 
-            y_eg = [-1 * count / 3.14 for count in yg]
-            y_t2g = [-1 * count / 3.14 for count in tg]
+            y_eg = [-1 * count / 3.14 for count in y_eg_sum]
+            y_t2g = [-1 * count / 3.14 for count in y_t2g_sum]
 
             # spin down component
             with open("./dos/G_loc_dn.out", "r") as f:
                 lines = f.readlines()
                 x_dn = [float(line.split()[0]) for line in lines]
 
-                y_dz2_dn = [float(line.split()[2]) for line in lines]  # eg
-                y_x2y2_dn = [float(line.split()[8]) for line in lines]
+            # d-eg spin down
+            y_eg_dn_sum = [
+                float(line.split()[2]) + float(line.split()[8]) for line in lines
+            ]
 
-                y_dxz_dn = [float(line.split()[4]) for line in lines]
-                y_dyz_dn = [float(line.split()[6]) for line in lines]  # t2g
-                y_dxy_dn = [float(line.split()[10]) for line in lines]
-
-            yg_dn = [float(line.split()[2]) + float(line.split()[8]) for line in lines]
-            tg_dn = [
+            # d-t2g spin down
+            y_t2g_dn_sum = [
                 float(line.split()[4])
                 + float(line.split()[6])
                 + float(line.split()[10])
                 for line in lines
             ]
 
-            y_eg_dn = [1 * count / 3.14 for count in yg_dn]
-            y_t2g_dn = [1 * count / 3.14 for count in tg_dn]
+            y_eg_dn = [1 * count / 3.14 for count in y_eg_dn_sum]
+            y_t2g_dn = [1 * count / 3.14 for count in y_t2g_dn_sum]
 
             # Plotting
             fig = plt.figure(figsize=(13, 9))
