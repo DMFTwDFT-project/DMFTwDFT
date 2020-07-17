@@ -485,9 +485,9 @@ class PostProcess:
             fig = plt.figure(figsize=(13, 9))
             ax = fig.add_subplot(111)
 
-            ax.plot(x, y_eg, "r", label="$Ni d-e_g$")
-            ax.plot(x, y_t2g, "b", label="$Ni d-t_{2g}$")
-            ax.plot(x, y_p, "g", label="$O p$")
+            ax.plot(x, y_eg, "r", label="Ni $d-e_g$")
+            ax.plot(x, y_t2g, "b", label="Ni $d-t_{2g}$")
+            ax.plot(x, y_p, "g", label="O $p$")
             ax.set_title("DMFT PDOS")
             ax.set_xlabel("Energy (eV)")
             ax.set_ylabel("DOS (states eV/cell)")
