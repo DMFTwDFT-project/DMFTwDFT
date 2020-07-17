@@ -434,30 +434,46 @@ class PostProcess:
                 lines = f.readlines()
                 x = [float(line.split()[0]) for line in lines]
 
-                # px, px, pz
-                y_p_sum = [
-                    float(line.split()[12])
-                    + float(line.split()[14])
-                    + float(line.split()[16])
+                # Ni d-eg
+                y_eg_sum = [
+                    float(line.split()[2])
+                    + float(line.split()[8])
+                    + float(line.split()[12])
                     + float(line.split()[18])
-                    + float(line.split()[20])
-                    + float(line.split()[22])
-                    + float(line.split()[24])
-                    + float(line.split()[26])
-                    + float(line.split()[28])
                     for line in lines
                 ]
 
-                # d-eg
-                y_eg_sum = [
-                    float(line.split()[2]) + float(line.split()[8]) for line in lines
-                ]
-
-                # d-t2g
+                # Ni d-t2g
                 y_t2g_sum = [
                     float(line.split()[4])
                     + float(line.split()[6])
                     + float(line.split()[10])
+                    + float(line.split()[14])
+                    + float(line.split()[16])
+                    + float(line.split()[20])
+                    for line in lines
+                ]
+
+                # O - px, px, pz
+                y_p_sum = [
+                    float(line.split()[22])
+                    + float(line.split()[24])
+                    + float(line.split()[26])
+                    + float(line.split()[28])
+                    + float(line.split()[30])
+                    + float(line.split()[32])
+                    + float(line.split()[34])
+                    + float(line.split()[36])
+                    + float(line.split()[38])
+                    + float(line.split()[40])
+                    + float(line.split()[42])
+                    + float(line.split()[44])
+                    + float(line.split()[46])
+                    + float(line.split()[48])
+                    + float(line.split()[50])
+                    + float(line.split()[52])
+                    + float(line.split()[54])
+                    + float(line.split()[56])
                     for line in lines
                 ]
 
@@ -469,9 +485,9 @@ class PostProcess:
             fig = plt.figure(figsize=(13, 9))
             ax = fig.add_subplot(111)
 
-            ax.plot(x, y_eg, "r", label="$d-e_g$")
-            ax.plot(x, y_t2g, "b", label="$d-t_{2g}$")
-            ax.plot(x, y_p, "g", label="$p_{x}+p_{y}+p_{z}$")
+            ax.plot(x, y_eg, "r", label="$Ni d-e_g$")
+            ax.plot(x, y_t2g, "b", label="$Ni d-t_{2g}$")
+            ax.plot(x, y_p, "g", label="$O p$")
             ax.set_title("DMFT PDOS")
             ax.set_xlabel("Energy (eV)")
             ax.set_ylabel("DOS (states eV/cell)")

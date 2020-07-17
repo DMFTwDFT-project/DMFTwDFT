@@ -17,6 +17,7 @@ gaunt.so
 gutils.so
 maxent_routines.so
 siesta
+sources/src/obj/*
 
 #sphinx
 _build/
