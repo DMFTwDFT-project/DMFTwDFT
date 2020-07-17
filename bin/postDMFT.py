@@ -428,56 +428,73 @@ class PostProcess:
         """
 	This method plots the density of states plot.
 	"""
+
+        # mapping d and p orbitals with atoms
+        d_indices = [i for i, x in enumerate(p["orbs"]) if x == "d"]
+        d_atoms = [p["atomnames"][i] for i in d_indices]
+
+        p_indices = [i for i, x in enumerate(p["orbs"]) if x == "p"]
+        p_atoms = [p["atomnames"][i] for i in p_indices]
+
+        # Finding the number of columns
+        fi = open("./dos/G_loc.out", "r")
+        firstline = fi.readline()
+        fi.close()
+        num_columns = len(firstline.split())
+
+        # index arrays for eg and t2g
+        eg_index = []
+        t2g_index = []
+        icounter_eg = 2
+        icounter_t2g = 4
+
+        # if cor_at has more than one atom,
+        # it will sum up the total contributions
+        for i0 in range(len(p["cor_at"])):
+            for i in range(len(p["cor_at"][0])):
+                # egj
+                eg_index.append(icounter_eg)
+                eg_index.append(icounter_eg + 6)
+                icounter_eg = icounter_eg + 10
+
+                # t2g
+                t2g_index.append(icounter_t2g)
+                t2g_index.append(icounter_t2g + 2)
+                t2g_index.append(icounter_t2g + 6)
+                icounter_t2g = icounter_t2g + 10
+
+        # index for p
+        # initialized by last index of t2g index array
+        if p_atoms:
+            p_index = []
+            icounter_p = t2g_index[-1] + 2
+            for i in range(icounter_p, num_columns, 2):
+                p_index.append(i)
+
         if args.sp == False:
             print("Plotting DOS...")
             with open("./dos/G_loc.out", "r") as f:
                 lines = f.readlines()
                 x = [float(line.split()[0]) for line in lines]
 
-                # Ni d-eg
+                # d-eg
                 y_eg_sum = [
-                    float(line.split()[2])
-                    + float(line.split()[8])
-                    + float(line.split()[12])
-                    + float(line.split()[18])
-                    for line in lines
+                    sum([float(line.split()[k]) for k in eg_index]) for line in lines
                 ]
 
-                # Ni d-t2g
+                # d-t2g
                 y_t2g_sum = [
-                    float(line.split()[4])
-                    + float(line.split()[6])
-                    + float(line.split()[10])
-                    + float(line.split()[14])
-                    + float(line.split()[16])
-                    + float(line.split()[20])
-                    for line in lines
+                    sum([float(line.split()[k]) for k in t2g_index]) for line in lines
                 ]
 
-                # O - px, px, pz
-                y_p_sum = [
-                    float(line.split()[22])
-                    + float(line.split()[24])
-                    + float(line.split()[26])
-                    + float(line.split()[28])
-                    + float(line.split()[30])
-                    + float(line.split()[32])
-                    + float(line.split()[34])
-                    + float(line.split()[36])
-                    + float(line.split()[38])
-                    + float(line.split()[40])
-                    + float(line.split()[42])
-                    + float(line.split()[44])
-                    + float(line.split()[46])
-                    + float(line.split()[48])
-                    + float(line.split()[50])
-                    + float(line.split()[52])
-                    + float(line.split()[54])
-                    + float(line.split()[56])
-                    for line in lines
-                ]
+                # px, px, pz
+                if p_atoms:
+                    y_p_sum = [
+                        sum([float(line.split()[k]) for k in p_index]) for line in lines
+                    ]
 
-            y_p = [-1 * count / 3.14 for count in y_p_sum]
+            if p_atoms:
+                y_p = [-1 * count / 3.14 for count in y_p_sum]
             y_eg = [-1 * count / 3.14 for count in y_eg_sum]
             y_t2g = [-1 * count / 3.14 for count in y_t2g_sum]
 
@@ -485,9 +502,18 @@ class PostProcess:
             fig = plt.figure(figsize=(13, 9))
             ax = fig.add_subplot(111)
 
-            ax.plot(x, y_eg, "r", label="Ni $d-e_g$")
-            ax.plot(x, y_t2g, "b", label="Ni $d-t_{2g}$")
-            ax.plot(x, y_p, "g", label="O $p$")
+            if len(p["cor_at"]) < 2:
+                eg_label = p["atomnames"][0] + " $d-e_g$"
+                t2g_label = p["atomnames"][0] + " $d-t_{2g}$"
+            else:
+                eg_label = " $d-e_g$"
+                t2g_label = " $d-t_{2g}$"
+
+            ax.plot(x, y_eg, "r", label=eg_label)
+            ax.plot(x, y_t2g, "b", label=t2g_label)
+            if p_atoms:
+                p_label = p["atomnames"][1] + " $p$"
+                ax.plot(x, y_p, "g", label=p_label)
             ax.set_title("DMFT PDOS")
             ax.set_xlabel("Energy (eV)")
             ax.set_ylabel("DOS (states eV/cell)")
@@ -508,17 +534,22 @@ class PostProcess:
 
                 # d-eg spin up
                 y_eg_sum = [
-                    float(line.split()[2]) + float(line.split()[8]) for line in lines
+                    sum([float(line.split()[k]) for k in eg_index]) for line in lines
                 ]
 
                 # d-t2g spin up
                 y_t2g_sum = [
-                    float(line.split()[4])
-                    + float(line.split()[6])
-                    + float(line.split()[10])
-                    for line in lines
+                    sum([float(line.split()[k]) for k in t2g_index]) for line in lines
                 ]
 
+                # px, px, pz
+                if p_atoms:
+                    y_p_sum = [
+                        sum([float(line.split()[k]) for k in p_index]) for line in lines
+                    ]
+
+            if p_atoms:
+                y_p = [-1 * count / 3.14 for count in y_p_sum]
             y_eg = [-1 * count / 3.14 for count in y_eg_sum]
             y_t2g = [-1 * count / 3.14 for count in y_t2g_sum]
 
@@ -529,17 +560,23 @@ class PostProcess:
 
             # d-eg spin down
             y_eg_dn_sum = [
-                float(line.split()[2]) + float(line.split()[8]) for line in lines
+                sum([float(line.split()[k]) for k in eg_index]) for line in lines
             ]
 
             # d-t2g spin down
             y_t2g_dn_sum = [
-                float(line.split()[4])
-                + float(line.split()[6])
-                + float(line.split()[10])
-                for line in lines
+                sum([float(line.split()[k]) for k in t2g_index]) for line in lines
             ]
 
+            # px, px, pz
+            if p_atoms:
+                y_p_dn_sum = [
+                    sum([float(line.split()[k]) for k in p_index]) for line in lines
+                ]
+
+            # x -1 for spin down components
+            if p_atoms:
+                y_p_dn = [1 * count / 3.14 for count in y_p_dn_sum]
             y_eg_dn = [1 * count / 3.14 for count in y_eg_dn_sum]
             y_t2g_dn = [1 * count / 3.14 for count in y_t2g_dn_sum]
 
@@ -547,10 +584,22 @@ class PostProcess:
             fig = plt.figure(figsize=(13, 9))
             ax = fig.add_subplot(111)
 
-            ax.plot(x, y_eg, "r", label="$d-e_g$")
-            ax.plot(x, y_t2g, "b", label="$d-t_{2g}$")
+            if len(p["cor_at"]) < 2:
+                eg_label = p["atomnames"][0] + " $d-e_g$"
+                t2g_label = p["atomnames"][0] + " $d-t_{2g}$"
+            else:
+                eg_label = " $d-e_g$"
+                t2g_label = " $d-t_{2g}$"
+
+            ax.plot(x, y_eg, "r", label=eg_label)
+            ax.plot(x, y_t2g, "b", label=t2g_label)
             ax.plot(x_dn, y_eg_dn, "r")
             ax.plot(x_dn, y_t2g_dn, "b")
+            if p_atoms:
+                p_label = p["atomnames"][1] + " $p$"
+                ax.plot(x, y_p, "g", label=p_label)
+                ax.plot(x_dn, y_p_dn, "g")
+
             ax.set_title("DMFT PDOS")
             ax.set_xlabel("Energy (eV)")
             ax.set_ylabel("DOS (states eV/cell)")
