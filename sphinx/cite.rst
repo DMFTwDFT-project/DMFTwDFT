@@ -16,6 +16,12 @@ BibTex::
     primaryClass={cond-mat.str-el}
     }
 
+DMFTwDFT uses several external libraries. Please cite them as well. 
+
+- `EDMFT <http://hauleweb.rutgers.edu/tutorials/index.html>`_
+
+- `Wannier90 <http://www.wannier.org>`_
+
 Thank you. 
 
 
