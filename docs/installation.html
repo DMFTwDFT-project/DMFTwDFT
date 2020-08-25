@@ -84,10 +84,10 @@
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#compiling-sources">Compiling sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#compiling-library-mode">Compiling library mode</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#external-libraries-and-executables">External libraries and executables</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#wannier90-library">Wannier90 library</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#path-variables">PATH variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional">Compiling library mode for full charge-self conistent DFT+DMFT calculations (OPTIONAL)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
@@ -176,9 +176,10 @@ The Python 2.x version does not support ionic relaxation, therefore use an alrea
         ├── bin
         ├── docs
         ├── examples
-        ├── reference
+        ├── manuals
         ├── scripts
         ├── sphinx
+        ├── support_packages
         └── sources
                 ├── src
                 ├── dmft_ksum
@@ -202,16 +203,6 @@ The Python 2.x version does not support ionic relaxation, therefore use an alrea
 <li><p>fort_kpt_tools.so - Fortran based k-points calculation module.</p></li>
 </ul>
 </div>
-<div class="section" id="compiling-library-mode">
-<h2>Compiling library mode<a class="headerlink" href="#compiling-library-mode" title="Permalink to this headline">¶</a></h2>
-<p>The above compilation also generates <code class="docutils literal notranslate"><span class="pre">libdmft.a</span></code> which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. In the case of VASP, add the location of this file to <code class="docutils literal notranslate"><span class="pre">LLIBS</span></code> in VASP’s makefile.include as shown below:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LLIBS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">Lparser</span> <span class="o">-</span><span class="n">lparser</span> <span class="o">-</span><span class="n">lstdc</span><span class="o">++</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">uthpala</span><span class="o">/</span><span class="n">wannier90</span><span class="o">/</span><span class="n">wannier90</span><span class="o">-</span><span class="mf">1.2</span><span class="o">/</span><span class="n">libwannier</span><span class="o">.</span><span class="n">a</span>
-         <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">uthpala</span><span class="o">/</span><span class="n">Dropbox</span><span class="o">/</span><span class="n">git</span><span class="o">/</span><span class="n">DMFTwDFT</span><span class="o">/</span><span class="n">sources</span><span class="o">/</span><span class="n">libdmft</span><span class="o">.</span><span class="n">a</span>
-</pre></div>
-</div>
-<p>The modified VASP files to enable full charge self-consistent DFT+DMFT calculations are in the <code class="docutils literal notranslate"><span class="pre">sources/CSC-mods</span></code> directory. Copy these to the VASP source directory and recompile VASP. Then rename this vasp executable to <code class="docutils literal notranslate"><span class="pre">vaspDMFT</span></code> and copy it to the <code class="docutils literal notranslate"><span class="pre">DMFTwDFT/bin</span></code> directory.</p>
-<p>More information on the library mode can be found in the <a class="reference internal" href="library.html#labellibrary"><span class="std std-ref">Library mode</span></a> section.</p>
-</div>
 <div class="section" id="external-libraries-and-executables">
 <h2>External libraries and executables<a class="headerlink" href="#external-libraries-and-executables" title="Permalink to this headline">¶</a></h2>
 <p>DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Professor Kristjan Haule at Rutgers University and are available in the eDMFT package.
@@ -233,6 +224,23 @@ Follow the provided instructions on the <a class="reference external" href="http
 <div class="section" id="path-variables">
 <h2>PATH variables<a class="headerlink" href="#path-variables" title="Permalink to this headline">¶</a></h2>
 <p>Finally, the location of the DMFTwDFT <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory should be added to the <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code> environmental variables in your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>.</p>
+</div>
+<div class="section" id="compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional">
+<h2>Compiling library mode for full charge-self conistent DFT+DMFT calculations (OPTIONAL)<a class="headerlink" href="#compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional" title="Permalink to this headline">¶</a></h2>
+<p>The above compilation also generates <code class="docutils literal notranslate"><span class="pre">libdmft.a</span></code> which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. Otherwise, the calculations can only be run for self-consistency within DMFT. In the case of VASP please follow the below steps to compile for self-consistency.</p>
+<ol class="arabic">
+<li><p>Generate libdmft.a by the Compiling sources code that will  be needed to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations.</p></li>
+<li><p>Before modifying the source code of VASP, we first need to install the VASP as it is. The user should follow the VASP installation instructions from the VASP web site.</p></li>
+<li><p>Copy modified/required VASP files such as charge.F  electron.F  main.F  mlwf.F  us.F from the sources/CSC-mods directory to the VASP source directory.</p></li>
+<li><p>Change the VASP makefile file. Specify libraries and/or objects to be linked against, in the usual ways:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">LLIBS</span> <span class="o">+=</span> <span class="o">-</span><span class="n">Lparser</span> <span class="o">-</span><span class="n">lparser</span> <span class="o">-</span><span class="n">lstdc</span><span class="o">++</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">uthpala</span><span class="o">/</span><span class="n">wannier90</span><span class="o">/</span><span class="n">wannier90</span><span class="o">-</span><span class="mf">1.2</span><span class="o">/</span><span class="n">libwannier</span><span class="o">.</span><span class="n">a</span>
+ <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">uthpala</span><span class="o">/</span><span class="n">Dropbox</span><span class="o">/</span><span class="n">git</span><span class="o">/</span><span class="n">DMFTwDFT</span><span class="o">/</span><span class="n">sources</span><span class="o">/</span><span class="n">libdmft</span><span class="o">.</span><span class="n">a</span>
+</pre></div>
+</div>
+</li>
+<li><p>Finally, recompile VASP. Then rename this vasp executable to <code class="docutils literal notranslate"><span class="pre">vaspDMFT</span></code> and copy it to the DMFTwDFT/bin directory.</p></li>
+</ol>
+<p>More information on the library mode can be found in the <a class="reference internal" href="library.html#labellibrary"><span class="std std-ref">Library mode</span></a> section.</p>
 </div>
 </div>
 

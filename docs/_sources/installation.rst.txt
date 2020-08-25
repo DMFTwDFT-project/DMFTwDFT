@@ -20,9 +20,10 @@ The structure of the directories is as follows. ::
 		├── bin
 		├── docs
 		├── examples
-		├── reference 
+		├── manuals 
 		├── scripts
 		├── sphinx
+		├── support_packages
 		└── sources
 			├── src
 			├── dmft_ksum
@@ -45,20 +46,6 @@ This should compile the follwing executables and libraries and copy them to the 
 * dmft_ksum_band - Performs band structure calculation. 
 * dmft_ksum_partial_band - Performs projected band structure calculation. 
 * fort_kpt_tools.so - Fortran based k-points calculation module.
-
-
-Compiling library mode
-----------------------
-
-The above compilation also generates ``libdmft.a`` which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. In the case of VASP, add the location of this file to ``LLIBS`` in VASP's makefile.include as shown below::
-
-	LLIBS += -Lparser -lparser -lstdc++ /home/uthpala/wannier90/wannier90-1.2/libwannier.a  
-	         /home/uthpala/Dropbox/git/DMFTwDFT/sources/libdmft.a
-
-The modified VASP files to enable full charge self-consistent DFT+DMFT calculations are in the ``sources/CSC-mods`` directory. Copy these to the VASP source directory and recompile VASP. Then rename this vasp executable to ``vaspDMFT`` and copy it to the ``DMFTwDFT/bin`` directory.
-
-More information on the library mode can be found in the :ref:`labellibrary` section.
-
 
 External libraries and executables
 ----------------------------------
@@ -85,4 +72,24 @@ PATH variables
 --------------
 
 Finally, the location of the DMFTwDFT ``bin`` directory should be added to the ``$PATH`` and ``$PYTHONPATH`` environmental variables in your ``.bashrc``.
+
+Compiling library mode for full charge-self conistent DFT+DMFT calculations (OPTIONAL)
+--------------------------------------------------------------------------------------
+
+The above compilation also generates ``libdmft.a`` which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. Otherwise, the calculations can only be run for self-consistency within DMFT. In the case of VASP please follow the below steps to compile for self-consistency.
+
+1. Generate libdmft.a by the Compiling sources code that will  be needed to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. 
+
+2. Before modifying the source code of VASP, we first need to install the VASP as it is. The user should follow the VASP installation instructions from the VASP web site.
+
+3. Copy modified/required VASP files such as charge.F  electron.F  main.F  mlwf.F  us.F from the sources/CSC-mods directory to the VASP source directory.
+
+4. Change the VASP makefile file. Specify libraries and/or objects to be linked against, in the usual ways::
+
+	LLIBS += -Lparser -lparser -lstdc++ /home/uthpala/wannier90/wannier90-1.2/libwannier.a
+         /home/uthpala/Dropbox/git/DMFTwDFT/sources/libdmft.a
+
+5. Finally, recompile VASP. Then rename this vasp executable to ``vaspDMFT`` and copy it to the DMFTwDFT/bin directory.
+
+More information on the library mode can be found in the :ref:`labellibrary` section.
 
