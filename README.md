@@ -71,7 +71,7 @@ Uthpala Herath, Pedram Tavadze, Xu He, Eric Bousquet, Sobhit Singh, Francisco Mu
 
   [1] Kristjan Haule, Phys. Rev. B 75, 155113 (2007).
 
-      Free energy implementation :
+Free energy implementation :
   [2] Kristjan Haule, Turan Birol, Phys. Rev. Lett. 115, 256402 (2015).
 
 [Wannier90](http://www.wannier.org/)<br>
