@@ -9,10 +9,10 @@ https://romerogroup.github.io/pyprocar/index.html
 
 
 To install PyProcar wif pip use the following command:
-pip install pyprocar
+    pip install pyprocar
 
 To install PyProcar with conda use the following command:
-conda install -c conda-forge pyprocar
+    conda install -c conda-forge pyprocar
 
 For detail, please refer the homepage and for citation, please cite the following:
 

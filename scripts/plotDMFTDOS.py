@@ -1,6 +1,11 @@
 #!/usr/bin/env python
 from __future__ import absolute_import, division, print_function, unicode_literals
 import matplotlib.pyplot as plt
+# Import math Library
+import math
+
+# Print the value of pi
+print (math.pi)
 
 with open('G_loc.out', 'r') as f:
     lines = f.readlines()
@@ -17,8 +22,8 @@ with open('G_loc.out', 'r') as f:
     yg= [float(line.split()[2])+float(line.split()[8]) for line in lines]
     tg= [float(line.split()[4])+float(line.split()[6])+float(line.split()[10]) for line in lines]
 
-y_eg =[-1*count/3.14 for count in yg]
-y_t2g =[-1*count/3.14 for count in tg]  
+y_eg =[-1*count/(math.pi) for count in yg]
+y_t2g =[-1*count/(math.pi) for count in tg]  
     
 plt.figure(1)
 plt.plot(x,y_eg,'r',label='$d-e_g$') 

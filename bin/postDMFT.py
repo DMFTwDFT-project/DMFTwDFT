@@ -7,6 +7,7 @@ import math
 import os
 import re
 import shutil
+import math
 import subprocess
 import sys
 from argparse import RawTextHelpFormatter
@@ -494,9 +495,9 @@ class PostProcess:
                     ]
 
             if p_atoms:
-                y_p = [-1 * count / 3.14 for count in y_p_sum]
-            y_eg = [-1 * count / 3.14 for count in y_eg_sum]
-            y_t2g = [-1 * count / 3.14 for count in y_t2g_sum]
+                y_p = [-1 * count / math.pi for count in y_p_sum]
+            y_eg = [-1 * count / math.pi for count in y_eg_sum]
+            y_t2g = [-1 * count / math.pi for count in y_t2g_sum]
 
             # Plotting
             fig = plt.figure(figsize=(13, 9))
@@ -740,37 +741,37 @@ class PostProcess:
             try:
                 # generating k-path
                 klist, dist_K, dist_SK = self.Create_kpath(args.kplist, args.kpband)
-                fi = open("./bands/klist.dat", "w")
 
-                # Put within try, exception to select correct kpband value.
-                print("Trying number of k-points (kpband) = %d" % args.kpband)
-                for i in range(args.kpband):
-                    kcheck = 0
-                    for j, d in enumerate(dist_SK):
-                        # print(
-                        #     "i:%d dist_K: %s dist_SK: %s abs: %f"
-                        #     % (i, str(dist_K[i]), str(d), float(dist_K[i] - d))
-                        # )
-                        if abs(dist_K[i] - d) < 1e-10:
-                            fi.write(
-                                "%.14f  %.14f  %.14f  %.14f  %s \n"
-                                % (
-                                    dist_K[i],
-                                    klist[i][0],
-                                    klist[i][1],
-                                    klist[i][2],
-                                    args.knames[j],
+                with open("./bands/klist.dat", "w") as fi:
+
+                    # Put within try, exception to select correct kpband value.
+                    print("Trying number of k-points (kpband) = %d" % args.kpband)
+                    for i in range(args.kpband):
+                        kcheck = 0
+                        for j, d in enumerate(dist_SK):
+                            # print(
+                            #     "i:%d dist_K: %s dist_SK: %s abs: %f"
+                            #     % (i, str(dist_K[i]), str(d), float(dist_K[i] - d))
+                            # )
+                            if abs(dist_K[i] - d) < 1e-10:
+                                fi.write(
+                                    "%.14f  %.14f  %.14f  %.14f  %s \n"
+                                    % (
+                                        dist_K[i],
+                                        klist[i][0],
+                                        klist[i][1],
+                                        klist[i][2],
+                                        args.knames[j],
+                                    )
                                 )
+                                kcheck = 1
+                                break
+                        if kcheck == 0:
+                            fi.write(
+                                "%.14f  %.14f  %.14f  %.14f \n"
+                                % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
                             )
-                            kcheck = 1
-                            break
-                    if kcheck == 0:
-                        fi.write(
-                            "%.14f  %.14f  %.14f  %.14f \n"
-                            % (dist_K[i], klist[i][0], klist[i][1], klist[i][2])
-                        )
 
-                fi.close()
                 indexerror = False
 
             except IndexError:
