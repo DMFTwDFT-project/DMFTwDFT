@@ -22,6 +22,10 @@ DMFTwDFT uses several external libraries. Please cite them as well.
 
 - `Wannier90 <http://www.wannier.org>`_
 
+- `PyProcar <https://github.com/romerogroup/pyprocar>`_
+
+- `PyChemia <https://github.com/MaterialsDiscovery/PyChemia>`_
+
 Thank you. 
 
 
