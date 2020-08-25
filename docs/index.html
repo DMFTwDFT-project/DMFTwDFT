@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>DMFTwDFT documentation &mdash; DMFTwDFT 1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> DMFTwDFT
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Library mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">DMFTwDFT</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>DMFTwDFT documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dmftwdft-documentation">
+<h1>DMFTwDFT documentation<a class="headerlink" href="#dmftwdft-documentation" title="Permalink to this headline">¶</a></h1>
+<p>DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently VASP, Siesta and Quantum Espresso (through Aiida) are supported.</p>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
+<p>DMFTwDFT offers the following:</p>
+<ol class="arabic simple">
+<li><p>DMFT has been one of the most successful methods treating many-body ﬂuctuations, by including dynamical but local correlations beyond the static DFT exchange-correlation functional. We provide a DMFT package, DMFTwDFT, interfaced with the Wannier90 code for its efficient extension to various free-licensed DFT codes.</p></li>
+<li><p>We provide the library mode to link the module for computing a DMFT density matrix and updating a charge density within the DFT loops without modifying any DFT source codes signiﬁcantly.</p></li>
+<li><p>We provide a ﬂexible Python-based interface that does not rely much on extensive user experience or speciﬁc parameters to perform the DFT+DMFT calculations of strongly correlated materials.</p></li>
+<li><p>To test and check our implementation, we computed the density of states and the band structure of well-known correlated materials, namely <span class="math notranslate nohighlight">\(LaNiO_{3}\)</span>, <span class="math notranslate nohighlight">\(SrVO_{3}\)</span>, and <span class="math notranslate nohighlight">\(NiO\)</span>. The obtained results are compared to those obtained from other DFT+DMFT implementations.</p></li>
+<li><p>In the next release, we envision implementing force calculations which will help us to perform phonon calculations in strongly correlated materials, and also implementing the ab-initio Hubbard U calculation using the linear response approach developed by Cococcioni et al.</p></li>
+</ol>
+<p>DMFTwDFT consists of two main scripts to perform the DFT+DMFT calculations.</p>
+<ol class="arabic simple">
+<li><p>DMFT.py     - Performs the DFT and DMFT calculations.</p></li>
+<li><p>postDMFT.py - Performs post-processing including analytic contiuation, density of states and band structures.</p></li>
+</ol>
+<p>The <code class="docutils literal notranslate"><span class="pre">/scripts</span></code> directory contains several utility scripts.</p>
+</div>
+<div class="section" id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-sources">Compiling sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#external-libraries-and-executables">External libraries and executables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#wannier90-library">Wannier90 library</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#path-variables">PATH variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional">Compiling library mode for full charge-self conistent DFT+DMFT calculations (OPTIONAL)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#dft-dmft-calculation">DFT+DMFT calculation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tutorials.html#dmft-post-processing">DMFT Post-processing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="library.html">Library mode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="developers.html">Developers</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="developers.html#contributors">Contributors</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, The DMFTwDFT Project
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
