@@ -1,0 +1,49 @@
+
+PyChemia, Python Framework for Materials Discovery and Design:
+============================================================
+PyChemia is an open-source Python Library for materials structural search. The purpose of the initiative is to create a method agnostic framework for materials discovery and design using a variety of methods from Minima Hoping to Soft-computing based methods. PyChemia is also a library for data-mining, using several methods to discover interesting candidates among the materials already processed.
+
+
+
+
+
+
+The code is hosted on
+=====================
+.. _GitHub: https://github.com/MaterialsDiscovery/PyChemia
+
+
+Installation
+============
+
+You can install pychemia in several ways. We are showing 3 ways of
+installing PyChemia inside a Virtual environment. A virtual environment
+is a good way of isolating software packages from the pacakges installed
+with the Operating System. The decision on which method to use
+depends if you want to use the most recent code or the package uploaded
+from time to time to PyPi. The last method is particularly suited for
+developers who want to change the code and get those changes operative without
+an explicit instalation.
+
+
+Installing with pip from pypi.org on a virtual environment 
+----------------------------------------------------------
+
+This method installs PyChemia from the packages uploaded
+to PyPi every month. It will provides a version of 
+PyChemia that is stable.
+
+First, create and activate the virtual environment.
+We are using the name `pychemia_ve`, but that is arbitrary.
+
+```bash
+virtualenv pychemia_ve
+source pychemia_ve/bin/activate
+```
+
+When the virtual environment is activated, your prompt 
+changes to `(pychemia_ve)...$`. Now, install pychemia 
+with pip
+
+```bash
+pip install pychemia

@@ -18,6 +18,11 @@ Please refer to the documentation.
 
 https://dmftwdft-project.github.io/DMFTwDFT/
 
+Specifically, for the installation refer to the following documentation.
+
+https://dmftwdft-project.github.io/DMFTwDFT/installation.html
+
+
 Developers
 -----------
 Hyowon Park <br />
@@ -54,8 +59,31 @@ Thank you.
 
 Support packages
 ----------------
+We acknowledge the use of the following packages:
+
 [PyProcar](https://github.com/uthpalah/PyProcar)<br />
+
+Uthpala Herath, Pedram Tavadze, Xu He, Eric Bousquet, Sobhit Singh, Francisco Muñoz, and Aldo H. Romero. "PyProcar: A Python library for electronic structure pre/post-processing". Computer Physics Communications 251 (2020): 107080.
+
 [PyChemia](https://github.com/MaterialsDiscovery/PyChemia)
+
+[Continuous time Quantum Monte Carlo (ctqmc)](http://hauleweb.rutgers.edu/tutorials/Tutorial0.html)<br>
+
+  [1] Kristjan Haule, Phys. Rev. B 75, 155113 (2007).
+
+      Free energy implementation :
+  [2] Kristjan Haule, Turan Birol, Phys. Rev. Lett. 115, 256402 (2015).
+
+[Wannier90](http://www.wannier.org/)<br>
+Wannier90 as a community code: new features and applications, G. Pizzi et al., J. Phys. Cond. Matt. 32, 165902 (2020) 
+
+
+Note: We suggest user to refer to this link https://dmftwdft-project.github.io/DMFTwDFT/installation.html for more details.
+
+
+
+Code change in the VASP:
+ 
 
 
 Mailing list

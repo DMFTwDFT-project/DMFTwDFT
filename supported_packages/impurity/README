@@ -1,0 +1,19 @@
+TO USE THE CTQMC IMPURITY SOLVER:
+_________________________________
+
+In order to compile the ctqmc impurity solver user should access sources/impurity/ctqmc directory, and just type make inside this directory. You will need only C++ & gsl libraries. However, to compile you will need to edit a bit src/Makefile.in file. 
+
+You will need to set PC++, PFLAGS, PLIBS. For example, for MAC computer one would set:
+PC++ = mpicxx
+PFLAGS = -D_MPI -O3
+PLIBS = -framework Accelerate -lgsl -lgslcblas
+
+ctqmc citation:
+
+[Continuous time Quantum Monte Carlo (ctqmc)](http://hauleweb.rutgers.edu/tutorials/Tutorial0.html)<br>
+
+  [1] Kristjan Haule, Phys. Rev. B 75, 155113 (2007).
+
+      Free energy implementation :
+  [2] Kristjan Haule, Turan Birol, Phys. Rev. Lett. 115, 256402 (2015).
+

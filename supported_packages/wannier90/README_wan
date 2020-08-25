@@ -1,0 +1,44 @@
+=========
+
+The Maximally-Localised Generalised Wannier Functions Code
+----------------------------------------------------------
+
+The homepage of the Wannier90 code is http://www.wannier.org
+
+The code is hosted on
+.. _GitHub: https://github.com/wannier-developers/wannier90
+
+How to cite
++++++++++++
+Please cite the following paper in any publications arising from the use of
+this code:
+
+  A.A. Mostofi, J.R. Yates, G. Pizzi, Y.S. Lee, I. Souza,
+  D Vanderbilt, N Marzari, *An updated version of wannier90: A tool for
+  obtaining maximally-localised Wannier functions*,
+  `Comput. Phys. Commun. 185, 2309 (2014)`_
+
+.. _Comput. Phys. Commun. 185, 2309 (2014): http://dx.doi.org/10.1016/j.cpc.2014.05.003
+
+
+How to install
++++++++++++++
+
+The newest version can be downloaded from wannier.org web cite: http://www.wannier.org/download/
+Requirements: A Fortran 95 compiler (most f90 compilers are really f95)
+               LAPACK and BLAS libraries
+               (Optional) MPI libraries for parallel execution of the
+                  postw90.x executable
+
+ Configuration:
+   The system dependent parameters (e.g. compiler name) are contained in a file
+   called 'make.inc'. Sample files may be found in the ./config/ directory.
+   Choose one that is nearest to your setup and copy it to make.inc. You may
+   need to edit it, for example to give the correct library path for your
+   machine.
+
+    On a linux system with the intel compiler build Wannier90 by typing
+
+         cp ./config/make.inc.ifort ./make.inc
+         make
+
