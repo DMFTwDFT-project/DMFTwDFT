@@ -81,11 +81,6 @@ Wannier90 as a community code: new features and applications, G. Pizzi et al., J
 Note: We suggest user to refer to this link https://dmftwdft-project.github.io/DMFTwDFT/installation.html for more details.
 
 
-
-Code change in the VASP:
- 
-
-
 Mailing list
 --------------
 Coming soon...
