@@ -153,7 +153,16 @@
   <div class="section" id="dmftwdft-documentation">
 <h1>DMFTwDFT documentation<a class="headerlink" href="#dmftwdft-documentation" title="Permalink to this headline">¶</a></h1>
 <p>DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently VASP, Siesta and Quantum Espresso (through Aiida) are supported.</p>
-<p>DMFTwDFT consists of two main segments.</p>
+<p>## Overview</p>
+<p>DMFTwDFT offers the followings:</p>
+<ol class="arabic simple">
+<li><p>DMFT has been one of the most successful methods treating many-body ﬂuctuations, by including dynamical but local correlations beyond the static DFT exchange-correlation functional. We provide a DMFT package, DMFTwDFT, interfaced with the Wannier90 code for its efficient extension to various free-licensed DFT codes.</p></li>
+<li><p>We provide the library mode to link the module for computing a DMFT density matrix and updating a charge density within the DFT loops without modifying any DFT source codes signiﬁcantly.</p></li>
+<li><p>We provide a ﬂexible Python-based interface that does not rely much on extensive user experience or speciﬁc parameters to perform the DFT+DMFT calculations of strongly correlated materials.</p></li>
+<li><p>To test and check our implementation, we computed the density of states and the band structure of well-known correlated materials, namely <span class="math notranslate nohighlight">\(LaNiO$_{3}$\)</span>, <span class="math notranslate nohighlight">\(SrVO$_{3}$\)</span>, and NiO. The obtained results are compared to those obtained from other DFT+DMFT implementations.</p></li>
+<li><p>In the next release, we envision implementing force calculations which will help us to perform phonon calculations in strongly correlated materials, and also implementing the ab-initio Hubbard U calculation using the linear response approach developed by Cococcioni et al.</p></li>
+</ol>
+<p>DMFTwDFT consists of two main scripts to perform the DFT+DMFT calculations.</p>
 <ol class="arabic simple">
 <li><p>DMFT.py     - Performs the DFT and DMFT calculations.</p></li>
 <li><p>postDMFT.py - Performs post-processing including analytic contiuation, density of states and band structures.</p></li>
