@@ -677,7 +677,7 @@ class DMFTLauncher:
             self.siesta_run(self.dir)
 
             # need to rename .eigW to .eig to run wannier90
-shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
+            shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
 
             if not self.lowdin:
                 if not self.nowin:
