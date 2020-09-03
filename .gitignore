@@ -19,6 +19,7 @@ maxent_routines.so
 siesta
 sources/src/obj/*
 sources/EDMFTF*
+*.log
 
 #sphinx
 _build/
