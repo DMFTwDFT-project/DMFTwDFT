@@ -4,13 +4,31 @@ Installation
 DMFTwDFT is currently supported by Python 2.x. It will be transitioned to Python 3.x in the future. 
 The Python 2.x version does not support ionic relaxation, therefore use an already relaxed structure as input. 
 
-Please install the following dependencies prior to installing DMFTwDFT. 
+Please install the following dependencies prior to installing DMFTwDFT.
+
+Python:
 
 * matplotlib 
 * numpy 
 * scipy
 * weave
 * mpi4py
+* pyprocar
+* pychemia
+
+To install execute::
+
+	pip install matplotlib numpy scipy weave mpi4py pyprocar pychemia
+
+Libraries:
+
+* GSL
+
+If not using intel compilers the following libraries should be installed:
+
+* LAPACK
+* BLAS
+* FFTW
 
 The executables of the DFT codes (vasp_std, siesta etc.) should be globally accessible. 
 
@@ -18,6 +36,7 @@ The structure of the directories is as follows. ::
 
 	DMFTwDFT
 		├── bin
+		├── config 
 		├── docs
 		├── examples
 		├── manuals 
@@ -35,9 +54,14 @@ The following section describes the procedure to compile the different componene
 Compiling sources
 -----------------
 
-From the ``sources`` directory execute::
+First copy a desired ``Makefile.in`` version in the **config** directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries.
+Similarly, in the **sources** directory copy intel.make.inc or gfortran.make.inc to make.inc. 
 
-	make all
+To compile, execute::
+
+	python setup.py <compiler> 
+
+where compiler = {intel, gfortran}
 
 This should compile the follwing executables and libraries and copy them to the ``bin`` directory.
 
@@ -50,10 +74,7 @@ This should compile the follwing executables and libraries and copy them to the 
 External libraries and executables
 ----------------------------------
 
-DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Professor Kristjan Haule at Rutgers University and are available in the eDMFT package.
-Follow the provided instructions on the `web page <http://hauleweb.rutgers.edu/tutorials/index.html>`_ to download and compile it. 
-
-Once compiled copy the following executables and libraries to the DMFTwDFT ``bin`` directory.
+DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Professor Kristjan Haule at Rutgers University available with the `EDMFTF <http://hauleweb.rutgers.edu/tutorials/index.html>`_ package. The following libraries and programs are used:
 
 * ctqmc
 * gaunt.so
@@ -61,7 +82,7 @@ Once compiled copy the following executables and libraries to the DMFTwDFT ``bin
 * skrams
 * maxent_routines.so
 
-If the automated compilation is successful, these are found in the eDMFT ``bin`` directory. Otherwise compile them manually inside the relevant ``src/impurity`` directories. gaunt.so and gutils.so are compiled in the src/impurity/atomd directory.
+If the automated compilation with setup.py is successful, these are found in``bin`` directory. 
 
 Wannier90 library
 -----------------

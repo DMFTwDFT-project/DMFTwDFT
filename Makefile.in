@@ -1,0 +1,64 @@
+#----------- DMFTwDFT external libraries setup ------------------------------
+#
+# COMPILER : GFORTRAN
+#
+# This Makefile compiles the required libraries from Professor Kristjan
+# Haule's EDMFTF code to run DMFTwDFT.
+#
+# Libraries used from EDMFTF:
+#
+# - ctqmc
+# - atomd
+# - skrams
+# - maxent_routines
+
+# Set Fortran, C++ & gsl libraries in this file.
+#
+# You will need to set PC++, PFLAGS, PLIBS. For example, for MAC computer one would set:
+# PC++ = mpicxx
+# PFLAGS = -D_MPI -O3
+# PLIBS = -framework Accelerate -lgsl -lgslcblas
+
+#===========================================================================
+
+#------------- SERIAL VERSION ----------------------------------------------
+F90 = gfortran
+F77 = gfortran
+C++ = g++
+CC  = gcc
+
+OPENMP = -fopenmp
+FFLAGS = -O2  -ffree-form -ffree-line-length-none $(OPENMP) 
+OFLAGS = -O2 
+
+LALIB  =  -lblas -llapack
+FFTLIB =  -lfftw3_omp -lfftw3 
+FFTINC =  -I/usr/include
+GSLLIB =  -lgsl 
+GSLINC =  
+PIC    =  -fPIC
+WFOPT  = -O2  -ffree-form -ffree-line-length-none $(OPENMP)  $(FFTINC)
+WLIBS   = $(FFTLIB)  $(LALIB)
+F2PL =
+
+F2PY_LAPACK = --link-lapack_opt
+
+#------------- PARALLEL VERSION --------------------------------------------
+Fmpi_define =  -D_MPI
+
+PF90 = mpif90 
+PC++ = mpicxx
+PCC  = mpicc 
+
+PFLAGS   = -D_MPI -DMPICH_IGNORE_CXX_SEEK -O3 #-restrict -ipo -no-prec-div 
+
+LLIBS = $(LALIB)
+PLIBS = $(LLIBS) $(GSLLIB)
+
+#
+CMP = f2py --opt='-O2' --fcompiler=gnu95   # fortran to python converter
+CMPLIBS  = --f90flags='-openmp ' --link-lapack_opt
+CMPLIBS2 = --f90flags=' $(OPENMP) ' $(CMPLIBS)
+#
+
+#============================================================================

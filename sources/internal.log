@@ -1,0 +1,572 @@
+(cd ./src/obj && make -f ../Makefile.2 libs)
+make[1]: Entering directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/src/obj'
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../constants.F90
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../io.F90
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../utility.F90
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../comms.F90
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../read_inputs.F90
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../tetrahedron.F90
+../tetrahedron.F90:489:39:
+
+           temp(1)=tval(tet_idx(tetkptr(t,1)),b)
+                                       1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:490:39:
+
+           temp(2)=tval(tet_idx(tetkptr(t,2)),b)
+                                       1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:491:39:
+
+           temp(3)=tval(tet_idx(tetkptr(t,3)),b)
+                                       1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:492:39:
+
+           temp(4)=tval(tet_idx(tetkptr(t,4)),b)
+                                       1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:496:29:
+
+           i1=tet_idx(tetkptr(t,order(1)))
+                             1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:497:29:
+
+           i2=tet_idx(tetkptr(t,order(2)))
+                             1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:498:29:
+
+           i3=tet_idx(tetkptr(t,order(3)))
+                             1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:499:29:
+
+           i4=tet_idx(tetkptr(t,order(4)))
+                             1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:480:9:
+
+       do t=tet_min,tet_max
+         1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../tetrahedron.F90:413:37:
+
+         temp(1)=tval(tet_idx(tetkptr(t,1)),b)
+                                     1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:414:37:
+
+         temp(2)=tval(tet_idx(tetkptr(t,2)),b)
+                                     1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:415:37:
+
+         temp(3)=tval(tet_idx(tetkptr(t,3)),b)
+                                     1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:416:37:
+
+         temp(4)=tval(tet_idx(tetkptr(t,4)),b)
+                                     1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:420:27:
+
+         i1=tet_idx(tetkptr(t,order(1)))
+                           1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:421:27:
+
+         i2=tet_idx(tetkptr(t,order(2)))
+                           1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:422:27:
+
+         i3=tet_idx(tetkptr(t,order(3)))
+                           1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:423:27:
+
+         i4=tet_idx(tetkptr(t,order(4)))
+                           1
+Warning: Legacy Extension: REAL array index at (1)
+../tetrahedron.F90:411:7:
+
+     do t=tet_min,tet_max
+       1
+Warning: Deleted feature: Loop variable at (1) must be integer
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../generate_ham.F90
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../generate_kpts.F90
+mpif90 -DMPI  -O2 -ffree-line-length-none  -c ../dmft_ksum.F90
+../dmft_ksum.F90:898:27:
+
+               Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                           1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:898:32:
+
+               Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:898:63:
+
+               Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                               1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:898:68:
+
+               Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:899:28:
+
+               dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                            1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:899:33:
+
+               dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                 1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:899:61:
+
+               dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                             1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:899:66:
+
+               dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                                  1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:897:15:
+
+             do IDIR=1,ndir
+               1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:896:13:
+
+           do ION=1,nions
+             1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:917:47:
+
+                   deps=deps+deig(nbmin+ib-1,ik,IDIR,ION)*real(Umat(ib,i)*dconjg(Umat(ib,i)))
+                                               1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:917:52:
+
+                   deps=deps+deig(nbmin+ib-1,ik,IDIR,ION)*real(Umat(ib,i)*dconjg(Umat(ib,i)))
+                                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:920:20:
+
+                 dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:920:24:
+
+                 dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                        1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:920:34:
+
+                 dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                                  1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:920:38:
+
+                 dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:911:15:
+
+             do IDIR=1,ndir
+               1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:910:13:
+
+           do ION=1,nions
+             1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1002:29:
+
+                 Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                             1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1002:34:
+
+                 Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                  1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1002:65:
+
+                 Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                                 1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1002:70:
+
+                 Umat_loc(:,:,IDIR,ION)=matmul(UMatrix_loc(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1003:30:
+
+                 dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                              1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1003:35:
+
+                 dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                   1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1003:63:
+
+                 dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                               1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1003:68:
+
+                 dUmat_loc(:,:,IDIR,ION)=matmul(dUMatrix(:,:,ik,IDIR,ION),evec0(ispin,loc_i,:,:))
+                                                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1001:17:
+
+               do IDIR=1,ndir
+                 1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1000:15:
+
+             do ION=1,nions
+               1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1022:49:
+
+                     deps=deps+deig(nbmin+ib-1,ik,IDIR,ION)*real(Umat(ib,i)*dconjg(Umat(ib,i)))
+                                                 1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1022:54:
+
+                     deps=deps+deig(nbmin+ib-1,ik,IDIR,ION)*real(Umat(ib,i)*dconjg(Umat(ib,i)))
+                                                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1031:46:
+
+                       deps=deps+dSig(ispin,ib,ION,IDIR)*real(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)*dconjg(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)))
+                                              1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1031:50:
+
+                       deps=deps+dSig(ispin,ib,ION,IDIR)*real(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)*dconjg(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)))
+                                                  1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1047:32:
+
+                     dN(ispin,ib,ION,IDIR)=dN(ispin,ib,ION,IDIR)+(deps-dmu(ION,IDIR))*pdos(ispin,1,ik,i)*sweight*real(evec0(ispin,loc_i,ib,i)*dconjg(evec0(ispin,loc_i,ib,i)))!*Sigoo(sym_idx(ispin,ib,j))
+                                1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1047:36:
+
+                     dN(ispin,ib,ION,IDIR)=dN(ispin,ib,ION,IDIR)+(deps-dmu(ION,IDIR))*pdos(ispin,1,ik,i)*sweight*real(evec0(ispin,loc_i,ib,i)*dconjg(evec0(ispin,loc_i,ib,i)))!*Sigoo(sym_idx(ispin,ib,j))
+                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1047:74:
+
+                     dN(ispin,ib,ION,IDIR)=dN(ispin,ib,ION,IDIR)+(deps-dmu(ION,IDIR))*pdos(ispin,1,ik,i)*sweight*real(evec0(ispin,loc_i,ib,i)*dconjg(evec0(ispin,loc_i,ib,i)))!*Sigoo(sym_idx(ispin,ib,j))
+                                                                          1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1047:78:
+
+                     dN(ispin,ib,ION,IDIR)=dN(ispin,ib,ION,IDIR)+(deps-dmu(ION,IDIR))*pdos(ispin,1,ik,i)*sweight*real(evec0(ispin,loc_i,ib,i)*dconjg(evec0(ispin,loc_i,ib,i)))!*Sigoo(sym_idx(ispin,ib,j))
+                                                                              1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1047:54:
+
+                     dN(ispin,ib,ION,IDIR)=dN(ispin,ib,ION,IDIR)+(deps-dmu(ION,IDIR))*pdos(ispin,1,ik,i)*sweight*real(evec0(ispin,loc_i,ib,i)*dconjg(evec0(ispin,loc_i,ib,i)))!*Sigoo(sym_idx(ispin,ib,j))
+                                                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1047:58:
+
+                     dN(ispin,ib,ION,IDIR)=dN(ispin,ib,ION,IDIR)+(deps-dmu(ION,IDIR))*pdos(ispin,1,ik,i)*sweight*real(evec0(ispin,loc_i,ib,i)*dconjg(evec0(ispin,loc_i,ib,i)))!*Sigoo(sym_idx(ispin,ib,j))
+                                                          1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1008:17:
+
+               do IDIR=1,ndir
+                 1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1007:15:
+
+             do ION=1,nions
+               1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1076:32:
+
+                   dSig(ispin,ib,ION,IDIR)=dSig(ispin,ib,ION,IDIR)+5.0*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1076:36:
+
+                   dSig(ispin,ib,ION,IDIR)=dSig(ispin,ib,ION,IDIR)+5.0*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1076:95:
+
+                   dSig(ispin,ib,ION,IDIR)=dSig(ispin,ib,ION,IDIR)+5.0*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                                                                               1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1076:99:
+
+                   dSig(ispin,ib,ION,IDIR)=dSig(ispin,ib,ION,IDIR)+5.0*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                                                                                   1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1076:56:
+
+                   dSig(ispin,ib,ION,IDIR)=dSig(ispin,ib,ION,IDIR)+5.0*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                                        1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1076:60:
+
+                   dSig(ispin,ib,ION,IDIR)=dSig(ispin,ib,ION,IDIR)+5.0*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                                            1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1073:15:
+
+             do IDIR=1,ndir
+               1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1072:13:
+
+           do ION=1,nions
+             1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1094:49:
+
+                     deps=deps+deig(nbmin+ib-1,ik,IDIR,ION)*real(Umat(ib,i)*dconjg(Umat(ib,i)))
+                                                 1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1094:54:
+
+                     deps=deps+deig(nbmin+ib-1,ik,IDIR,ION)*real(Umat(ib,i)*dconjg(Umat(ib,i)))
+                                                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1099:46:
+
+                       deps=deps+dSig(ispin,ib,ION,IDIR)*real(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)*dconjg(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)))
+                                              1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1099:50:
+
+                       deps=deps+dSig(ispin,ib,ION,IDIR)*real(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)*dconjg(evec0(ispin,loc_i,(ib-1)*n_orbs+j,i)))
+                                                  1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1102:22:
+
+                   dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1102:26:
+
+                   dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                          1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1102:36:
+
+                   dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1102:40:
+
+                   dmu(ION,IDIR)=dmu(ION,IDIR)+deps*pdos(ispin,1,ik,i)*sweight/dosef
+                                        1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1089:17:
+
+               do IDIR=1,ndir
+                 1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1088:15:
+
+             do ION=1,nions
+               1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1117:22:
+
+                 dEkin(ION,IDIR)=dEkin(ION,IDIR)+Sigoo(sym_idx(ispin,ib,j))*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1117:26:
+
+                 dEkin(ION,IDIR)=dEkin(ION,IDIR)+Sigoo(sym_idx(ispin,ib,j))*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                          1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1117:100:
+
+                 dEkin(ION,IDIR)=dEkin(ION,IDIR)+Sigoo(sym_idx(ispin,ib,j))*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                                                                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1117:104:
+
+                 dEkin(ION,IDIR)=dEkin(ION,IDIR)+Sigoo(sym_idx(ispin,ib,j))*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                                                                                        1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1117:38:
+
+                 dEkin(ION,IDIR)=dEkin(ION,IDIR)+Sigoo(sym_idx(ispin,ib,j))*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1117:42:
+
+                 dEkin(ION,IDIR)=dEkin(ION,IDIR)+Sigoo(sym_idx(ispin,ib,j))*dN(ispin,(ib-1)*n_orbs+j,ION,IDIR)
+                                          1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1113:11:
+
+         do IDIR=1,ndir
+           1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1112:9:
+
+       do ION=1,nions
+         1
+Warning: Deleted feature: Loop variable at (1) must be integer
+../dmft_ksum.F90:1152:38:
+
+           WRITE(99,'(3F12.8)') dN(1,1,ION,1), dN(1,1,ION,2), dN(1,1,ION,3)
+                                      1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1152:53:
+
+           WRITE(99,'(3F12.8)') dN(1,1,ION,1), dN(1,1,ION,2), dN(1,1,ION,3)
+                                                     1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1152:68:
+
+           WRITE(99,'(3F12.8)') dN(1,1,ION,1), dN(1,1,ION,2), dN(1,1,ION,3)
+                                                                    1
+Warning: Legacy Extension: REAL array index at (1)
+../dmft_ksum.F90:1151:11:
+
+         do ION=1,nions
+           1
+Warning: Deleted feature: Loop variable at (1) must be integer
+mpif90 -O2 -ffree-line-length-none  -c ../dmft_lib.F90
+ar rv ../../libdmft.a dmft_lib.o dmft_ksum.o constants.o utility.o read_inputs.o generate_ham.o io.o generate_kpts.o comms.o tetrahedron.o
+ar: creating ../../libdmft.a
+a - dmft_lib.o
+a - dmft_ksum.o
+a - constants.o
+a - utility.o
+a - read_inputs.o
+a - generate_ham.o
+a - io.o
+a - generate_kpts.o
+a - comms.o
+a - tetrahedron.o
+make[1]: Leaving directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/src/obj'
+(cd ./src/obj && make -f ../Makefile.2 dmft)
+make[1]: Entering directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/src/obj'
+mpif90 ../main.F90 -DMPI  -O2 dmft_ksum.o constants.o utility.o read_inputs.o generate_ham.o io.o generate_kpts.o comms.o tetrahedron.o -L/home/uthpala/lib  -llapack -lblas -o ../../dmft.x
+make[1]: Leaving directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/src/obj'
+(cd ./fort_kpt_tools && make -f Makefile fort_kpt_tools.so )
+make[1]: Entering directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/fort_kpt_tools'
+f2py --fcompiler=intelem  -c fort_kpt_tools.f -m fort_kpt_tools
+running build
+running config_cc
+unifing config_cc, config, build_clib, build_ext, build commands --compiler options
+running config_fc
+unifing config_fc, config, build_clib, build_ext, build commands --fcompiler options
+running build_src
+build_src
+building extension "fort_kpt_tools" sources
+f2py options: []
+f2py:> /tmp/tmph28Sjx/src.linux-x86_64-2.7/fort_kpt_toolsmodule.c
+creating /tmp/tmph28Sjx/src.linux-x86_64-2.7
+Reading fortran codes...
+	Reading file 'fort_kpt_tools.f' (format:fix,strict)
+Post-processing...
+	Block: fort_kpt_tools
+			Block: get_kptr
+			Block: sorti
+			Block: get_itet
+			Block: get_tetmult
+			Block: tetra_pnf
+			Block: sortr
+Post-processing (stage 2)...
+Building modules...
+	Building module "fort_kpt_tools"...
+		Constructing wrapper function "get_kptr"...
+		  kptr,gptr = get_kptr(nk,symm,kt,[nop,nkt])
+		Constructing wrapper function "sorti"...
+		  sorti(x,iy,[n])
+		Constructing wrapper function "get_itet"...
+		  tetptr,tet = get_itet(nk,ptet,kibz,kptr,ntet,[nibz,nkptr])
+		Constructing wrapper function "get_tetmult"...
+		  mult = get_tetmult(tet,itet,[ntet,nitet])
+		Constructing wrapper function "tetra_pnf"...
+		  cpdos = tetra_pnf(tet_idx,tetkptr,eigval,[norb,nki,ntet])
+		Constructing wrapper function "sortr"...
+		  sortr(x,iy,[n])
+	Wrote C/API module "fort_kpt_tools" to file "/tmp/tmph28Sjx/src.linux-x86_64-2.7/fort_kpt_toolsmodule.c"
+  adding '/tmp/tmph28Sjx/src.linux-x86_64-2.7/fortranobject.c' to sources.
+  adding '/tmp/tmph28Sjx/src.linux-x86_64-2.7' to include_dirs.
+copying /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/f2py/src/fortranobject.c -> /tmp/tmph28Sjx/src.linux-x86_64-2.7
+copying /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/f2py/src/fortranobject.h -> /tmp/tmph28Sjx/src.linux-x86_64-2.7
+build_src: building npy-pkg config files
+running build_ext
+customize UnixCCompiler
+customize UnixCCompiler using build_ext
+customize IntelEM64TFCompiler
+Found executable /opt/intel/compilers_and_libraries_2019.5.281/linux/bin/intel64/ifort
+customize IntelEM64TFCompiler using build_ext
+building 'fort_kpt_tools' extension
+compiling C sources
+C compiler: gcc -pthread -B /home/uthpala/anaconda2/compiler_compat -Wl,--sysroot=/ -fno-strict-aliasing -g -O2 -DNDEBUG -g -fwrapv -O3 -Wall -Wstrict-prototypes -fPIC
+
+creating /tmp/tmph28Sjx/tmp
+creating /tmp/tmph28Sjx/tmp/tmph28Sjx
+creating /tmp/tmph28Sjx/tmp/tmph28Sjx/src.linux-x86_64-2.7
+compile options: '-I/tmp/tmph28Sjx/src.linux-x86_64-2.7 -I/home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include -I/home/uthpala/anaconda2/include/python2.7 -c'
+gcc: /tmp/tmph28Sjx/src.linux-x86_64-2.7/fortranobject.c
+gcc: /tmp/tmph28Sjx/src.linux-x86_64-2.7/fort_kpt_toolsmodule.c
+In file included from /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmph28Sjx/src.linux-x86_64-2.7/fortranobject.h:13,
+                 from /tmp/tmph28Sjx/src.linux-x86_64-2.7/fortranobject.c:2:
+/home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+ #warning "Using deprecated NumPy API, disable it with " \
+  ^~~~~~~
+In file included from /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/ndarraytypes.h:1822,
+                 from /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/ndarrayobject.h:12,
+                 from /home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/arrayobject.h:4,
+                 from /tmp/tmph28Sjx/src.linux-x86_64-2.7/fortranobject.h:13,
+                 from /tmp/tmph28Sjx/src.linux-x86_64-2.7/fort_kpt_toolsmodule.c:16:
+/home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include/numpy/npy_1_7_deprecated_api.h:17:2: warning: #warning "Using deprecated NumPy API, disable it with " "#define NPY_NO_DEPRECATED_API NPY_1_7_API_VERSION" [-Wcpp]
+ #warning "Using deprecated NumPy API, disable it with " \
+  ^~~~~~~
+/tmp/tmph28Sjx/src.linux-x86_64-2.7/fort_kpt_toolsmodule.c:109:12: warning: ‘f2py_size’ defined but not used [-Wunused-function]
+ static int f2py_size(PyArrayObject* var, ...)
+            ^~~~~~~~~
+compiling Fortran sources
+Fortran f77 compiler: /opt/intel/compilers_and_libraries_2019.5.281/linux/bin/intel64/ifort -FI -fPIC -fp-model strict -O1 -qopenmp 
+Fortran f90 compiler: /opt/intel/compilers_and_libraries_2019.5.281/linux/bin/intel64/ifort -FR -fPIC -fp-model strict -O1 -qopenmp 
+Fortran fix compiler: /opt/intel/compilers_and_libraries_2019.5.281/linux/bin/intel64/ifort -FI -fPIC -fp-model strict -O1 -qopenmp 
+compile options: '-I/tmp/tmph28Sjx/src.linux-x86_64-2.7 -I/home/uthpala/anaconda2/lib/python2.7/site-packages/numpy/core/include -I/home/uthpala/anaconda2/include/python2.7 -c'
+ifort:f77: fort_kpt_tools.f
+ifort: command line warning #10159: invalid argument for option '-fp-model'
+/opt/intel/compilers_and_libraries_2019.5.281/linux/bin/intel64/ifort -shared -shared -nofor_main /tmp/tmph28Sjx/tmp/tmph28Sjx/src.linux-x86_64-2.7/fort_kpt_toolsmodule.o /tmp/tmph28Sjx/tmp/tmph28Sjx/src.linux-x86_64-2.7/fortranobject.o /tmp/tmph28Sjx/fort_kpt_tools.o -L/home/uthpala/anaconda2/lib -lpython2.7 -o ./fort_kpt_tools.so
+Removing build directory /tmp/tmph28Sjx
+make[1]: Leaving directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/fort_kpt_tools'
+(cd ./dmft_ksum && make -f Makefile all )
+make[1]: Entering directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/dmft_ksum'
+mpiifort -O2 -xhost -o dmft_ksum_band dmft_ksum_band.f -L/opt/intel/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64/ -Wl,--start-group -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -Wl,--end-group -lpthread -lm
+mpiifort -O2 -xhost -o dmft_ksum_partial_band dmft_ksum_partial_band.f -L/opt/intel/compilers_and_libraries_2019.5.281/linux/mkl/lib/intel64/ -Wl,--start-group -lmkl_intel_lp64 -lmkl_sequential -lmkl_core -Wl,--end-group -lpthread -lm	
+make[1]: Leaving directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/dmft_ksum'
+(cd ./src/obj && make -f ../Makefile.2 dos)
+make[1]: Entering directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/src/obj'
+mpif90 ../dos.F90 -DMPI  -O2 dmft_ksum.o constants.o utility.o read_inputs.o generate_ham.o io.o generate_kpts.o comms.o tetrahedron.o -L/home/uthpala/lib  -llapack -lblas -o ../../dmft_dos.x
+make[1]: Leaving directory '/home/uthpala/Dropbox/git/DMFTwDFT/sources/src/obj'
+cp  *.x ../bin/
+cp  dmft_ksum/dmft_ksum_band ../bin/
+cp  dmft_ksum/dmft_ksum_partial_band ../bin/
+cp  fort_kpt_tools/fort_kpt_tools.so ../bin/

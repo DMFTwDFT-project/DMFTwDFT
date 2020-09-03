@@ -18,6 +18,7 @@ gutils.so
 maxent_routines.so
 siesta
 sources/src/obj/*
+sources/EDMFTF*
 
 #sphinx
 _build/
