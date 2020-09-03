@@ -82,7 +82,7 @@ DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Pr
 * skrams
 * maxent_routines.so
 
-If the automated compilation with setup.py is successful, these are found in``bin`` directory. 
+If the automated compilation with setup.py is successful, these are found in ``bin`` directory. 
 
 Wannier90 library
 -----------------
