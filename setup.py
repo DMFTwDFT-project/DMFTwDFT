@@ -73,7 +73,9 @@ def main(args):
     if all(result_array):
         print("Internal compilation complete.")
     else:
-        print("Internal compilation failed! Check internal.log for details.")
+        print(
+            "Internal compilation failed! Check internal.log for details. Make sure gfortran.make.inc or intel.make.inc in sources points to the correct libraries."
+        )
         sys.exit()
 
     # --------------- COMPILING EXTERNAL SOURCES -----------------------------
