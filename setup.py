@@ -42,10 +42,10 @@ def main(args):
     # Running the Makefile to compile internal sources.
     if compiler == "intel":
         print("Compiler : intel\n")
-        shutil.copy("./sources/intel.make.inc", "./sources/make.inc")
+        shutil.copy("./sources/make.inc.intel", "./sources/make.inc")
     elif compiler == "gfortran":
         print("Compiler : gfortran\n")
-        shutil.copy("./sources/gfortran.make.inc", "./sources/make.inc")
+        shutil.copy("./sources/make.inc.gfortran", "./sources/make.inc")
 
     print("Compiling internal sources...\n")
     cmd = "cd sources; make clean; make all > internal.log 2>&1 "
