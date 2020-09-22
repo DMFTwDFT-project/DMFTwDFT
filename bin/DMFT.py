@@ -92,7 +92,7 @@ class DMFTLauncher:
 
         # VASP calculation
         if self.dft == "vasp":
-            self.vasp_exec = "vaspDMFT"  # vasp executable
+            self.vasp_exec = "vasp_std"  # vasp executable
 
         # Siesta calculation
         elif self.dft == "siesta":

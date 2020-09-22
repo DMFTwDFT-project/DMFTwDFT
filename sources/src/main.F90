@@ -8,14 +8,14 @@
 ! Please cite XXXXX                                          !
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-program DMFTwDFT 
+program DMFTwDFT
   !!! main program
-  USE constants 
+  USE constants
   USE comms
   USE read_inputs
   USE generate_ham
   USE generate_kpts
-  USE dmft_ksum 
+  USE dmft_ksum
   USE tetrahedron
 
   implicit none
@@ -24,18 +24,18 @@ program DMFTwDFT
 
   call comms_setup
   !print *, "Hello world", my_node_id, num_nodes
-  call Read_wan_chk() 
-  call Read_wan_eig() 
+  call Read_wan_chk()
+  call Read_wan_eig()
 !  call Read_wan_amn()
-!  call get_tetra() 
-!  call Read_wan_damn_and_compute_dU() 
+!  call get_tetra()
+!  call Read_wan_damn_and_compute_dU()
   !call Compute_UNI_from_amn()
 !  STOP
-!  if (on_root) then
-!    call Read_wan_amn() 
-!!    call Check_Unitarity() 
-!    call Print_overlap() 
-!  endif
+  if (on_root) then
+    call Read_wan_amn()
+!    call Check_Unitarity()
+    call Print_overlap()
+  endif
 !  STOP
   call Read_sig_inp()
   call Read_dmft_params()

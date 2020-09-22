@@ -1,12 +1,13 @@
 TO USE THE CTQMC IMPURITY SOLVER:
 _________________________________
 
-In order to compile the ctqmc impurity solver user should access sources/impurity/ctqmc directory, and just type make inside this directory. You will need only C++ & gsl libraries. However, to compile you will need to edit a bit src/Makefile.in file. 
+In order to compile the ctqmc impurity solver user should access sources/impurity/ctqmc directory (part of EDMFT code)  and just type make inside this directory. You will need only C++ & gsl libraries. However, to compile you will need to edit a bit src/Makefile.in file. 
 
 You will need to set PC++, PFLAGS, PLIBS. For example, for MAC computer one would set:
 PC++ = mpicxx
 PFLAGS = -D_MPI -O3
 PLIBS = -framework Accelerate -lgsl -lgslcblas
+
 
 ctqmc citation:
 
@@ -16,4 +17,13 @@ ctqmc citation:
 
       Free energy implementation :
   [2] Kristjan Haule, Turan Birol, Phys. Rev. Lett. 115, 256402 (2015).
+
+
+
+Note:We are also using the other dependencies from the sources/impurity folder such as maxent_source, atomd, and skrams. These programs generate executables such as maxent_routine.so, gaunt.so, gutils.so, and skrams which should also copy the DMFTwDFT bin directory. However, we suggest users use the "setup.py" file to install the code that will automatically download and installs the internal and external programs. The setup.py file can be found in the DMFTwDFT main folder.
+
+
+
+
+
 

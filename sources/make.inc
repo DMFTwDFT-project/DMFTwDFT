@@ -3,8 +3,8 @@
 # For Linux with intel version 11/12 on 64bit machines
 #=====================================================
 F90 = ifort
-COMMS=mpi
-MPIF90=mpiifort
+#COMMS=mpi
+#MPIF90=mpiifort
 CMP = f2py --fcompiler=intelem # fortran to python converter
 
 FCOPTS=-O2 #-check 

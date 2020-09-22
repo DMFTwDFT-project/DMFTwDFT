@@ -14,5 +14,5 @@ LDOPTS=-O2
 # Blas and LAPACK
 #=======================
 
-LIBDIR = /home/uthpala/lib
+LIBDIR = /Users/uthpala/lib/ #/home/uthpala/lib
 LIBS = -L$(LIBDIR)  -llapack -lblas
