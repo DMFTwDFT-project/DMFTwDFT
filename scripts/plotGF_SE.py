@@ -34,7 +34,6 @@ gf_file = sorted(
 )[-1]
 
 with open(gf_file, "r") as f:
-    f.readline()
     lines = f.readlines()
     x = [float(line.split()[0]) for line in lines]
     y1_real = [float(line.split()[1]) for line in lines]  # eg
@@ -50,7 +49,7 @@ plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Re $G(i{\omega_n})$")
 plt.legend()
 plt.savefig("Gf_real.png")
-plt.show()
+#plt.show()
 
 plt.figure(2)
 plt.plot(x, y1_imag, label="eg")
@@ -60,7 +59,7 @@ plt.legend()
 plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Im $G(i{\omega_n})$")
 plt.savefig("Gf_imag.png")
-plt.show()
+#plt.show()
 f.close()
 
 # plotting Self-energies
@@ -69,7 +68,8 @@ se_file = sorted(
 )[-1]
 
 with open(se_file, "r") as f:
-    f.readline()
+    for i in range(5):
+        f.readline()
     lines = f.readlines()
     x = [float(line.split()[0]) for line in lines]
     y1_real = [float(line.split()[1]) for line in lines]  # eg
@@ -85,7 +85,7 @@ plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Re $\Sigma(i{\omega_n})$")
 plt.legend()
 plt.savefig("Selfenergy_real.png")
-plt.show()
+#plt.show()
 
 plt.figure(4)
 plt.plot(x, y1_imag, label="eg")
@@ -95,12 +95,13 @@ plt.legend()
 plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Im $\Sigma(i{\omega_n})$")
 plt.savefig("Selfenergy_imaginary.png")
-plt.show()
+#plt.show()
 f.close()
 
 # plotting analytically continued Self-energies
 with open("./ac/Sig.out", "r") as f:
-    f.readline()
+    for i in range(2):
+        f.readline()
     lines = f.readlines()
     x = [float(line.split()[0]) for line in lines]
     y1_real = [float(line.split()[1]) for line in lines]  # eg
@@ -117,7 +118,7 @@ plt.legend()
 plt.xlabel("$\omega$")
 plt.ylabel("Re $\Sigma(\omega})$")
 plt.savefig("RealSelf-EnergyAnalyticallycontinued.png")
-plt.show()
+#plt.show()
 
 plt.figure(6)
 plt.plot(x, y1_imag, label="eg")
@@ -128,5 +129,5 @@ plt.legend()
 plt.xlabel("$\omega$")
 plt.ylabel("Im $\Sigma(\omega})$")
 plt.savefig("Imaginary Self-Energy Analytically continued.png")
-plt.show()
+#plt.show()
 f.close()
