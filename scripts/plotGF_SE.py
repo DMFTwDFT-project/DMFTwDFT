@@ -21,7 +21,6 @@ Currently, this script is for correlated d-orbitals considering eg and t2g i.e.
 
 as set in INPUT.py. Please modify according to your requirements.
 
-- Uthpala Herath
 
 """
 

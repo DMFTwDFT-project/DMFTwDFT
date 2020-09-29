@@ -1,6 +1,7 @@
 *.pyc
 .DS_Store
 *.so
+*.mod
 vaspDMFT
 libdmft.a
 *.o
