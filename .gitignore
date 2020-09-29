@@ -3,6 +3,7 @@
 *.so
 *.mod
 vaspDMFT
+vaspDMFT*
 libdmft.a
 *.o
 wannier90.x
