@@ -20,6 +20,12 @@ To install execute::
 
 	pip install matplotlib numpy scipy weave mpi4py pyprocar pychemia
 
+NOTE:
+
+PyProcar is used as a support package to find the wannier window of the correlated orbitals. It's not necessary to be installed for DMFTwDFT.
+PyChemia is required for the Python 3 version of the code which is still under development. 
+For the Python 2 version this is not required. 
+
 Libraries:
 
 * GSL

@@ -81,6 +81,10 @@ Wannier90 as a community code: new features and applications, G. Pizzi et al., J
 Note: Users can download these external programs, as explained in the README file of each supported package folder (see folder DMFTwDFT-master/support-packages). For installation, we suggest users refer to this link: https://dmftwdft-project.github.io/DMFTwDFT/installation.html for more details. 
 OR Users can run the python script "setup.py" which will automatically download and install the internal as well as external programs.
 
+PyProcar is used as a support package to find the wannier window of the correlated orbitals. It's not necessary to be installed for DMFTwDFT.
+PyChemia is required for the Python 3 version of the code which is still under development. 
+For the Python 2 version this is not required. 
+
 
 
 Mailing list
