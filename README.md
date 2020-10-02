@@ -88,8 +88,10 @@ For the Python 2 version this is not required.
 
 
 Mailing list
---------------
-Coming soon...
+-------------
+Please post your questions on our forum.
+
+https://groups.google.com/d/forum/dmftwdft
 
 
 Changes
