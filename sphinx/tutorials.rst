@@ -10,6 +10,7 @@ To perform a DFT+DMFT calculation, the following files should be present within 
 
 	- VASP = {POSCAR, KPOINTS, POTCAR, INCAR}
 	- Siesta = {.fdf, .psf}
+	- QE = {.scf.in, .nscf.in, .pw2wannier90.in}
 	- QE (Aiida) = {aiida.amn, aiida.chk, aiida.eig, aiida.mmn, aiida.out, aiida.win}	
 
 Before you start remember to add the ``bin`` directory path in ``INPUT.py`` as the value for the key ``path_bin``.
@@ -61,6 +62,7 @@ E.g.: ::
 
 	$DMFT.py -dft vasp -relax -dmft
 	$DMFT.py -dft siesta -structurename SrVO3 -dmft
+	$DMFT.py -dft qe -structurename SrVO3 -dmft
 	$DMFT.py -dft qe -aiida -dmft -v
 	
 DMFT Post-processing

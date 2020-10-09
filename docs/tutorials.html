@@ -167,6 +167,7 @@ To perform a DFT+DMFT calculation, the following files should be present within 
 <div><ul class="simple">
 <li><p>VASP = {POSCAR, KPOINTS, POTCAR, INCAR}</p></li>
 <li><p>Siesta = {.fdf, .psf}</p></li>
+<li><p>QE = {.scf.in, .nscf.in, .pw2wannier90.in}</p></li>
 <li><p>QE (Aiida) = {aiida.amn, aiida.chk, aiida.eig, aiida.mmn, aiida.out, aiida.win}</p></li>
 </ul>
 </div></blockquote>
@@ -236,6 +237,7 @@ To get a description of its options, run:</p>
 <p>E.g.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>$DMFT.py -dft vasp -relax -dmft
 $DMFT.py -dft siesta -structurename SrVO3 -dmft
+$DMFT.py -dft qe -structurename SrVO3 -dmft
 $DMFT.py -dft qe -aiida -dmft -v
 </pre></div>
 </div>

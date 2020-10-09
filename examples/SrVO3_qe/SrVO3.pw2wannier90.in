@@ -1,0 +1,11 @@
+&inputpp
+	outdir = './'
+	prefix = 'SrVO3'
+	seedname = 'SrVO3'
+	spin_component = 'none'
+	write_mmn = .true.
+	write_amn = .true.
+	write_unk = .false.
+	write_dmn = .false.
+	wan_mode = 'standalone'
+/
