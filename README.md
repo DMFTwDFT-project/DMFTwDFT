@@ -22,6 +22,12 @@ Specifically, for the installation refer to the following documentation.
 
 https://dmftwdft-project.github.io/DMFTwDFT/installation.html
 
+Quick Install:
+
+Copy Makefile.in from the config directory for the desired compiler and do::
+
+  python setup.py {gfortran, intel}
+
 
 Developers
 -----------
@@ -57,6 +63,12 @@ BibTex:
 
 Thank you. 
 
+Mailing list
+-------------
+Please post your questions on our forum.
+
+https://groups.google.com/d/forum/dmftwdft
+
 Support packages
 ----------------
 We acknowledge the use of the following packages:
@@ -84,15 +96,6 @@ OR Users can run the python script "setup.py" which will automatically download 
 PyProcar is used as a support package to find the wannier window of the correlated orbitals. It's not necessary to be installed for DMFTwDFT.
 PyChemia is required for the Python 3 version of the code which is still under development. 
 For the Python 2 version this is not required. 
-
-
-
-Mailing list
--------------
-Please post your questions on our forum.
-
-https://groups.google.com/d/forum/dmftwdft
-
 
 Changes
 -------
