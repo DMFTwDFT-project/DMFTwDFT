@@ -24,8 +24,9 @@ from scipy import *
 from scipy import interpolate
 
 import Fileio
-import oreo
-import Re_wt
+
+# import oreo
+# import Re_wt
 import Struct
 from INPUT import *
 from splash import welcome

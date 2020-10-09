@@ -70,7 +70,6 @@ contains
     endif
   end subroutine generate_uniform_kmesh
 
-
   subroutine generate_dense_kmesh(n_kpts_loc,kpt_dft,wght_dft)
     use constants
     use io

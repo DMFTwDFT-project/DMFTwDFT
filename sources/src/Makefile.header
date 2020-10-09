@@ -1,4 +1,4 @@
-OBJS  =  dmft_ksum.o constants.o utility.o read_inputs.o generate_ham.o io.o generate_kpts.o comms.o tetrahedron.o
+OBJS  =  dmft_ksum.o constants.o utility.o read_inputs.o generate_ham.o io.o generate_kpts.o comms.o
 
 OBJSLIB  =  dmft_lib.o
 
