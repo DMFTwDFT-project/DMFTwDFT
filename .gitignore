@@ -22,6 +22,7 @@ siesta
 sources/src/obj/*
 sources/EDMFTF*
 *.log
+make.inc
 
 #sphinx
 _build/
