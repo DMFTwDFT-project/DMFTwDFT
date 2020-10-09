@@ -99,8 +99,11 @@ module comms
 !     module procedure comms_allreduce_int    ! to be done
     module procedure comms_allreduce_real
     module procedure comms_allreduce_real2
+    module procedure comms_allreduce_real3
+    module procedure comms_allreduce_real4
     module procedure comms_allreduce_cmplx2
     module procedure comms_allreduce_cmplx3
+!    module procedure comms_allreduce_cmplx4
     module procedure comms_allreduce_cmplx
   end interface comms_allreduce
 
@@ -873,6 +876,7 @@ contains
 
   end subroutine comms_reduce_cmplx3
 
+
   subroutine comms_allreduce_real2(array, size1,size2, op)
     !! Reduce complex data to all nodes
     implicit none
@@ -916,6 +920,94 @@ contains
     return
 
   end subroutine comms_allreduce_real2
+
+  subroutine comms_allreduce_real3(array, size1,size2,size3, op)
+    !! Reduce complex data to all nodes
+    implicit none
+
+    real(kind=dp), intent(inout) :: array(:,:,:)
+    integer, intent(in)    :: size1,size2,size3
+    integer :: size
+    character(len=*), intent(in) :: op
+
+#ifdef MPI
+    integer :: error, ierr
+
+    real(kind=dp), allocatable :: array_red(:,:,:)
+
+    size=size1*size2*size3
+    allocate (array_red(size1,size2,size3), stat=ierr)
+    if (ierr /= 0) then
+      call io_error('failure to allocate array_red in comms_allreduce_cmplx')
+    end if
+
+    select case (op)
+
+    case ('SUM')
+      call MPI_allreduce(array, array_red, size, MPI_double_precision, MPI_sum, mpi_comm_world, error)
+    case ('PRD')
+      call MPI_allreduce(array, array_red, size, MPI_double_precision, MPI_prod, mpi_comm_world, error)
+    case default
+      call io_error('Unknown operation in comms_allreduce_real')
+
+    end select
+
+    call dcopy(size, array_red, 1, array, 1)
+
+    if (error .ne. MPI_success) then
+      call io_error('Error in comms_allreduce_real')
+    end if
+
+    if (allocated(array_red)) deallocate (array_red)
+#endif
+
+    return
+
+  end subroutine comms_allreduce_real3
+
+  subroutine comms_allreduce_real4(array, size1,size2,size3,size4, op)
+    !! Reduce complex data to all nodes
+    implicit none
+
+    real(kind=dp), intent(inout) :: array(:,:,:,:)
+    integer, intent(in)    :: size1,size2,size3,size4
+    integer :: size
+    character(len=*), intent(in) :: op
+
+#ifdef MPI
+    integer :: error, ierr
+
+    real(kind=dp), allocatable :: array_red(:,:,:,:)
+
+    size=size1*size2*size3*size4
+    allocate (array_red(size1,size2,size3,size4), stat=ierr)
+    if (ierr /= 0) then
+      call io_error('failure to allocate array_red in comms_allreduce_cmplx')
+    end if
+
+    select case (op)
+
+    case ('SUM')
+      call MPI_allreduce(array, array_red, size, MPI_double_precision, MPI_sum, mpi_comm_world, error)
+    case ('PRD')
+      call MPI_allreduce(array, array_red, size, MPI_double_precision, MPI_prod, mpi_comm_world, error)
+    case default
+      call io_error('Unknown operation in comms_allreduce_real')
+
+    end select
+
+    call dcopy(size, array_red, 1, array, 1)
+
+    if (error .ne. MPI_success) then
+      call io_error('Error in comms_allreduce_real')
+    end if
+
+    if (allocated(array_red)) deallocate (array_red)
+#endif
+
+    return
+
+  end subroutine comms_allreduce_real4
 
   subroutine comms_allreduce_cmplx2(array, size1,size2, op)
     !! Reduce complex data to all nodes
@@ -1004,6 +1096,50 @@ contains
     return
 
   end subroutine comms_allreduce_cmplx3
+
+  subroutine comms_allreduce_cmplx4(array, size1,size2,size3,size4, op)
+    !! Reduce complex data to all nodes
+    implicit none
+
+    complex(kind=dp), intent(inout) :: array(:,:,:,:)
+    integer, intent(in)    :: size1,size2,size3,size4
+    integer :: size
+    character(len=*), intent(in) :: op
+
+#ifdef MPI
+    integer :: error, ierr
+
+    complex(kind=dp), allocatable :: array_red(:,:,:,:)
+
+    size=size1*size2*size3*size4
+    allocate (array_red(size1,size2,size3,size4), stat=ierr)
+    if (ierr /= 0) then
+      call io_error('failure to allocate array_red in comms_reduce_cmplx')
+    end if
+
+    select case (op)
+
+    case ('SUM')
+      call MPI_allreduce(array, array_red, size, MPI_double_complex, MPI_sum, root_id, mpi_comm_world, error)
+    case ('PRD')
+      call MPI_allreduce(array, array_red, size, MPI_double_complex, MPI_prod, root_id, mpi_comm_world, error)
+    case default
+      call io_error('Unknown operation in comms_reduce_cmplx')
+
+    end select
+
+    call zcopy(size, array_red, 1, array, 1)
+
+    if (error .ne. MPI_success) then
+      call io_error('Error in comms_reduce_cmplx')
+    end if
+
+    if (allocated(array_red)) deallocate (array_red)
+#endif
+
+    return
+
+  end subroutine comms_allreduce_cmplx4
 
   subroutine comms_allreduce_cmplx(array, size, op)
     !! Reduce complex data to all nodes
