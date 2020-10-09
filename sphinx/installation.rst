@@ -36,7 +36,6 @@ If not using intel compilers the following libraries should be installed:
 * BLAS
 * FFTW
 
-The executables of the DFT codes (vasp_std, siesta etc.) should be globally accessible. 
 
 The structure of the directories is as follows. ::
 
@@ -60,8 +59,8 @@ The following section describes the procedure to compile the different componene
 Compiling sources
 -----------------
 
-First copy a desired ``Makefile.in`` version in the **config** directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries.
-Similarly, in the **sources** directory copy intel.make.inc or gfortran.make.inc to make.inc. 
+First copy a desired ``Makefile.in`` version in the **config** directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries (default: /usr/local/bin).
+Similarly, in the **sources** directory modify intel.make.inc or gfortran.make.inc accordingly. 
 
 To compile, execute::
 
@@ -107,16 +106,18 @@ The above compilation also generates ``libdmft.a`` which can be used to link DMF
 
 1. Generate libdmft.a by the Compiling sources code that will  be needed to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. 
 
-2. Before modifying the source code of VASP, we first need to install the VASP as it is. The user should follow the VASP installation instructions from the VASP web site.
-
-3. Copy modified/required VASP files such as charge.F  electron.F  main.F  mlwf.F  us.F from the sources/CSC-mods directory to the VASP source directory.
-
-4. Change the VASP makefile file. Specify libraries and/or objects to be linked against, in the usual ways::
+2. Change the VASP makefile.include file. Specify libraries and/or objects to be linked against, in the usual ways::
 
 	LLIBS += -Lparser -lparser -lstdc++ /home/uthpala/wannier90/wannier90-1.2/libwannier.a
          /home/uthpala/Dropbox/git/DMFTwDFT/sources/libdmft.a
 
-5. Finally, recompile VASP. Then rename this vasp executable to ``vaspDMFT`` and copy it to the DMFTwDFT/bin directory.
+3. Before modifying the source code of VASP, we first need to install the VASP as it is. The user should follow the VASP installation instructions from the VASP web site.
+
+4. First copy the modified mlwf.F VASP file from the sources/CSC-mods directory to the VASP source directory and install the VASP again. This step will create some dependenices for next step.
+
+5. Next, copy the other modified/required VASP files such as charge.F,  electron.F,  main.F, and us.F from the sources/CSC-mods directory to the VASP source directory.
+
+6. Finally, recompile VASP. Then rename this vasp executable to vaspDMFT and copy it to teh DMFTwDFT/bin directory.
 
 More information on the library mode can be found in the :ref:`labellibrary` section.
 
