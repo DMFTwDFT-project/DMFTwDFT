@@ -241,7 +241,8 @@ Similarly, in the <strong>sources</strong> directory modify intel.make.inc or gf
 </div>
 <div class="section" id="wannier90-library">
 <h2>Wannier90 library<a class="headerlink" href="#wannier90-library" title="Permalink to this headline">¶</a></h2>
-<p>DMFTwDFT requires <code class="docutils literal notranslate"><span class="pre">wannier90.x</span></code> and <code class="docutils literal notranslate"><span class="pre">w90chk2chk.x</span></code> to be in the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory. You can get them from <a class="reference external" href="http://www.wannier.org/">http://www.wannier.org/</a>. VASP should be recompiled with the Wannier90 library.</p>
+<p>DMFTwDFT requires <code class="docutils literal notranslate"><span class="pre">wannier90.x</span></code> and <code class="docutils literal notranslate"><span class="pre">w90chk2chk.x</span></code> to be in the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory. You can get them from <a class="reference external" href="http://www.wannier.org/">http://www.wannier.org/</a>. VASP should be recompiled with the Wannier90 library.
+NOTE: w90chk2chk.x seems to be problematic with wannier90 v 3.0+. Tested successfully with v 2.1.0.</p>
 </div>
 <div class="section" id="path-variables">
 <h2>PATH variables<a class="headerlink" href="#path-variables" title="Permalink to this headline">¶</a></h2>

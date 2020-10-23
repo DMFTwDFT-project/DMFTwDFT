@@ -93,6 +93,7 @@ Wannier90 library
 -----------------
 
 DMFTwDFT requires ``wannier90.x`` and ``w90chk2chk.x`` to be in the ``bin`` directory. You can get them from `<http://www.wannier.org/>`_. VASP should be recompiled with the Wannier90 library.
+NOTE: w90chk2chk.x seems to be problematic with wannier90 v 3.0+. Tested successfully with v 2.1.0.
 
 PATH variables
 --------------
