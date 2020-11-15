@@ -8,8 +8,8 @@ It calculates the total number of electrons in the Wannier manifold.
 This is an initial requirement to perform DMFT calculations with DMFTwDFT.
 
 This requires that the DMFTwDFT/bin directory is added to $PYTHONPATH.
-
-- Uthpala Herath
+It takes the atomnames, orbs, cor_at and cor_orb from INPUT.py.
+Also requires the DFT input files to be present.
 
 """
 
@@ -501,7 +501,7 @@ class ElectronOccupation:
 
             occ = self.Integration(dos[:speI, :]) + occ
         print("Total electron occupancy in Wannier manifold : %s" % occ)
-        np.savetxt("occupancy.out",[occ],fmt="%10.5f")
+        np.savetxt("occupancy.out", [occ], fmt="%10.5f")
 
 
 if __name__ == "__main__":
