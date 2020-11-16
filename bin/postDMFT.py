@@ -454,7 +454,7 @@ class PostProcess:
         # it will sum up the total contributions
         for i0 in range(len(p["cor_at"])):
             for i in range(len(p["cor_at"][0])):
-                # egj
+                # eg
                 eg_index.append(icounter_eg)
                 eg_index.append(icounter_eg + 6)
                 icounter_eg = icounter_eg + 10
@@ -472,6 +472,10 @@ class PostProcess:
             icounter_p = t2g_index[-1] + 2
             for i in range(icounter_p, num_columns, 2):
                 p_index.append(i)
+
+        print("eg_index : %s" % eg_index)
+        print("t2g_index : %s" % t2g_index)
+        print("p_index : %s" % p_index)
 
         if args.sp == False:
             print("Plotting DOS...")
