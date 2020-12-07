@@ -283,9 +283,11 @@ if __name__ == "__main__":
                     print out  # , err
                     cmd = "cp UC.dat UC" + str(i + 1) + ".dat"
                     print os.popen(cmd).read()
+
             #
 
             if it == 0:
+
                 DMFT.EKIN0 = 0
                 print ("Running XHF0...")
                 cmd = (
@@ -297,6 +299,7 @@ if __name__ == "__main__":
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
+
                 fiEKIN = open("INFO_KSUM", "r")
                 lines = fiEKIN.readlines()
                 DMFT.EKIN0 = float(lines[-1].split()[4])

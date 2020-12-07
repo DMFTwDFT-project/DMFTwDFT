@@ -301,7 +301,7 @@ class DMFT_class:
         #      if nspin==2: self.SigMdc_dn=zeros(TB.ncor_orb,dtype=float)
 
         # For dc type = 3
-        self.Nf = [0.5]
+        self.Nf = p["nf"]
 
         for i, ats in enumerate(self.cor_at):
             d_orb = TB.TB_orbs[ats[0]]
@@ -317,7 +317,6 @@ class DMFT_class:
             self.Sigoo[i, : 2 * len(d_orb)] = dot(UC, OCC)
             OCC = Compute_OCC(self.N_imp[i], self.MOM_imp[i], d_orb)
             self.Sigoo_imp[i, : 2 * len(d_orb)] = dot(UC, OCC)
-
 
             ###### Compute VDC & EDC #######
             if dc_type == 1:
