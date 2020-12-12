@@ -60,7 +60,6 @@ Compiling sources
 -----------------
 
 First copy a desired ``Makefile.in`` version in the **config** directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries (default: /usr/local/bin).
-Similarly, in the **sources** directory modify intel.make.inc or gfortran.make.inc accordingly. 
 
 To compile, execute::
 
@@ -75,6 +74,8 @@ This should compile the follwing executables and libraries and copy them to the 
 * dmft_ksum_band - Performs band structure calculation. 
 * dmft_ksum_partial_band - Performs projected band structure calculation. 
 * fort_kpt_tools.so - Fortran based k-points calculation module.
+
+If you want to install them manually, you may do so inside the **sources** directory by modifying gfortran.make.inc or intel.make.inc and renaming it as make.inc.
 
 External libraries and executables
 ----------------------------------

@@ -1,6 +1,6 @@
 #----------- DMFTwDFT external libraries setup ------------------------------
 #
-# COMPILER : INTEL
+# COMPILER : GFORTRAN
 #
 # This Makefile compiles the required libraries from Professor Kristjan
 # Haule's EDMFTF code to run DMFTwDFT.
@@ -20,23 +20,24 @@
 # PLIBS = -framework Accelerate -lgsl -lgslcblas
 
 #===========================================================================
+
 #------------- SERIAL VERSION ----------------------------------------------
-F90 = ifort
-F77 = ifort
-C++ = icpc
-CC  = icc
+F90 = gfortran
+F77 = gfortran
+C++ = g++
+CC  = gcc
 
 OPENMP = -fopenmp
-FFLAGS = -O2  -free -no-prec-div -pc80 $(OPENMP)
+FFLAGS = -O2  -ffree-form -ffree-line-length-none $(OPENMP)
 OFLAGS = -O2
 
-LALIB  =  -mkl
+LALIB  =  -L/usr/lib/ -lblas -llapack
 FFTLIB =  -lfftw3_omp -lfftw3
-FFTINC =   -I/usr/include
-GSLLIB =  -lgslcblas -lgsl
-GSLINC =   -I/usr/include
+FFTINC =  -I/usr/include
+GSLLIB =  -L/usr/lib/ -lgsl
+GSLINC =
 PIC    =  -fPIC
-WFOPT  = -O2  -free -no-prec-div -pc80 $(OPENMP)  $(FFTINC)
+WFOPT  = -O2  -ffree-form -ffree-line-length-none $(OPENMP)  $(FFTINC)
 WLIBS   = $(FFTLIB)  $(LALIB)
 F2PL =
 
@@ -45,9 +46,9 @@ F2PY_LAPACK = --link-lapack_opt
 #------------- PARALLEL VERSION --------------------------------------------
 Fmpi_define =  -D_MPI
 
-PF90 = mpiifort
-PC++ = mpiicpc
-PCC  = mpiicc
+PF90 = mpif90
+PC++ = mpicxx
+PCC  = mpicc
 
 PFLAGS   = -D_MPI -DMPICH_IGNORE_CXX_SEEK -O3 #-restrict -ipo -no-prec-div
 
@@ -55,8 +56,8 @@ LLIBS = $(LALIB)
 PLIBS = $(LLIBS) $(GSLLIB)
 
 #
-CMP = f2py --opt='-O2'  --fcompiler=intelem   # fortran to python converter
-CMPLIBS  = --f90flags='-fopenmp ' --opt='-fast' --opt='-fast'  --link-lapack_opt
+CMP = f2py --opt='-O2' --fcompiler=gnu95   # fortran to python converter
+CMPLIBS  = --f90flags='-openmp ' --link-lapack_opt
 CMPLIBS2 = --f90flags=' $(OPENMP) ' $(CMPLIBS)
 #
 

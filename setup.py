@@ -20,6 +20,7 @@ import tarfile
 import glob
 import argparse
 from argparse import RawTextHelpFormatter
+from re import findall
 
 sys.path.insert(1, "./bin")
 import splash
@@ -46,6 +47,20 @@ def main(args):
     elif compiler == "gfortran":
         print("Compiler : gfortran\n")
         shutil.copy("./sources/gfortran.make.inc", "./sources/make.inc")
+
+        # Read LALIB from Makefile.in for lapack and blas library location
+        # and append it to LIBS in make.inc.
+
+        fp = open("Makefile.in","r")
+        data = fp.read()
+        fp.close()
+
+        lalib = findall(r"LALIB\s*=\s*([-a-zA-Z\s\/]*)\n",data)
+        libs = "LIBS += " + str(lalib[0])
+
+        fo = open('./sources/make.inc', 'a')
+        fo.write(libs)
+        fo.close()
 
     print("Compiling internal sources...\n")
     cmd = "cd sources; make clean; make all > internal.log 2>&1 "

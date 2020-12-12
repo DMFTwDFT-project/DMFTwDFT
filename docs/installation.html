@@ -1,8 +1,7 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
@@ -12,12 +11,18 @@
   
 
   
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
   
   
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -25,15 +30,11 @@
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
         <script src="_static/language_data.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorials" href="tutorials.html" />
@@ -51,7 +52,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> DMFTwDFT
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> DMFTwDFT
           
 
           
@@ -74,6 +75,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -99,6 +101,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -137,7 +140,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Installation</li>
     
@@ -211,8 +214,7 @@ For the Python 2 version this is not required.</p>
 <p>The following section describes the procedure to compile the different componenets required to run DMFTwDFT. Once the executables and libraries have been compiled, they should be inside the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory.</p>
 <div class="section" id="compiling-sources">
 <h2>Compiling sources<a class="headerlink" href="#compiling-sources" title="Permalink to this headline">¶</a></h2>
-<p>First copy a desired <code class="docutils literal notranslate"><span class="pre">Makefile.in</span></code> version in the <strong>config</strong> directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries (default: /usr/local/bin).
-Similarly, in the <strong>sources</strong> directory modify intel.make.inc or gfortran.make.inc accordingly.</p>
+<p>First copy a desired <code class="docutils literal notranslate"><span class="pre">Makefile.in</span></code> version in the <strong>config</strong> directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries (default: /usr/local/bin).</p>
 <p>To compile, execute:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="o">&lt;</span><span class="n">compiler</span><span class="o">&gt;</span>
 </pre></div>
@@ -226,6 +228,7 @@ Similarly, in the <strong>sources</strong> directory modify intel.make.inc or gf
 <li><p>dmft_ksum_partial_band - Performs projected band structure calculation.</p></li>
 <li><p>fort_kpt_tools.so - Fortran based k-points calculation module.</p></li>
 </ul>
+<p>If you want to install them manually, you may do so inside the <strong>sources</strong> directory by modifying gfortran.make.inc or intel.make.inc and renaming it as make.inc.</p>
 </div>
 <div class="section" id="external-libraries-and-executables">
 <h2>External libraries and executables<a class="headerlink" href="#external-libraries-and-executables" title="Permalink to this headline">¶</a></h2>
@@ -288,11 +291,19 @@ NOTE: w90chk2chk.x seems to be problematic with wannier90 v 3.0+. Tested success
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, The DMFTwDFT Project
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -303,7 +314,6 @@ NOTE: w90chk2chk.x seems to be problematic with wannier90 v 3.0+. Tested success
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
