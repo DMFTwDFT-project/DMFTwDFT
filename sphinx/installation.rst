@@ -59,7 +59,7 @@ The following section describes the procedure to compile the different componene
 Compiling sources
 -----------------
 
-First copy a desired ``Makefile.in`` version in the **config** directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries (default: /usr/local/bin).
+First copy a desired ``Makefile.in`` version in the **config** directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries (default: /usr/local/lib).
 
 To compile, execute::
 
