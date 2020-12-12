@@ -15,4 +15,3 @@ LDOPTS=-O2
 
 LIBDIR = /usr/local/lib/ 
 LIBS = -L$(LIBDIR)  -llapack -lblas
-LIBS += -L/usr/lib/ -lblas -llapack
