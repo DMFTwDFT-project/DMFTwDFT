@@ -55,7 +55,7 @@ def main(args):
         data = fp.read()
         fp.close()
 
-        lalib = findall(r"LALIB\s*=\s*([-a-zA-Z0-9\s\/]*)\n",data)
+        lalib = findall(r"LALIB\s*=\s*([-_.a-zA-Z0-9\s\/]*)\n",data)
         libs = "LIBS += " + str(lalib[0])
 
         fo = open('./sources/make.inc', 'a')
