@@ -31,7 +31,7 @@ OPENMP = -fopenmp
 FFLAGS = -O2  -ffree-form -ffree-line-length-none $(OPENMP)
 OFLAGS = -O2
 
-LALIB  =  -L/usr/lib/ -lblas -llapack
+LALIB  =  -lblas -llapack
 FFTLIB =  -lfftw3_omp -lfftw3
 FFTINC =  -I/usr/include
 GSLLIB =  -L/usr/lib/ -lgsl

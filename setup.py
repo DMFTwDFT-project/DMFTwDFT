@@ -89,7 +89,7 @@ def main(args):
         print("Internal compilation complete.")
     else:
         print(
-            "Internal compilation failed! Check internal.log for details. Make sure gfortran.make.inc or intel.make.inc in sources points to the correct libraries."
+            "Internal compilation failed! Check internal.log for details. Make sure Makefile.in points to the correct lapack, blas and gsl libraries. You can try to install internal sources manually within the sources directory by modifying make.inc"
         )
         sys.exit()
 
