@@ -9,7 +9,7 @@ p = {
     "Ndft": 1,  # Number of DFT iterations
     "Nit": 2,  # Number of DMFT iterations
     "n_tot": 19,  # Number of total electrons
-    "nf": 8.0,  # Number of target Nd
+    "nf": 1.0,  # Number of target Nd
     "nspin": 1,  # Number of total spins
     "atomnames": ["V", "O"],  # The name of atoms
     "orbs": ["d", "p"],  # The name  of orbitals

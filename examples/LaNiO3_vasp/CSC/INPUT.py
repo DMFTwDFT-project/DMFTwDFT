@@ -7,8 +7,8 @@ p = {"Niter":     30,               # Number of DFT+DMFT iterations
      "Ndft":      10,               # Number of DFT iterations
      "Nit":       1,               # Number of DMFT iterations
      "n_tot":     50.0,            # Number of total electrons
-     "nf":        8.0,            # Number of target Nd 
-     "nspin":     1,            # Number of total spins 
+     "nf":        7.0,            # Number of target Nd
+     "nspin":     1,            # Number of total spins
      "atomnames": ['Ni','O'],       # The name of atoms
      "orbs"     : ['d','p'],       # The name  of orbitals
      "L_rot"    : [1,0],           # Whether rotate local axis or not
@@ -18,7 +18,7 @@ p = {"Niter":     30,               # Number of DFT+DMFT iterations
      "J":         [1.0],            # Hund's coupling
      "alpha":     [0.2],            # Double counting parameter
      "mix_sig":   0.2,              # Mixing parameter for Sigma
-     "q":         [24,24,24],       # Number of k-points for Wannier k-sum 
+     "q":         [24,24,24],       # Number of k-points for Wannier k-sum
      "ewin":      [-8,3.1],           # Energy Window with respect to Fermi energy
      "noms":      400,            # Number of Matsubara frequencies for k-sum
      "dc_type":   1,              # Vdc type
@@ -44,7 +44,7 @@ pC = {"exe":         ["ctqmc",                     "# Name of impurity solver"],
 
 ##### VASP parameters ########
 pV = {"System=":     ["LaNuO3",       "# The name of system"],
-      "ENCUT=":      [600.0,                 "# Energy cutoff"], 
+      "ENCUT=":      [600.0,                 "# Energy cutoff"],
       "ISPIN=":      [1,               "#ISPIN"],
       "NBANDS=":     [72,                     "# LMAX"],
       "LMAXMIX=":    [4,             "#LMAX"],
@@ -54,7 +54,7 @@ pV = {"System=":     ["LaNuO3",       "# The name of system"],
       "ISMEAR=":      [-5,                    "# ISMEAR"],
       "ADDGRID=":    [".TRUE.",             "#GGA"],
       "LWANNIER90=":      [".TRUE.",                    "# ISMEAR"],
-     } 
+     }
 
 ############## CIX parameters ###########
 pD = {"para="     : 1,

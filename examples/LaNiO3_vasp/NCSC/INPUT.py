@@ -7,7 +7,7 @@ p = {"Niter":     1,               # Number of DFT+DMFT iterations
      "Ndft":      1,               # Number of DFT iterations
      "Nit":       15,               # Number of DMFT iterations
      "n_tot":     50.0,            # Number of total electrons
-     "nf":        8.0,            # Number of target Nd 
+     "nf":        7.0,            # Number of target Nd 
      "nspin":     1,            # Number of total spins 
      "atomnames": ['Ni','O'],       # The name of atoms
      "orbs"     : ['d','p'],       # The name  of orbitals
