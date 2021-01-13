@@ -1,7 +1,7 @@
 !------------------------------------------------------------!
 !------------------------------------------------------------!
 
-module read_inputs
+module read_inputs 
   !! This module contains parameters to control the actions of wannier90.
   !! Also routines to read the parameters and write them out again.
 
@@ -19,16 +19,16 @@ module read_inputs
   real(kind=dp), allocatable, save :: Sigoo(:)
   real(kind=dp), allocatable, save :: om(:)
   integer, allocatable, save :: sym_idx(:,:,:)
-  real(kind=dp), save :: T  ! Temperature
-  real(kind=dp), save :: n_elec  ! Total number of electrons
+  real(kind=dp), save :: T  ! Temperature 
+  real(kind=dp), save :: n_elec  ! Total number of electrons 
   integer, save :: nspin  ! number of spins
-  integer, save :: noms    ! number of small omega points
+  integer, save :: noms    ! number of small omega points 
   integer, save :: nom    ! number of total omega points
   integer, save :: mu_iter    ! number of iteration
   integer, save :: nR     ! number of real R vectors
   integer, save :: num_bands ! number of bands
   integer, save :: qx,qy,qz ! number of k-points
-  integer, save :: num_tot_bands
+  integer, save :: num_tot_bands 
   integer, save :: num_wann
   integer, save :: num_orb
   integer, save :: ncor_orb
@@ -36,17 +36,21 @@ module read_inputs
   integer, save :: n_atoms ! number of correlated atoms
   integer, save :: n_orbs ! number of correlated orbitals/atom
   integer, save :: mp_grid(3)
-  logical, save :: lforce
+  logical, save :: lforce 
   real(kind=dp),allocatable, save :: kpt_latt(:,:)
+  integer,allocatable, save :: ikpt(:,:) !index of kpoints 
+  real(kind=dp), save :: real_latt(3,3)
+  real(kind=dp), save :: recip_latt(3,3)
   real(kind=dp),allocatable, save :: eigvals(:,:)
   real(kind=dp),allocatable, save :: deig(:,:)
   integer, allocatable, save :: band_win(:,:)
   real(kind=dp), save :: mu
+  real(kind=dp), save :: mu_DFT
   real(kind=dp), save :: broaden
-
+  
 
 contains
-
+ 
   subroutine Read_wan_chk()
 
     use constants, only: cmplx_0,eps6
@@ -61,7 +65,8 @@ contains
     integer :: num_exclude_bands,  nntot
 
     integer :: num_band_max, nbmin, nbmax, ierr
-    real(kind=dp) :: real_latt(3,3), recip_latt(3,3),sweight, omega_invariant
+    !real(kind=dp) :: real_latt(3,3), recip_latt(3,3),
+    real(kind=dp) :: sweight, omega_invariant
     integer :: i,j,k, nb, nbb, IP, IPP, JJ, KK, nkp
     logical,allocatable:: lwindow(:,:), lexclude_band(:)
     integer,allocatable:: ndimwin(:), excl_bands(:)
@@ -95,7 +100,7 @@ contains
        read(20) ((kpt_latt(i,nkp),i=1,3),nkp=1,num_kpts)
        read(20) nntot                ! nntot
        read(20) num_wann                ! num_wann
-       !if
+       !if 
        read(20) checkpoint             ! checkpoint
        read(20) have_disentangled      ! whether a disentanglement has been performed
        if (have_disentangled) then
@@ -119,8 +124,24 @@ contains
           endif
           read(20) (((u_matrix_opt(i,j,nkp),i=1,num_bands),j=1,num_wann),nkp=1,num_kpts)
        else
-          write(*,*) 'No U_matrix_opt ? Probably set identity'
-          STOP
+          !write(*,*) 'No U_matrix_opt ? Probably set identity'
+          !STOP
+          if (.not. allocated(lwindow)) then
+            allocate (lwindow(num_bands, num_kpts), stat=ierr)
+            if (ierr /= 0) call io_error('Error allocating lwindow in Read_wan_chk')
+          endif
+          if (.not. allocated(u_matrix_opt)) then
+            allocate (u_matrix_opt(num_bands,num_wann,num_kpts), stat=ierr)
+            if (ierr /= 0) call io_error('Error allocating u_matrix_opt in Read_wan_chk')
+          endif
+          do nkp=1,num_kpts
+            do j=1, num_bands
+              lwindow(j,nkp)=.TRUE.
+              do i=1, num_wann
+                if (i.eq.j) u_matrix_opt(j,i,nkp)=1.0
+              enddo
+            enddo
+          enddo 
        endif
         ! U_matrix
        if (.not. allocated(u_matrix)) then
@@ -131,8 +152,16 @@ contains
        close(20)
     endif
 
-    num_tot_bands=num_exclude_bands+num_bands
+    if (.not. allocated(ikpt)) then
+      allocate (ikpt(3,num_kpts), stat=ierr)
+      if (ierr /= 0) call io_error('Error allocating ikpt')
+    endif
+    do i=1,num_kpts
+       ikpt(:,i)=(/ MODULO(NINT(kpt_latt(1,i)*mp_grid(1)-0.25),mp_grid(1)),MODULO(NINT(kpt_latt(2,i)*mp_grid(2)-0.25),mp_grid(2)),MODULO(NINT(kpt_latt(3,i)*mp_grid(3)-0.25),mp_grid(3)) /)
+    enddo
 
+    num_tot_bands=num_exclude_bands+num_bands
+    
     if (.not. allocated(lexclude_band)) then
       allocate (lexclude_band(num_tot_bands), stat=ierr)
       if (ierr /= 0) call io_error('Error allocating lexclude_band in Read_wan_chk')
@@ -148,18 +177,19 @@ contains
     endif
     num_band_max=1
     DO nkp=1,num_kpts
-      IP=0;IPP=0;nbmin=num_tot_bands;nbmax=1;
+      IP=0;IPP=0;nbmin=num_bands;nbmax=1;
       DO nb=1,num_tot_bands
         IF (lexclude_band(nb)) CYCLE
         IP=IP+1
         IF (.NOT.lwindow(IP,nkp)) CYCLE
         IPP=IPP+1
-        IF (nb<nbmin) nbmin=nb
-        IF (nb>nbmax) nbmax=nb
+        IF (IP<nbmin) nbmin=IP
+        IF (IP>nbmax) nbmax=IP
       ENDDO
       band_win(1,nkp)=nbmin;band_win(2,nkp)=nbmax
       IF (num_band_max<nbmax-nbmin+1) num_band_max=nbmax-nbmin+1
     ENDDO
+!    write(*,*) band_win 
     if (.not. allocated(UMatrix)) then
       allocate (UMatrix(num_bands,num_wann,num_kpts), stat=ierr)
       if (ierr /= 0) call io_error('Error allocating UMatrix in Read_wan_chk')
@@ -168,7 +198,6 @@ contains
     DO nkp=1,num_kpts
       UMatrix(:,:,nkp)=MATMUL(u_matrix_opt(:,:,nkp),u_matrix(:,:,nkp))
     ENDDO
-    !write(*,*) band_win
     !write(*,*) UMatrix(:,1,1)
     !write(*,*) num_kpts
     if (allocated(excl_bands)) deallocate (excl_bands)
@@ -177,14 +206,14 @@ contains
     if (allocated(u_matrix_opt)) deallocate (u_matrix_opt)
     if (allocated(u_matrix)) deallocate (u_matrix)
     !if (allocated(band_win)) deallocate (band_win)
-
-
+    
+    
   end subroutine Read_wan_chk
 
   subroutine Compute_UNI_from_amn()
     use constants, only: dp, cmplx_0
     use io, only: io_error, io_file_unit, stdout, seedname
-    use utility
+    use utility 
 
     implicit none
 
@@ -192,7 +221,7 @@ contains
     logical :: iffile
     integer :: nkp,nbmin,nbmax,num_band_max,ierr,N,M,L
     complex(kind=dp), allocatable :: cz(:,:), cvdag(:,:), UNI_mat(:,:,:), UNI_loc(:,:)
-    real(kind=dp), allocatable :: evalue(:)
+    real(kind=dp), allocatable :: evalue(:) 
 
     if (.not. allocated(UNI_mat)) then
       allocate (UNI_mat(num_wann,num_wann,num_kpts), stat=ierr)
@@ -215,7 +244,7 @@ contains
        enddo
        close(30)
     endif
-
+    
 
     !UMatrix=cmplx_0
     DO nkp=1,num_kpts
@@ -228,45 +257,52 @@ contains
       allocate(evalue(num_wann))
       allocate(cz(num_band_max,num_band_max))
       allocate(cvdag(num_wann,num_wann))
-
+      
       call SVD(amn_mat(nbmin:nbmax,:,nkp),num_band_max,num_wann,evalue,cz,cvdag)
       !UNI_loc=0.0_dp
 
       UNI_loc=cmplx_0
       do N=1,num_band_max
+      !do N=1,num_wann
         do M=1,num_wann
           do L=1,num_wann
              UNI_loc(N,M) = UNI_loc(N,M) + cz(N,L)*cvdag(L,M)
           enddo
         enddo
-      enddo
+      enddo   
+      !UMatrix(1:num_band_max,:,nkp)=UNI_loc(:,:)
       UMatrix(1:num_band_max,:,nkp)=MATMUL(UNI_loc(:,:),UNI_mat(:,:,nkp))
       deallocate(evalue,cz,cvdag,UNI_loc)
     ENDDO
     deallocate(UNI_mat)
 
-  end subroutine Compute_UNI_from_amn
+  end subroutine Compute_UNI_from_amn    
 
   subroutine Check_Unitarity()
     use constants, only: dp, cmplx_0
     use io, only: io_error, io_file_unit, stdout, seedname
-    use utility
+    use utility 
 
     implicit none
 
     integer :: nkp,nbmin,nbmax,num_band_max,ierr,N,M,L
     real(kind=dp) :: A_re, A_im
-    complex(kind=dp), allocatable :: Overlap(:,:), cz(:,:), cvdag(:,:), UNI_loc(:,:)
-    real(kind=dp), allocatable :: evalue(:)
+    complex(kind=dp), allocatable :: amn_mat_loc(:,:,:),Overlap(:,:), cz(:,:), cvdag(:,:), UNI_loc(:,:)
+    real(kind=dp), allocatable :: evalue(:) 
 
     if (.not. allocated(Overlap)) then
       allocate (Overlap(num_wann,num_wann), stat=ierr)
       if (ierr /= 0) call io_error('Error allocating Overlap in Print_overlap')
     endif
+    if (.not. allocated(amn_mat_loc)) then
+      allocate (amn_mat_loc(num_bands,num_wann,num_kpts), stat=ierr)
+      if (ierr /= 0) call io_error('Error allocating amn_mat in Read_wan_amn')
+    endif
+    amn_mat_loc(:,:,:)=amn_mat(:,:,:)
 
     OPEN(UNIT=90,FILE='Overlap.dat',FORM='FORMATTED',iostat=ierr)
     DO nkp=1,num_kpts
-      Overlap=cmplx_0;
+      Overlap=cmplx_0; 
       nbmin=band_win(1,nkp); nbmax=band_win(2,nkp)
       num_band_max=nbmax-nbmin+1
       if (.not. allocated(UNI_loc)) then
@@ -277,7 +313,7 @@ contains
       allocate(evalue(num_wann))
       allocate(cz(num_band_max,num_band_max))
       allocate(cvdag(num_wann,num_wann))
-      call SVD(amn_mat(nbmin:nbmax,:,nkp),num_band_max,num_wann,evalue,cz,cvdag)
+      call SVD(amn_mat_loc(nbmin:nbmax,:,nkp),num_band_max,num_wann,evalue,cz,cvdag)
       UNI_loc=0.0_dp
       do N=1,num_band_max
         do M=1,num_wann
@@ -285,9 +321,10 @@ contains
              UNI_loc(N,M) = UNI_loc(N,M) + cz(N,L)*cvdag(L,M)
           enddo
         enddo
-      enddo
+      enddo   
+      Overlap=MATMUL(TRANSPOSE(CONJG(UMatrix(:,:,nkp))),UMatrix(:,:,nkp))
       !Overlap=MATMUL(TRANSPOSE(CONJG(UNI_loc)),UNI_loc)
-      Overlap=MATMUL(UNI_loc,TRANSPOSE(CONJG(UNI_loc)))
+      !Overlap=MATMUL(UNI_loc,TRANSPOSE(CONJG(UNI_loc)))
       deallocate(evalue,cz,cvdag,UNI_loc)
       WRITE(90,*) 'nkp=', nkp
       DO N=1,num_wann
@@ -303,23 +340,24 @@ contains
   subroutine Print_overlap()
     use constants, only: dp, cmplx_0
     use io, only: io_error, io_file_unit, stdout, seedname
-    use utility
+    use utility 
 
     implicit none
 
     integer :: nkp,nbmin,nbmax,num_band_max,ierr,N,M,L
     real(kind=dp) :: A_re, A_im
     complex(kind=dp), allocatable :: Overlap(:,:), cz(:,:), cvdag(:,:), UNI_loc(:,:)
-    real(kind=dp), allocatable :: evalue(:)
+    real(kind=dp), allocatable :: evalue(:) 
 
     if (.not. allocated(Overlap)) then
       allocate (Overlap(num_wann,num_wann), stat=ierr)
+      !allocate (Overlap(num_band_max,num_wann), stat=ierr)
       if (ierr /= 0) call io_error('Error allocating Overlap in Print_overlap')
     endif
 
     OPEN(UNIT=90,FILE='UNI_mat.dat',FORM='FORMATTED',iostat=ierr)
     DO nkp=1,num_kpts
-      Overlap=cmplx_0;
+      Overlap=cmplx_0; 
       nbmin=band_win(1,nkp); nbmax=band_win(2,nkp)
       num_band_max=nbmax-nbmin+1
       if (.not. allocated(UNI_loc)) then
@@ -338,10 +376,11 @@ contains
              UNI_loc(N,M) = UNI_loc(N,M) + cz(N,L)*cvdag(L,M)
           enddo
         enddo
-      enddo
+      enddo   
       Overlap=MATMUL(TRANSPOSE(CONJG(UNI_loc)),UMatrix(1:num_band_max,:,nkp))
       WRITE(90,*) 'nkp=', nkp!, num_band_max
-      DO N=1,num_band_max
+      !DO N=1,num_band_max
+      DO N=1,num_wann
         DO M=1,num_wann
           WRITE(90,*) Overlap(N,M)
         ENDDO
@@ -352,7 +391,7 @@ contains
 
   end subroutine Print_overlap
 
-
+  
 
   subroutine Read_wan_amn()
     use constants, only: dp, cmplx_0
@@ -367,12 +406,12 @@ contains
     real(kind=dp) :: A_re, A_im
 
     if (.not. allocated(amn_mat)) then
-      allocate (amn_mat(num_tot_bands,num_wann,num_kpts), stat=ierr)
+      allocate (amn_mat(num_bands,num_wann,num_kpts), stat=ierr)
       if (ierr /= 0) call io_error('Error allocating amn_mat in Read_wan_amn')
     endif
 
     amn_mat=cmplx_0
-    !write(*,*) num_kpts,num_wann,num_tot_bands
+    !write(*,*) num_kpts,num_wann,num_bands
 
     inquire(file='wannier90.amn',exist=iffile)
     if (iffile.eqv. .false.)then
@@ -384,7 +423,7 @@ contains
        read(30,*) header
        do i=1,num_kpts
          do j=1,num_wann
-           do k=1,num_tot_bands
+           do k=1,num_bands
              read(30,*) idx1,idx2,idx3,A_re,A_im
              !write(*,*) A_re, A_im
              amn_mat(k,j,i)=dcmplx(A_re,A_im)
@@ -405,10 +444,10 @@ contains
 
     ! local Wannier variables
     logical :: iffile
-    integer :: x,y,nkp,nb,ierr
+    integer :: x,y,nkp,nb,ierr 
 
     if (.not. allocated(eigvals)) then
-      allocate (eigvals(num_tot_bands,num_kpts), stat=ierr)
+      allocate (eigvals(num_bands,num_kpts), stat=ierr)
       if (ierr /= 0) call io_error('Error allocating UMatrix in Read_wan_chk')
     endif
 
@@ -420,8 +459,7 @@ contains
     else
        open(unit=20,file='wannier90.eig',status='old',form='formatted')
        DO nkp=1,num_kpts
-         !DO nb=1,num_tot_bands
-         Do nb=1,num_bands
+         DO nb=1,num_bands
            read(20,*) x,y,eigvals(nb,nkp)
          ENDDO
        ENDDO
@@ -432,7 +470,7 @@ contains
     if (iffile.eqv..true.) lforce=.true.
     if (lforce.eqv..true.) then
       if (.not. allocated(deig)) then
-        allocate (deig(num_tot_bands,num_kpts), stat=ierr)
+        allocate (deig(num_bands,num_kpts), stat=ierr)
         if (ierr /= 0) call io_error('Error allocating deig in Read_wan_win')
       endif
 
@@ -443,7 +481,7 @@ contains
       else
          open(unit=20,file='wannier90.deig',status='old',form='formatted')
          DO nkp=1,num_kpts
-           DO nb=1,num_tot_bands
+           DO nb=1,num_bands
              read(20,*) x,y,deig(nb,nkp)
            ENDDO
          ENDDO
@@ -465,31 +503,31 @@ contains
 
     open(unit=20,file='dmft_params.dat',status='old',form='formatted',iostat=ierr)
     if (ierr /= 0) call io_error('dmft_params.dat file is missing or has errors')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) qx, qy, qz
+    read(20,*,iostat=ierr) qx, qy, qz 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) n_elec
+    read(20,*,iostat=ierr) n_elec 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
     read(20,*,iostat=ierr) noms
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) mu_iter
+    read(20,*,iostat=ierr) mu_iter 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
     read(20,*,iostat=ierr) nspin
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
     read(20,*,iostat=ierr) n_atoms
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
     read(20,*,iostat=ierr) n_orbs
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
@@ -498,13 +536,22 @@ contains
       if (ierr /= 0) call io_error('Error allocating sym_idx in compute_DMFT_mu')
     endif
     sym_idx=0
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
     do i=1,n_atoms
        read(20,*,iostat=ierr) ((sym_idx(k,i,j), j=1,n_orbs), k=1,nspin)
     enddo
     if (ierr /= 0) call io_error('Error Reading header in dmft_params.dat file')
     !write(*,*) sym_idx(1,1,1),sym_idx(1,1,2),sym_idx(1,1,3),sym_idx(1,1,4),sym_idx(1,1,5)
+    inquire(file='DFT_mu.out',exist=iffile)
+    if (iffile.eqv. .false.) then
+      write(*,*) 'input is needed for new mu!'
+      STOP
+    else
+      open(65,file="DFT_mu.out")
+      read(65,*) mu_DFT
+      close(65)
+    endif
     inquire(file='DMFT_mu.out',exist=iffile)
     if (iffile.eqv. .false.) then
       write(*,*) 'input is needed for new mu!'
@@ -514,7 +561,7 @@ contains
       read(65,*) mu
       close(65)
     endif
-
+    
   end subroutine Read_dmft_params
 
   subroutine Read_sig_inp_real()
@@ -526,7 +573,7 @@ contains
     ! local Wannier variables
 !    logical :: iffile
     character(len=1) ::  sharp, temp_line
-    integer :: i,j,norb_loc,ierr
+    integer :: i,j,norb_loc,ierr 
     real(kind=dp), allocatable :: sig_loc(:)
 
     open(unit=20,file='sig.inp_real',status='old',form='formatted',iostat=ierr)
@@ -551,15 +598,15 @@ contains
       if (ierr /= 0) call io_error('Error allocating sig_loc in Read_sig_inp')
     endif
     Sigoo=0.0_dp
-    read(20,*,iostat=ierr) (sharp, i=1,2), broaden
+    read(20,*,iostat=ierr) (sharp, i=1,2), broaden 
     if (ierr /= 0) call io_error('Error Reading Sigoo in sig.inp file')
     !write(*,*) T
     read(20,*,iostat=ierr) (sharp, i=1,2), (Sigoo(i), i=1,norb_loc)
     if (ierr /= 0) call io_error('Error Reading Sigoo in sig.inp file')
     !write(*,*) Sigoo
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in sig.inp file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in sig.inp file')
     Sigma=cmplx_0
     do i=1,nom
@@ -590,7 +637,7 @@ contains
     ! local Wannier variables
 !    logical :: iffile
     character(len=1) ::  sharp, temp_line
-    integer :: i,j,norb_loc,ierr
+    integer :: i,j,norb_loc,ierr 
     real(kind=dp), allocatable :: sig_loc(:)
 
     open(unit=20,file='sig.inp',status='old',form='formatted',iostat=ierr)
@@ -615,15 +662,15 @@ contains
       if (ierr /= 0) call io_error('Error allocating sig_loc in Read_sig_inp')
     endif
     Sigoo=0.0_dp
-    read(20,*,iostat=ierr) (sharp, i=1,2), T
+    read(20,*,iostat=ierr) (sharp, i=1,2), T 
     if (ierr /= 0) call io_error('Error Reading Sigoo in sig.inp file')
     !write(*,*) T
     read(20,*,iostat=ierr) (sharp, i=1,2), (Sigoo(i), i=1,norb_loc)
     if (ierr /= 0) call io_error('Error Reading Sigoo in sig.inp file')
     !write(*,*) Sigoo
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in sig.inp file')
-    read(20,*,iostat=ierr) temp_line
+    read(20,*,iostat=ierr) temp_line 
     if (ierr /= 0) call io_error('Error Reading header in sig.inp file')
     Sigma=cmplx_0
     do i=1,nom
@@ -868,7 +915,7 @@ end module read_inputs
 !    call comms_bcast(wannier_spreads(1), num_wann)
 !
 !  end subroutine param_chkpt_dist
-!
+!  
 !
 !  !==================================================================!
 !  subroutine param_read()
