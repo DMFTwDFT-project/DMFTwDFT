@@ -5,6 +5,7 @@
 vaspDMFT
 vaspDMFT*
 libdmft.a
+vasp
 *.o
 wannier90.x
 w90chk2chk.x

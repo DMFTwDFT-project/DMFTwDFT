@@ -434,7 +434,7 @@ if __name__ == "__main__":
                     f.close()
 
                 cmd = (
-                    para_com
+                    para_com_dft
                     + " "
                     + p["path_bin"]
                     + "vaspDMFT > vasp.out 2> vasp.error || { echo 'Parallel run failed!'; exit 1; }"
