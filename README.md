@@ -50,17 +50,21 @@ How to cite
 
 If you have used DMFTwDFT in your work, please cite:
 
-[arXiv:2002.00068 [cond-mat.str-el]](https://arxiv.org/abs/2002.00068)
+[10.1016/j.cpc.2020.107778](https://www.sciencedirect.com/science/article/abs/pii/S001046552030388X)
 
 BibTex:
 
-     @misc{singh2020dmftwdft,
-    title={DMFTwDFT: An open-source code combining Dynamical Mean Field Theory with various Density Functional Theory packages},
-    author={Vijay Singh and Uthpala Herath and Benny Wah and Xingyu Liao and Aldo H. Romero and Hyowon Park},
-    year={2020},
-    eprint={2002.00068},
-    archivePrefix={arXiv},
-    primaryClass={cond-mat.str-el}
+    @article{SINGH2021107778,
+    title = "DMFTwDFT: An open-source code combining Dynamical Mean Field Theory with various density functional theory packages",
+    journal = "Computer Physics Communications",
+    volume = "261",
+    pages = "107778",
+    year = "2021",
+    issn = "0010-4655",
+    doi = "https://doi.org/10.1016/j.cpc.2020.107778",
+    url = "http://www.sciencedirect.com/science/article/pii/S001046552030388X",
+    author = "Vijay Singh and Uthpala Herath and Benny Wah and Xingyu Liao and Aldo H. Romero and Hyowon Park",
+    keywords = "DFT, DMFT, Strongly correlated materials, Python, Condensed matter physics, Many-body physics",
     }
 
 Thank you. 
