@@ -47,20 +47,6 @@ pC = {
     "Naver": [80000000, "  # Naver"],
 }
 
-##### VASP parameters ########
-pV = {
-    "System=": ["LaNiO3", "# The name of system"],
-    "ENCUT=": [600.0, "# Energy cutoff"],
-    "ISPIN=": [1, "#ISPIN"],
-    # "NBANDS=":     [24,                     "# LMAX"],
-    "LMAXMIX=": [4, "#LMAX"],
-    "NCORE=": [1, "#LMAX"],
-    "IALGO=": [48, "#LMAX"],
-    #      "NELM=":    [20,             "#LMAX"],
-    "ISMEAR=": [-5, "# ISMEAR"],
-    "ADDGRID=": [".TRUE.", "#GGA"],
-    "LWANNIER90=": [".TRUE.", "# ISMEAR"],
-}
 
 ############## CIX parameters ###########
 pD = {

@@ -3,10 +3,10 @@
 #=====================================================
 F90 = ifort
 COMMS=mpi
-MPIF90=mpiifort
+MPIF90=mpif90
 CMP = f2py --fcompiler=intelem # fortran to python converter
 
-FCOPTS=-O2 #-check 
+FCOPTS=-O2 -fallow-argument-mismatch -ffree-line-length-none -L /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/lib -lSystem #-check 
 LDOPTS=-O2 
 
 #========================================================

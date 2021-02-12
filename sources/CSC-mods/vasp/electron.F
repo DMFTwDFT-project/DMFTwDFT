@@ -99,7 +99,7 @@
       TYPE (transit)     SOFT_TO_C  ! index table between GRID_SOFT and GRIDC
       TYPE (energy)      E
       TYPE (latt)        LATT_INI
-     
+
       INTEGER NSTEP,LMDIM,IRDMAX,NEDOS
       REAL(q) :: TOTEN,EFERMI
 
@@ -126,11 +126,11 @@
                  CHAM(WDES%NB_TOT,WDES%NB_TOT,WDES%NKPTS,WDES%ISPIN)
       REAL(q) :: XCSIF(3,3)
 
-! local 
+! local
       REAL(q) :: TOTENL=0
       REAL(q) :: DESUM1,DESUM(INFO%NELM)
       INTEGER :: IONODE, NODE_ME
-!  needed temporary for aspherical GGA calculation 
+!  needed temporary for aspherical GGA calculation
       OVERLAP,ALLOCATABLE ::  CDIJ_TMP(:,:,:,:)
 ! local l-projected wavefunction characters (not really used here)
       REAL(q)    PAR(1,1,1,1,WDES%NCDIJ),DOSPAR(1,1,1,WDES%NCDIJ)
@@ -199,15 +199,15 @@
          DO ISP=1,WDES%NCDIJ
             CALL RC_ADD(CHTOT(1,ISP),1.0_q,CHTOT(1,ISP),0.0_q,CHTOTL(1,ISP),GRIDC)
          ENDDO
-         
+
          IF (LDO_METAGGA().AND.LMIX_TAU()) THEN
             DO ISP=1,WDES%NCDIJ
                CALL RC_ADD(KINEDEN%TAU(1,ISP),1.0_q,KINEDEN%TAU(1,ISP),0.0_q,KINEDEN%TAUL(1,ISP),GRIDC)
             ENDDO
          ENDIF
-         
+
          RHOLM_LAST=RHOLM
-         
+
          INFO%LPOTOK=.FALSE.
 
          ! add the available GAMMA file
@@ -222,7 +222,7 @@
            CHDEN, LMDIM, CRHODE, CHTOT, RHOLM, N_MIX_PAW, IRDMAX)
 
          CALL SET_KINEDEN(GRID,GRID_SOFT,GRIDC,SOFT_TO_C,LATT_CUR,SYMM, &
-           T_INFO%NIONS,W,WDES,KINEDEN)      
+           T_INFO%NIONS,W,WDES,KINEDEN)
 
          CALL STOP_TIMING("G",IO%IU6,"CHARGE")
 
@@ -240,7 +240,7 @@
                     LATT_CUR%OMEGA, N_MIX_PAW, RHOLM, RHOLM_LAST, &
                     RMST,RMSC,RMSP,WEIGHT,.TRUE.,IERRBR, &
                     NMIX_ONE_CENTRE,RHO_ONE_CENTRE,RHO_ONE_CENTRE_LAST)
-               MIX%LRESET=.FALSE.        
+               MIX%LRESET=.FALSE.
             ELSE
                CALL BRMIX(KINEDEN,GRIDB,GRIDC,IO,MIX,B_TO_C, &
                     (2*GRIDC%MPLWV),CHTOT,CHTOTL,WDES%NCDIJ,LATT_CUR%B, &
@@ -305,7 +305,7 @@
                   GRID,GRIDC,GRID_SOFT,WDES%COMM_INTER,WDES,INFO,P,T_INFO,E,LATT_CUR, &
                   CHDEN,CHTOT,DENCOR,CVTOT,SV,HAMILTONIAN%MUTOT,HAMILTONIAN%MU,SOFT_TO_C,XCSIF)
 
-      CALL VECTORPOT(GRID, GRIDC, GRID_SOFT, SOFT_TO_C,  WDES%COMM_INTER, & 
+      CALL VECTORPOT(GRID, GRIDC, GRID_SOFT, SOFT_TO_C,  WDES%COMM_INTER, &
                  LATT_CUR, T_INFO%POSION, HAMILTONIAN%AVEC, HAMILTONIAN%AVTOT)
 
       CALL STOP_TIMING("G",IO%IU6,"POTLOK")
@@ -331,7 +331,7 @@
 #else
       CALL  UPDATE_POTENTIAL(  &
           KINEDEN,HAMILTONIAN,P,WDES,NONLR_S,NONL_S,LATT_CUR, &
-          T_INFO,INFO,IO, & 
+          T_INFO,INFO,IO, &
           GRID,GRID_SOFT,GRIDC,GRIDUS,C_TO_US,SOFT_TO_C, &
           CHTOT,DENCOR,CVTOT,CSTRF, &
           LMDIM,IRDMAX,CDIJ,CQIJ,CRHODE,N_MIX_PAW,RHOLM,CHDEN,SV)
@@ -428,7 +428,7 @@
 #endif
         CALL EDDAV(HAMILTONIAN, P, GRID,INFO,LATT_CUR,NONLR_S,NONL_S,W,WDES, NSIM, &
              LMDIM,CDIJ,CQIJ, RMS,DESUM1,ICOUEV, SV, E%EXHF, IO%IU6,IO%IU0, &
-             LDELAY=.FALSE.,  LSUBROTI=INFO%LDIAG, LEMPTY=.FALSE., LHF= N>=ABS(INFO%NELMDL), & 
+             LDELAY=.FALSE.,  LSUBROTI=INFO%LDIAG, LEMPTY=.FALSE., LHF= N>=ABS(INFO%NELMDL), &
              EXHF_ACFDT= E%EXHF_ACFDT)
         CALL STOP_TIMING("G",IO%IU6,"EDDAV",XMLTAG="dav")
         DWRITE0 "edddav is ok"
@@ -448,10 +448,10 @@
                  LEMPTY=.FALSE., EREF=INFO%EREF)
          ENDIF
          CALL STOP_TIMING("G",IO%IU6,"EINNER",XMLTAG="dav")
-         ! since we iterate deep it is safer to recalculate projeciton operators 
+         ! since we iterate deep it is safer to recalculate projeciton operators
          ! and reorthogonalize
          CALL PROALL (GRID,LATT_CUR,NONLR_S,NONL_S,W)
-         
+
       ELSE IF (INFO%IALGO==5 .OR.INFO%IALGO==6 .OR. &
      &         INFO%IALGO==7 .OR.INFO%IALGO==8 .OR. INFO%IALGO==0) THEN select_algo
 
@@ -589,7 +589,7 @@
 
       INFO%LABORT=.FALSE.
       LABORT_WITHOUT_CONV=.FALSE.
-      
+
 !-----eigenvalues and energy must be converged
       IF(ABS(DESUM(N))<INFO%EDIFF.AND.ABS(DESUM1)<INFO%EDIFF) INFO%LABORT=.TRUE.
 !-----charge-density not constant and in last cycle no change of charge
@@ -624,7 +624,7 @@
               WDES%NCDIJ, LMDIM, CDIJ_TMP(1,1,1,1), RHOLM, CRHODE, &
               E, LMETA= .FALSE. , LASPH=INFO%LASPH , LCOREL=.TRUE. )
          DEALLOCATE(CDIJ_TMP)
-      ENDIF     
+      ENDIF
 !========================= subroutine CHSP  ============================
 ! if charge density is updated
 !  ) first copy current charge to CHTOTL
@@ -678,10 +678,10 @@
       !WRITE_MMN_AMN=.FALSE.
       !if (LDMFT.eq..TRUE..AND. MOD(N,4).eq.0) then
       if (LDMFT.eq..TRUE.) then
-        CALL MLWF_WANNIER90_AMN(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO) 
-        !CALL MLWF_WANNIER90(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO) 
+        CALL MLWF_WANNIER90_AMN(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
+        !CALL MLWF_WANNIER90(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
 !      else
-      !CALL MLWF_WANNIER90_EIG(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO) 
+      !CALL MLWF_WANNIER90_EIG(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
 !      endif
         CALL MPI_barrier( WDES%COMM%MPI_COMM, ierr )
         !STOP
@@ -745,13 +745,13 @@
 !        DEALLOCATE(WProj_tot)
         !tot_n=0
         !DO NK=1,WDES%NKPTS
-        !  DO NB=1,WDES%NBANDS  
+        !  DO NB=1,WDES%NBANDS
         !    tot_n=tot_n+W%FERWE(NB,NK,1)*WDES%WTKPT(NK)*2
         !  ENDDO
         !ENDDO
         !write(*,*) tot_n
         !DO NK=1,WDES%NKPTS
-        !  DO NB=1,num_wann_  
+        !  DO NB=1,num_wann_
         !    tot_n=0
         !    DO NP=1,num_wann_
         !      tot_n=tot_n+DMFT_EVEC_(NB,NP,NK)*CONJG(DMFT_EVEC_(NB,NP,NK))
@@ -767,9 +767,9 @@
            CHDEN, LMDIM, CRHODE, CHTOT, RHOLM, N_MIX_PAW, IRDMAX)
 
       CALL SET_KINEDEN(GRID,GRID_SOFT,GRIDC,SOFT_TO_C,LATT_CUR,SYMM, &
-           T_INFO%NIONS,W,WDES,KINEDEN)      
+           T_INFO%NIONS,W,WDES,KINEDEN)
 
-     
+
 !      if (LDMFT.eq..TRUE.) then
 !      !if (LDMFT.eq..TRUE..AND. MOD(N,4).eq.0) then
 !        DO NK=1,WDES%NKPTS
@@ -808,14 +808,14 @@
           &   LATT_CUR%OMEGA, N_MIX_PAW, RHOLM, RHOLM_LAST, &
           &   RMST,RMSC,RMSP,WEIGHT,.TRUE.,IERRBR, &
           &   NMIX_ONE_CENTRE,RHO_ONE_CENTRE,RHO_ONE_CENTRE_LAST)
-           MIX%LRESET=.FALSE.        
+           MIX%LRESET=.FALSE.
         ELSE
            CALL BRMIX(KINEDEN,GRIDB,GRIDC,IO,MIX,B_TO_C, &
           &   (2*GRIDC%MPLWV),CHTOT,CHTOTL,WDES%NCDIJ,LATT_CUR%B, &
           &   LATT_CUR%OMEGA, N_MIX_PAW, RHOLM, RHOLM_LAST, &
           &   RMST,RMSC,RMSP,WEIGHT,.TRUE.,IERRBR)
            MIX%LRESET=.FALSE.
-        ENDIF       
+        ENDIF
       ELSE
 !  simple mixing ... :
         RMST=0
@@ -921,14 +921,14 @@
       IF (LCORREL()) THEN
          WRITE(IO%IU6,7241) E%PSCENC,E%TEWEN,E%DENC,E%EXHF,E%XCENC,E%PAWPS,E%PAWAE, &
                          E%EENTROPY,E%EBANDSTR,INFO%EALLAT+ECORE(),Ediel_sol,TOTEN, &
-                         TOTEN-E%EENTROPY,TOTEN-E%EENTROPY/(2+NORDER)   
+                         TOTEN-E%EENTROPY,TOTEN-E%EENTROPY/(2+NORDER)
       ELSE
          WRITE(IO%IU6,7240) E%PSCENC,E%TEWEN,E%DENC,E%EXHF,E%XCENC,E%PAWPS,E%PAWAE, &
                          E%EENTROPY,E%EBANDSTR,INFO%EALLAT,Ediel_sol,TOTEN, &
                          TOTEN-E%EENTROPY,TOTEN-E%EENTROPY/(2+NORDER)
       ENDIF
 
-      IF (LHFCALC) THEN 
+      IF (LHFCALC) THEN
          WRITE(IO%IU6,'( "  exchange ACFDT corr.  = ",F18.8,"  see jH, gK, PRB 81, 115126")') E%EXHF_ACFDT
       ENDIF
 
@@ -1006,7 +1006,7 @@
         IF (IO%IU0>=0) WRITE(IO%IU0,*) "WARNING: NC-PP core level shifts not calculated"
       ENDIF
       ENDIF
- 
+
       IF (((NSTEP==1 .OR. NSTEP==DYN%NSW).AND.INFO%LABORT).OR. &
      &     (IO%NWRITE>=1 .AND.INFO%LABORT).OR.IO%NWRITE>=3) THEN
         CALL KPAR_SYNC_CELTOT( WDES, W )
@@ -1098,7 +1098,7 @@
          CALL REPORT(.TRUE.)
 ! uncomment this line for specific postprocessing of relaxed core stuff
 !        CALL RCPOSTPROC
-!         
+!
       ENDIF
 !======================== end of loop ENDLSC ===========================
 ! This is the end of the selfconsistent calculation loop
@@ -1113,7 +1113,7 @@
         EXIT electron
       ENDIF
       INFO%LSOFT=.FALSE.
-#ifndef noSTOPCAR 
+#ifndef noSTOPCAR
 #ifndef F90_T3D
       CALL RDATAB(IO%LOPEN,'STOPCAR',99,'LABORT','=','#',';','L', &
      &            IDUM,RDUM,CDUM,INFO%LSOFT,CHARAC,NCOUNT,1,IERR)
@@ -1143,7 +1143,7 @@
          IF (.NOT. DIP%LCOR_DIP) THEN
             CALL CDIPOL_CHTOT_REC(GRIDC, LATT_CUR,P,T_INFO, &
                  CHTOT,CSTRF,CVTOT, WDES%NCDIJ, INFO%NELECT )
-            
+
             CALL WRITE_DIP(IO%IU6)
             IF (IO%IU6>0) THEN
                WRITE(IO%IU6,*)
@@ -1156,16 +1156,16 @@
 
       ! notify calling routine whether convergence has been reached
       INFO%LABORT=LABORT_WITHOUT_CONV
-      
+
       DWRITE0 'electron left'
-      
+
       RETURN
     END SUBROUTINE ELMIN
 
 
 !**********************************************************************
-! 
-! write eigenvalues 
+!
+! write eigenvalues
 !
 !**********************************************************************
 
@@ -1198,7 +1198,7 @@
 
    END SUBROUTINE WRITE_EIGENVAL
 
-   
+
    SUBROUTINE WRITE_EIGENVAL_RESIDUAL(  WDES, W, IU6)
      USE wave
      USE prec
@@ -1258,4 +1258,3 @@
      ENDIF
 
    END SUBROUTINE WRITE_EIGENVAL_NBANDS
-
