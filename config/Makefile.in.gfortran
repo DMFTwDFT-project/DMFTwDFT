@@ -28,15 +28,15 @@ C++ = g++
 CC  = gcc
 
 OPENMP = -fopenmp
-FFLAGSEXTRA = -fallow-argument-mismatch
-FFLAGS = -O2  -ffree-form -ffree-line-length-none $(OPENMP) $(FFLAGSEXTRA) 
-OFLAGS = -O2 
+FFLAGSEXTRA = # -fallow-argument-mismatch
+FFLAGS = -O2  -ffree-form -ffree-line-length-none $(OPENMP) $(FFLAGSEXTRA)
+OFLAGS = -O2
 
 LALIB  =  -lblas -llapack
-FFTLIB =  -lfftw3_omp -lfftw3 
+FFTLIB =  -lfftw3_omp -lfftw3
 FFTINC =  -I/usr/include
-GSLLIB =  -lgsl 
-GSLINC =  
+GSLLIB =  -lgsl
+GSLINC =
 PIC    =  -fPIC
 WFOPT  = -O2  -ffree-form -ffree-line-length-none $(OPENMP)  $(FFTINC)
 WLIBS   = $(FFTLIB)  $(LALIB)
@@ -47,11 +47,11 @@ F2PY_LAPACK = --link-lapack_opt
 #------------- PARALLEL VERSION --------------------------------------------
 Fmpi_define =  -D_MPI
 
-PF90 = mpif90 
+PF90 = mpif90
 PC++ = mpicxx
-PCC  = mpicc 
+PCC  = mpicc
 
-PFLAGS   = -D_MPI -DMPICH_IGNORE_CXX_SEEK -O3 #-restrict -ipo -no-prec-div 
+PFLAGS   = -D_MPI -DMPICH_IGNORE_CXX_SEEK -O3 #-restrict -ipo -no-prec-div
 
 LLIBS = $(LALIB)
 PLIBS = $(LLIBS) $(GSLLIB)
