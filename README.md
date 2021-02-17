@@ -28,7 +28,7 @@ Copy Makefile.in from the ``config`` directory for the desired compiler to the D
 
 Note:
 
-For gnu compilers, it is assumed that liblapack.a, libblas.a and gsl libraries are installed in the ``/usr/local/lib/`` directory. If not, modify Makefile.in to point to the correct location.
+For gnu compilers, it is assumed that liblapack.a, libblas.a and gsl libraries are installed in the ``/usr/local/lib/`` directory. If not, modify ``LALIB`` and ``GSLLIB`` in Makefile.in to point to the correct location. Additionally, set compiler flags in ``FFLAGSEXTRA``.
 
 Developers
 -----------

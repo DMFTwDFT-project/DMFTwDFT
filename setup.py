@@ -50,16 +50,22 @@ def main(args):
 
         # Read LALIB from Makefile.in for lapack and blas library location
         # and append it to LIBS in make.inc.
+        # Repeat for FFLAGS and append to FCOPTS in make.inc.
 
-        fp = open("Makefile.in","r")
+        fp = open("Makefile.in", "r")
         data = fp.read()
         fp.close()
 
-        lalib = findall(r"LALIB\s*=\s*([-_.a-zA-Z0-9\s\/]*)\n",data)
+        # Appending LALIBS as LIBS in make.inc
+        lalib = findall(r"LALIB\s*=\s*([-_.a-zA-Z0-9\s\/]*)\n", data)
         libs = "LIBS += " + str(lalib[0])
 
-        fo = open('./sources/make.inc', 'a')
-        fo.write(libs)
+        fflags = findall(r"FFLAGSEXTRA\s*=\s*([-_.a-zA-Z0-9\s\/]*)\n", data)
+        fcopts = "FCOPTS += " + str(fflags[0])
+
+        fo = open("./sources/make.inc", "a")
+        fo.write(libs + "\n")
+        fo.write(fcopts)
         fo.close()
 
     print("Compiling internal sources...\n")
@@ -89,9 +95,10 @@ def main(args):
         print("Internal compilation complete.")
     else:
         print(
-            "Internal compilation failed! Check internal.log for details. Make sure Makefile.in points to the correct lapack, blas and gsl libraries. You can try to install internal sources manually within the sources directory by modifying make.inc"
+            "Internal compilation failed! Check internal.log for details. Make sure Makefile.in points to the correct lapack, blas and gsl libraries. You can try to install internal sources manually within the sources directory by modifying make.inc. Run with -ignore to bypass."
         )
-        sys.exit()
+        if not args.ignore:
+            sys.exit()
 
     # --------------- COMPILING EXTERNAL SOURCES -----------------------------
 
@@ -131,11 +138,14 @@ def main(args):
     ).communicate()
     if os.path.exists(ctqmc_dir + "ctqmc"):
         print("Complete.\n")
+        # Copy to bin directory
+        shutil.copy(ctqmc_dir + "ctqmc", "./bin/")
     else:
-        print("ctqmc compilation failed! Check ctqmc.log for details.")
-        sys.exit()
-    # Copy to bin directory
-    shutil.copy(ctqmc_dir + "ctqmc", "./bin/")
+        print(
+            "ctqmc compilation failed! Check ctqmc.log for details. Run with -ignore to bypass."
+        )
+        if not args.ignore:
+            sys.exit()
 
     # Compiling atomd (gaunt.so, gutils.so)
     atomd_dir = EDMFTF_folder + "/src/impurity/atomd/"
@@ -148,12 +158,16 @@ def main(args):
         atomd_dir + "gutils.so"
     ):
         print("Complete.\n")
+        # Copy to bin directory
+        shutil.copy(atomd_dir + "gaunt.so", "./bin/")
+        shutil.copy(atomd_dir + "gutils.so", "./bin/")
+
     else:
-        print("atomd compilation failed! Check atomd.log for details.")
-        sys.exit()
-    # Copy to bin directory
-    shutil.copy(atomd_dir + "gaunt.so", "./bin/")
-    shutil.copy(atomd_dir + "gutils.so", "./bin/")
+        print(
+            "atomd compilation failed! Check atomd.log for details. Run with -ignore to bypass."
+        )
+        if not args.ignore:
+            sys.exit()
 
     # Compiling maxent_routines
     maxent_dir = EDMFTF_folder + "/src/impurity/maxent_source/"
@@ -164,13 +178,14 @@ def main(args):
     ).communicate()
     if os.path.exists(maxent_dir + "maxent_routines.so"):
         print("Complete.\n")
+        # Copy to bin directory
+        shutil.copy(maxent_dir + "maxent_routines.so", "./bin/")
     else:
         print(
-            "maxent_routines compilation failed! Check maxent_routines.log for details."
+            "maxent_routines compilation failed! Check maxent_routines.log for details. Run with -ignore to bypass."
         )
-        sys.exit()
-    # Copy to bin directory
-    shutil.copy(maxent_dir + "maxent_routines.so", "./bin/")
+        if not args.ignore:
+            sys.exit()
 
     # Compiling skrams
     skrams_dir = EDMFTF_folder + "/src/impurity/skrams/"
@@ -181,11 +196,14 @@ def main(args):
     ).communicate()
     if os.path.exists(skrams_dir + "skrams"):
         print("Complete.\n")
+        # Copy to bin directory
+        shutil.copy(skrams_dir + "skrams", "./bin/")
     else:
-        print("skrams compilation failed! Check skrams.log for details.")
-        sys.exit()
-    # Copy to bin directory
-    shutil.copy(skrams_dir + "skrams", "./bin/")
+        print(
+            "skrams compilation failed! Check skrams.log for details. Run with -ignore to bypass."
+        )
+        if not args.ignore:
+            sys.exit()
 
     # Compilation complete
     print("DMFTwDFT compilation complete!")
@@ -240,6 +258,11 @@ if "__main__" == __name__:
             help="Compiler.",
             choices=["intel", "gfortran"],
             default="intel",
+        )
+        parser.add_argument(
+            "-ignore",
+            help="Ignore compilation errors and continue.",
+            action="store_true",
         )
         args = parser.parse_args()
         main(args)
