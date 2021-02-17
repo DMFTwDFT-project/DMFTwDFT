@@ -57,11 +57,14 @@ def main(args):
         fp.close()
 
         # Appending LALIBS as LIBS in make.inc
-        lalib = findall(r"LALIB\s*=\s*([-_.a-zA-Z0-9\s\/]*)\n", data)
+        lalib = findall(r"LALIB\s*=\s*([-_.a-zA-Z0-9\s\/]*)(?:\n|#)", data)
         libs = "LIBS += " + str(lalib[0])
 
-        fflags = findall(r"FFLAGSEXTRA\s*=\s*([-_.a-zA-Z0-9\s\/]*)\n", data)
-        fcopts = "FCOPTS += " + str(fflags[0])
+        fflags = findall(r"FFLAGSEXTRA\s*=\s*([-_.a-zA-Z0-9\s\/]*)(?:\n|#)", data)
+        if len(fflags) > 0:
+            fcopts = "FCOPTS += " + str(fflags[0])
+        else:
+            fcopts = ""
 
         fo = open("./sources/make.inc", "a")
         fo.write(libs + "\n")
@@ -81,7 +84,6 @@ def main(args):
         "libdmft.a",
         "./dmft_ksum/dmft_ksum_band",
         "./dmft_ksum/dmft_ksum_partial_band",
-        "./fort_kpt_tools/fort_kpt_tools.so",
     ]
 
     result_array = []
