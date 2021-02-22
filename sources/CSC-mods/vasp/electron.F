@@ -152,6 +152,7 @@
       COMPLEX(q),allocatable :: WaveW(:,:,:),WaveW_tot(:,:,:)
       COMPLEX(q),allocatable :: WProj(:,:,:),WProj_tot(:,:,:)
       REAL(q),allocatable :: FERWE(:,:)
+      INTEGER num_wannier
 
       IONODE=0
       NODE_ME=0
@@ -678,6 +679,8 @@
       !WRITE_MMN_AMN=.FALSE.
       !if (LDMFT.eq..TRUE..AND. MOD(N,4).eq.0) then
       if (LDMFT.eq..TRUE.) then
+
+        CALL ParseWannier90(num_wannier)
         CALL MLWF_WANNIER90_AMN(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
         !CALL MLWF_WANNIER90(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
 !      else
@@ -686,7 +689,7 @@
         CALL MPI_barrier( WDES%COMM%MPI_COMM, ierr )
         !STOP
         !CALL Compute_DMFT_from_amn(KPOINTS_FULL%NKPTS,num_wann_,KPOINTS_FULL%VKPT,KPOINTS_FULL%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
-        CALL Compute_DMFT_from_amn(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
+        CALL Compute_DMFT_from_amn(WDES%NKPTS,num_wannier,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
         !CALL Compute_DMFT(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
         !IF (IO%IU6>=0) then
         !  DO IK=1,WDES%NKPTS
