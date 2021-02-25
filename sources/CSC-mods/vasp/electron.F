@@ -687,6 +687,7 @@
         !STOP
         !CALL Compute_DMFT_from_amn(KPOINTS_FULL%NKPTS,num_wann_,KPOINTS_FULL%VKPT,KPOINTS_FULL%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
         !write(*,*) "Computing DMFT from AMN..."
+        !write(*,'(A,I4)') "num_wann_:", num_wann_
         CALL Compute_DMFT_from_amn(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
         !CALL Compute_DMFT(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
         !IF (IO%IU6>=0) then
