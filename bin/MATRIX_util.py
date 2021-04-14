@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 from scipy import *
 from scipy import linalg
 from mysub import *

@@ -11,10 +11,12 @@ import math
 import subprocess
 import sys
 from argparse import RawTextHelpFormatter
+import warnings
 
 import matplotlib
 
 matplotlib.use("pdf")
+warnings.filterwarnings("ignore", module="matplotlib\..*")
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.interpolate

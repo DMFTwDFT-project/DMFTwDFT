@@ -1,9 +1,9 @@
 
-module dmft_ksum
+module dmft_ksum 
 
   use constants, only: dp
   use io, only: stdout, maxlen
-  use read_inputs
+  use read_inputs 
 
   implicit none
 
@@ -11,7 +11,7 @@ module dmft_ksum
   complex(kind=dp), allocatable, save :: DMFT_evec_loc(:,:,:)
 
 contains
-
+ 
   subroutine compute_DMFT_mu()
     use constants
     use io
@@ -19,7 +19,7 @@ contains
     use generate_kpts, only: kpts, weight, num_new_kpts
     use generate_ham, only: tran
     use comms, only: on_root,comms_barrier,comms_reduce,comms_allreduce,my_node_id, num_nodes, comms_array_split, comms_bcast
-
+   
     implicit none
 
     logical :: iffile
@@ -31,8 +31,8 @@ contains
     !real(kind=dp) :: coeff_real,coeff_imag
     !real(kind=dp) :: at, at0
     integer :: i,j,l,ik,r,ib,im,ispin,loc_i,ierr
-    integer :: nbmin,nbmax,num_band_max
-    integer :: numk_loc!,mu_iter
+    integer :: nbmin,nbmax,num_band_max 
+    integer :: numk_loc!,mu_iter 
     ! Needed to split an array on different nodes
     integer, dimension(0:num_nodes - 1) :: counts
     integer, dimension(0:num_nodes - 1) :: displs
@@ -48,8 +48,8 @@ contains
 
 !    write(*,*) num_new_kpts
     !write(*,*) 'hi1'
-    !ierr=0
-    call comms_array_split(num_new_kpts, counts, displs)
+    !ierr=0 
+    call comms_array_split(num_new_kpts, counts, displs)    
     !write(*,*) my_node_id, counts(my_node_id), displs(my_node_id)
     numk_loc=counts(my_node_id)
     !mu_iter=100
@@ -131,7 +131,7 @@ contains
         !do j=1,ncor_orb
         !  Hk_loc(j,j)=Hk_loc(j,j)+Sigma(j,nom)-real(Sigma(j,1200))
         !enddo
-        !CALL EIGENVAL(Hk_loc,num_wann,eval(:,nom,ispin,loc_i))
+        !CALL EIGENVAL(Hk_loc,num_wann,eval(:,nom,ispin,loc_i)) 
         !call quicksort_cmplx(eval(:,noms,ispin,loc_i))
         !call quicksort_cmplx(eval(:,nom,ispin,loc_i))
         !!if (on_root) then
@@ -176,9 +176,9 @@ contains
     !if (allocated(eval_loc)) deallocate (eval_loc)
     if (allocated(Hk_loc)) deallocate (Hk_loc)
 
-!    if (on_root) then
+!    if (on_root) then 
 !     endif
-!     call comms_bcast(mu,1)
+!     call comms_bcast(mu,1) 
 !    n_elec=48.0_dp
 !    T=0.03_dp
 
@@ -219,7 +219,7 @@ contains
         !STOP
       enddo
       call comms_allreduce(tot_n,1,'SUM')
-      !if (on_root) write(*,*) mu, tot_n, n_elec
+!      if (on_root) write(*,*) mu, tot_n, n_elec
       if (abs(tot_n-n_elec)<1E-10) EXIT
       if (tot_n<n_elec) then
         if (HIGHB.eqv..FALSE.) then
@@ -257,14 +257,14 @@ contains
     use generate_ham, only: tran
     use comms, only: on_root,comms_allreduce,my_node_id, num_nodes, &
         comms_array_split,comms_reduce, comms_barrier
-
+   
     implicit none
 
     character(len=10) :: write_format
     real(kind=dp) :: tot_n
     complex(kind=dp) :: Gs, Gs0
     integer :: i,j,l,ik,r,ib,im,ispin,loc_i,ierr
-    integer :: nbmin,nbmax,num_band_max
+    integer :: nbmin,nbmax,num_band_max 
     integer :: numk_loc
     ! Needed to split an array on different nodes
     integer, dimension(0:num_nodes - 1) :: counts
@@ -285,9 +285,9 @@ contains
     complex(kind=dp), allocatable :: Delta(:,:)
     complex(kind=dp), allocatable :: Gloc(:,:,:)
     complex(kind=dp), allocatable :: sym_Gloc(:,:)
-    complex(kind=dp) :: DMFT_UU,DMFT_U0
+    complex(kind=dp) :: DMFT_UU,DMFT_U0 
 
-    call comms_array_split(num_new_kpts, counts, displs)
+    call comms_array_split(num_new_kpts, counts, displs)    
     numk_loc=counts(my_node_id)
     if (.not. allocated(Gloc)) then
       allocate (Gloc(num_wann,nom,nspin), stat=ierr)
@@ -376,7 +376,7 @@ contains
       do ib=1,ncor_orb
         sym_Gloc(ib,:)=sym_Gloc(ib,:)/mul_fac(ib)
       enddo
-
+      
       !call write_complex_function('G_loc.out',sym_Gloc,om)
 
       if (.not. allocated(sym_Ed)) then
@@ -387,18 +387,20 @@ contains
       mul_fac=0.0_dp
       !write(*,*) Ed
       !do ib=1,num_wann
-      do i=1,n_atoms
-        do j=1,n_orbs
-          if (sym_idx(1,i,j)>0) then
-            sym_Ed(sym_idx(1,i,j))=sym_Ed(sym_idx(1,i,j))+Ed((i-1)*n_orbs+j)!real(HamR((nR+1)/2,ib,ib))
-            mul_fac(sym_idx(1,i,j))=mul_fac(sym_idx(1,i,j))+1.0_dp
-          endif
+      do ispin=1,nspin
+        do i=1,n_atoms
+          do j=1,n_orbs
+            if (sym_idx(ispin,i,j)>0) then
+              sym_Ed(sym_idx(ispin,i,j))=sym_Ed(sym_idx(ispin,i,j))+Ed((i-1)*n_orbs+j)!real(HamR((nR+1)/2,ib,ib))
+              mul_fac(sym_idx(ispin,i,j))=mul_fac(sym_idx(ispin,i,j))+1.0_dp
+            endif
+          enddo
         enddo
       enddo
       do ib=1,ncor_orb
         sym_Ed(ib)=sym_Ed(ib)/mul_fac(ib)
       enddo
-
+       
       if (.not. allocated(Delta)) then
         allocate (Delta(ncor_orb,nom), stat=ierr)
         if (ierr /= 0) call io_error('Error allocating Delta in compute_G_loc')
@@ -435,14 +437,14 @@ contains
     use generate_ham, only: tran
     use comms, only: on_root,comms_allreduce,my_node_id, num_nodes, comms_array_split, &
         comms_reduce, comms_barrier
-
+   
     implicit none
 
     character(len=10) :: write_format
     real(kind=dp) :: tot_n
     complex(kind=dp) :: Gs, Gs0
     integer :: i,j,l,ik,r,ib,im,ispin,loc_i,ierr
-    integer :: nbmin,nbmax,num_band_max
+    integer :: nbmin,nbmax,num_band_max 
     integer :: numk_loc
     ! Needed to split an array on different nodes
     integer, dimension(0:num_nodes - 1) :: counts
@@ -463,10 +465,10 @@ contains
     complex(kind=dp), allocatable :: Delta(:,:)
     complex(kind=dp), allocatable :: Gloc(:,:,:)
     complex(kind=dp), allocatable :: sym_Gloc(:,:)
-    complex(kind=dp) :: DMFT_UU,DMFT_U0
+    complex(kind=dp) :: DMFT_UU,DMFT_U0 
 
     !write(*,*) num_new_kpts
-    call comms_array_split(num_new_kpts, counts, displs)
+    call comms_array_split(num_new_kpts, counts, displs)    
     !write(*,*) my_node_id, counts(my_node_id), displs(my_node_id)
     numk_loc=counts(my_node_id)
 !    mu_iter=100
@@ -583,7 +585,7 @@ contains
             Gloc(i,im,ispin)=Gloc(i,im,ispin)+evec(i,i)*weight(ik)*nspin
           enddo
           Gloc_sum(:,:)=Gloc_sum(:,:)+T*(evec(:,:)+transpose(conjg(evec(:,:))))*weight(ik)
-          !eval=cmplx_0; evec=cmplx_0; evl=cmplx_0; evr=cmplx_0;
+          !eval=cmplx_0; evec=cmplx_0; evl=cmplx_0; evr=cmplx_0; 
           !evec=Hk*1.0_dp
           !do j=1,ncor_orb
           !  evec(j,j)=evec(j,j)+Sigma(j,im)-real(Sigma(j,1200))
@@ -657,6 +659,7 @@ contains
 
       enddo
     enddo
+!    write(*,*) lforce, dEkin
     if (allocated(HamR)) deallocate (HamR,stat=ierr)
     if (allocated(dHamR)) deallocate (dHamR,stat=ierr)
     if (allocated(Hk)) deallocate (Hk,stat=ierr)
@@ -676,7 +679,7 @@ contains
     do i=1,num_wann
       tot_n=tot_n+dm(i)
     enddo
-    call comms_barrier
+!    call comms_barrier
 
     !if (on_root) write(*,*) tot_n,Gloc(1,1,1), Ekin, Ed, dm, mom
 
@@ -702,7 +705,7 @@ contains
       do ib=1,ncor_orb
         sym_Gloc(ib,:)=sym_Gloc(ib,:)/mul_fac(ib)
       enddo
-
+      
 !      write(*,*) 'hi1'
       call write_complex_function('G_loc.out',sym_Gloc,om)
 
@@ -714,12 +717,14 @@ contains
       mul_fac=0.0_dp
       !write(*,*) Ed
       !do ib=1,num_wann
-      do i=1,n_atoms
-        do j=1,n_orbs
-          if (sym_idx(1,i,j)>0) then
-            sym_Ed(sym_idx(1,i,j))=sym_Ed(sym_idx(1,i,j))+Ed((i-1)*n_orbs+j)!real(HamR((nR+1)/2,ib,ib))
-            mul_fac(sym_idx(1,i,j))=mul_fac(sym_idx(1,i,j))+1.0_dp
-          endif
+      do ispin=1,nspin
+        do i=1,n_atoms
+          do j=1,n_orbs
+            if (sym_idx(ispin,i,j)>0) then
+              sym_Ed(sym_idx(ispin,i,j))=sym_Ed(sym_idx(ispin,i,j))+Ed((i-1)*n_orbs+j)!real(HamR((nR+1)/2,ib,ib))
+              mul_fac(sym_idx(ispin,i,j))=mul_fac(sym_idx(ispin,i,j))+1.0_dp
+            endif
+          enddo
         enddo
       enddo
       do ib=1,ncor_orb
@@ -727,7 +732,7 @@ contains
       enddo
       !write(*,*) real(HamR((nR+1)/2,1,1)),real(HamR((nR+1)/2,2,2)),real(HamR((nR+1)/2,3,3)),real(HamR((nR+1)/2,4,4)),real(HamR((nR+1)/2,5,5)),real(HamR((nR+1)/2,6,6))
       !write(*,*) mul_fac
-
+       
       if (.not. allocated(Delta)) then
         allocate (Delta(ncor_orb,nom), stat=ierr)
         if (ierr /= 0) call io_error('Error allocating Delta in compute_G_loc')
@@ -738,14 +743,14 @@ contains
           Delta(ib,im)=mu+cmplx_i*om(im)-sym_Ed(ib)-Sigma(ib,im)-1.0_dp/sym_Gloc(ib,im)
         enddo
       enddo
-!      write(*,*) Delta(1,1)
+!      write(*,*) Delta(1,1) 
 !      write(*,*) 'hi2'
       call write_complex_function('Delta.out',Delta,om)
       call write_float('Ed.out',sym_Ed)
 !      call write_float('DMFT_mu.out',mu)
 
 !      write(*,*) 'hi3'
-!      write(*,*) sym_Ed
+!      write(*,*) sym_Ed 
 !      print *, "Hello world", my_node_id, num_nodes
 !!      OPEN(UNIT=99,FILE='Ed.out',FORM='FORMATTED')
 !! 110  FORMAT('(',I2,'F20.15)')
@@ -801,14 +806,14 @@ contains
     use generate_ham, only: tran
     use comms, only: on_root,comms_allreduce,my_node_id, num_nodes, &
         comms_array_split,comms_reduce, comms_barrier
-
+   
     implicit none
 
     character(len=10) :: write_format
     real(kind=dp) :: tot_n
     complex(kind=dp) :: Gs, Gs0
     integer :: i,j,l,ik,r,ib,im,ispin,loc_i,ierr
-    integer :: nbmin,nbmax,num_band_max
+    integer :: nbmin,nbmax,num_band_max 
     integer :: numk_loc,nfine_tot
     !integer,intent(in) :: n_kpts_loc,n_wann
     ! Needed to split an array on different nodes
@@ -827,9 +832,9 @@ contains
     complex(kind=dp), allocatable :: Delta(:,:)
     complex(kind=dp), allocatable :: Gloc(:,:,:)
     complex(kind=dp), allocatable :: sym_Gloc(:,:)
-    complex(kind=dp) :: DMFT_UU,DMFT_U0
+    complex(kind=dp) :: DMFT_UU,DMFT_U0 
 
-    call comms_array_split(num_new_kpts, counts, displs)
+    call comms_array_split(num_new_kpts, counts, displs)    
     numk_loc=counts(my_node_id)
     if (.not. allocated(Gloc_sum)) then
       allocate (Gloc_sum(num_wann,num_wann,num_new_kpts), stat=ierr)
@@ -955,7 +960,7 @@ contains
     call comms_allreduce(Nd,1,'SUM')
 
 
-    call comms_array_split(n_kpts, counts, displs)
+    call comms_array_split(n_kpts, counts, displs)    
     numk_loc=counts(my_node_id)
 
     if (.not. allocated(DMFT_eval_loc)) then
@@ -987,7 +992,7 @@ contains
     enddo
     call comms_allreduce(DMFT_evec_loc,num_wann,num_wann,n_kpts,'SUM')
     call comms_allreduce(DMFT_eval_loc,num_wann,n_kpts,'SUM')
-
+    
     if (allocated(evec)) deallocate (evec,stat=ierr)
     if (allocated(Gloc_sum)) deallocate (Gloc_sum,stat=ierr)
     if (allocated(UMatrix)) deallocate (UMatrix)
@@ -1001,7 +1006,7 @@ contains
       CLOSE(99)
 
       OPEN(UNIT=99,FILE='INFO_DFT_loop',STATUS='old',FORM='FORMATTED',ACCESS='APPEND')
-      WRITE(99,'(4F12.6)') mu, tot_n, Nd, Ekin
+      WRITE(99,'(4F12.6)') mu, tot_n, Nd, Ekin 
       CLOSE(99)
 
     endif
@@ -1014,7 +1019,7 @@ contains
 !    use generate_kpts, only: kpts, weight, num_new_kpts
 !    use generate_ham, only: tran
 !    use comms, only: on_root,comms_allreduce,my_node_id, num_nodes, comms_array_split,comms_reduce
-!
+!   
 !    implicit none
 !
 !    logical :: iffile
@@ -1022,8 +1027,8 @@ contains
 !    real(kind=dp) :: low_mu, high_mu, tot_n
 !    complex(kind=dp) :: Gs, Gs0
 !    integer :: i,j,l,ik,r,ib,im,ispin,loc_i,ierr
-!    integer :: nbmin,nbmax,num_band_max
-!    integer :: numk_loc,mu_iter
+!    integer :: nbmin,nbmax,num_band_max 
+!    integer :: numk_loc,mu_iter 
 !    ! Needed to split an array on different nodes
 !    integer, dimension(0:num_nodes - 1) :: counts
 !    integer, dimension(0:num_nodes - 1) :: displs
@@ -1039,10 +1044,10 @@ contains
 !    complex(kind=dp), allocatable :: evl(:,:)
 !    complex(kind=dp), allocatable :: evr(:,:)
 !    complex(kind=dp), allocatable :: Gloc_sum(:,:)
-!    complex(kind=dp) :: DMFT_UU,DMFT_U0
+!    complex(kind=dp) :: DMFT_UU,DMFT_U0 
 !
 !    !write(*,*) num_new_kpts
-!    call comms_array_split(num_new_kpts, counts, displs)
+!    call comms_array_split(num_new_kpts, counts, displs)    
 !    !write(*,*) my_node_id, counts(my_node_id), displs(my_node_id)
 !    numk_loc=counts(my_node_id)
 !    mu_iter=100
@@ -1055,4 +1060,5 @@ contains
 !      if (ierr /= 0) call io_error('Error allocating Gloc_sum in compute_G_loc')
 !    endif
 
-end module dmft_ksum
+end module dmft_ksum 
+ 

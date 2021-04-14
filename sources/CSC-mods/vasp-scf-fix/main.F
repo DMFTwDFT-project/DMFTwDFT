@@ -42,8 +42,8 @@
 ! For the mixing a Broyden/Pulay like method is used (see for instance):
 !  D. Johnson, Phys. Rev. B 38, 12807 (1988)
 !
-! The program can use normconserving PP,
-! generalised ultrasoft-PP (Vanderbilt-PP Vanderbilt Phys Rev B 40,
+! The program can use normconserving PP, 
+! generalised ultrasoft-PP (Vanderbilt-PP Vanderbilt Phys Rev B 40,  
 ! 12255 (1989)) and PAW (P.E. Bloechl, Phys. Rev. B{\bf 50}, 17953 (1994))
 ! datasets. Partial core corrections can be handled
 ! Spin and GGA and exact exchange functionals are implemented
@@ -152,9 +152,9 @@
       USE dvvtrajectory
 
       USE mlwf
-#ifdef VASP2WANNIER90
+#ifdef VASP2WANNIER90 
       USE dmft
-      USE crpa
+      USE crpa 
 #endif
       USE chgfit
       USE stockholder
@@ -242,7 +242,7 @@
        INTEGER :: SEED(3),SEED_INIT(3)
        INTEGER :: DTVALUES(8)
        INTEGER :: IDUMLONG
-       INTEGER :: CLOCK
+       INTEGER :: CLOCK       
        INTEGER, PARAMETER :: SEED1_MAX=900000000, K_SEED=3
        INTEGER, PARAMETER :: SEED2_MAX=1000000
 #endif
@@ -292,7 +292,7 @@
       GDEF   ,POINTER::   CHF(:,:,:,:),CHAM(:,:,:,:)
 !  optics stuff
       GDEF   ,ALLOCATABLE::   NABIJ(:,:)
-!
+!  
       LOGICAL :: LVCADER
 
 !-----remaining mainly work arrays
@@ -331,7 +331,7 @@
       INTEGER NORDER   !   order of smearing
 !---- a few logical and string variables
       LOGICAL    LTMP,LSTOP2
-      LOGICAL    LPAW           ! paw is used
+      LOGICAL    LPAW           ! paw is used 
       LOGICAL    LPARD          ! partial band decomposed charge density
       LOGICAL    LREALLOCATE    ! reallocation of proj operators required
       LOGICAL    L_NO_US        ! no ultrasoft PP
@@ -381,21 +381,21 @@
       LOGICAL  LBEEFCALCBASIS
       COMMON /BEEFENS/ LBEEFCALCBASIS,LBEEFBAS
 #endif
-
-      ! These are declared in mlwf.F
-      !integer, parameter :: dp = kind(1.0d0)
+      ! DMFTwDFT
+      ! !integer, parameter :: dp = kind(1.0d0)
       !real(kind=dp),allocatable :: DMFT_eval_(:,:)
       !complex(kind=dp),allocatable :: DMFT_evec_(:,:,:)
       INTEGER NB, NK, NP, NBG
-      REAL(q) tot_n
-      COMPLEX(q),allocatable :: WaveW(:,:,:),WaveW_tot(:,:,:)
-      COMPLEX(q),allocatable :: WProj(:,:,:),WProj_tot(:,:,:)
-      REAL(q),allocatable :: FERWE(:,:)
+      REAL(q) POTIM !tot_n
+     ! COMPLEX(q),allocatable :: WaveW(:,:,:),WaveW_tot(:,:,:)
+     ! COMPLEX(q),allocatable :: WProj(:,:,:),WProj_tot(:,:,:)
+     ! REAL(q),allocatable :: FERWE(:,:)
 
-      integer eig_i,eig_k
-      REAL(q) DMFT_eval_norm
+       REAL(q) DMFT_eval_norm
+       integer eig_i,eig_k,num_wannier
 
       INTERFACE
+
         subroutine Compute_DMFT(n_kpts_loc,n_wann,kpt_dft,wght_dft,band_win_loc,DMFT_eval,DMFT_evec)
 
         implicit none
@@ -408,6 +408,7 @@
         real(kind=dp), intent(out) :: DMFT_eval(n_wann,n_kpts_loc)
         complex(kind=dp), intent(out) :: DMFT_evec(n_wann,n_wann,n_kpts_loc)
         end subroutine
+
         subroutine Compute_DMFT_from_amn(n_kpts_loc,n_wann,kpt_dft,wght_dft,band_win_loc,DMFT_eval,DMFT_evec)
 
         implicit none
@@ -420,6 +421,45 @@
         real(kind=dp), intent(out) :: DMFT_eval(n_wann,n_kpts_loc)
         complex(kind=dp), intent(out) :: DMFT_evec(n_wann,n_wann,n_kpts_loc)
         end subroutine
+
+        subroutine Compute_tetra_force(n_kpts_loc,n_wann,kpt_dft,wght_dft,band_win_loc,DMFT_EDM)
+
+        implicit none
+        !integer, intent(in) :: mpi_comm_world,mpi_sum,mpi_integer
+        integer, parameter :: dp = kind(1.0d0)
+        integer, intent(in) :: n_kpts_loc,n_wann
+        real(kind=dp), intent(in) :: kpt_dft(3,n_kpts_loc)
+        real(kind=dp), intent(in) :: wght_dft(n_kpts_loc)
+        integer, intent(out) :: band_win_loc(2,n_kpts_loc)
+        complex(kind=dp), intent(out) :: DMFT_EDM(28,n_wann,n_kpts_loc)
+        end subroutine
+
+        subroutine Compute_tetra(n_kpts_loc,n_wann,kpt_dft,wght_dft,band_win_loc,DMFT_eval,DMFT_evec)
+
+        implicit none
+        !integer, intent(in) :: mpi_comm_world,mpi_sum,mpi_integer
+        integer, parameter :: dp = kind(1.0d0)
+        integer, intent(in) :: n_kpts_loc,n_wann
+        real(kind=dp), intent(in) :: kpt_dft(3,n_kpts_loc)
+        real(kind=dp), intent(in) :: wght_dft(n_kpts_loc)
+        integer, intent(out) :: band_win_loc(2,n_kpts_loc)
+        real(kind=dp), intent(out) :: DMFT_eval(n_wann,n_kpts_loc)
+        complex(kind=dp), intent(out) :: DMFT_evec(n_wann,n_wann,n_kpts_loc)
+        end subroutine
+
+        subroutine Compute_tetra_from_amn(n_kpts_loc,n_wann,kpt_dft,wght_dft,band_win_loc,DMFT_eval,DMFT_evec)
+
+        implicit none
+        !integer, intent(in) :: mpi_comm_world,mpi_sum,mpi_integer
+        integer, parameter :: dp = kind(1.0d0)
+        integer, intent(in) :: n_kpts_loc,n_wann
+        real(kind=dp), intent(in) :: kpt_dft(3,n_kpts_loc)
+        real(kind=dp), intent(in) :: wght_dft(n_kpts_loc)
+        integer, intent(out) :: band_win_loc(2,n_kpts_loc)
+        real(kind=dp), intent(out) :: DMFT_eval(n_wann,n_kpts_loc)
+        complex(kind=dp), intent(out) :: DMFT_evec(n_wann,n_wann,n_kpts_loc)
+        end subroutine
+
       END INTERFACE
 
 #ifdef PROFILING
@@ -453,7 +493,7 @@
       g_io%PENALTY=534
 #endif
 !
-! with all the dynamic libraries (blas, lapack, scalapack etc.
+! with all the dynamic libraries (blas, lapack, scalapack etc. 
 ! VASP has a size of at least 30 Mbyte
 !
       CALL INIT_FINAL_TIMING
@@ -561,7 +601,7 @@
       CALL RD_POSCAR_HEAD(LATT_CUR, T_INFO, &
      &           NIOND,NIONPD, NTYPD,NTYPPD, IO%IU0, IO%IU6)
 
-      ALLOCATE(T_INFO%ATOMOM(3*NIOND),T_INFO%RWIGS(NTYPPD),T_INFO%ROPT(NTYPD),T_INFO%POMASS(NTYPD), &
+      ALLOCATE(T_INFO%ATOMOM(3*NIOND),T_INFO%RWIGS(NTYPPD),T_INFO%ROPT(NTYPD),T_INFO%POMASS(NTYPD), & 
                T_INFO%DARWIN_V(NTYPD), T_INFO%DARWIN_R(NTYPD),T_INFO%VCA(NTYPD))
 
       IF (IO%IU6>=0) THEN
@@ -598,10 +638,10 @@
           DYN%IBRION,INFO%ICHARG,INFO%INIWAV,INFO%NELM,INFO%NELMALL,INFO%NELMIN,INFO%NELMDL,INFO%EDIFF,DYN%EDIFFG, &
           DYN%NSW,DYN%ISIF,PRED%IWAVPR,SYMM%ISYM,DYN%NBLOCK,DYN%KBLOCK,INFO%ENMAX,DYN%POTIM,DYN%TEBEG, &
           DYN%TEEND,DYN%NFREE, &
-          PACO%NPACO,PACO%APACO,T_INFO%NTYP,NTYPD,DYN%SMASS,SCALEE,T_INFO%POMASS, &
+          PACO%NPACO,PACO%APACO,T_INFO%NTYP,NTYPD,DYN%SMASS,SCALEE,T_INFO%POMASS, & 
           T_INFO%DARWIN_V,T_INFO%DARWIN_R,T_INFO%VCA,LVCADER, &
-          T_INFO%RWIGS,INFO%NELECT,INFO%NUP_DOWN,INFO%TIME, &
-          KPOINTS%EMIN,KPOINTS%EMAX,KPOINTS%EFERMI,KPOINTS%ISMEAR,KPOINTS%SPACING,KPOINTS%LGAMMA, &
+          T_INFO%RWIGS,INFO%NELECT,INFO%NUP_DOWN,INFO%TIME, & 
+          KPOINTS%EMIN,KPOINTS%EMAX,KPOINTS%EFERMI,KPOINTS%ISMEAR,KPOINTS%SPACING,KPOINTS%LGAMMA, & 
           DYN%PSTRESS,INFO%NDAV, &
           KPOINTS%SIGMA,KPOINTS%LTET,INFO%WEIMIN,INFO%EBREAK,INFO%DEPER,IO%NWRITE,INFO%LCORR, &
           IO%IDIOT,T_INFO%NIONS,T_INFO%NTYPP,IO%LMUSIC,IO%LOPTICS,STM, &
@@ -664,7 +704,7 @@
       ENDIF
 ! METAGGA not implemented for non collinear magnetism
 !      IF (WDES%LNONCOLLINEAR .AND. INFO%LMETAGGA) THEN
-!         WRITE(*,*) 'METAGGA for non collinear magnetism not supported.'
+!         WRITE(*,*) 'METAGGA for non collinear magnetism not supported.' 
 !         WRITE(*,*) 'exiting VASP; sorry for the inconveniences.'
 !         STOP
 !      ENDIF
@@ -731,7 +771,7 @@
       CALL CRPA_READER(IO%IU5, IO%IU6, IO%IU0, NBANDS, L2E4W, L2E4W_ALL ,IO%LDOWNSAMPLE)
       CALL PEAD_READER(IO%IU5, IO%IU6, IO%IU0)
       CALL DMATRIX_READER(IO%IU5, IO%IU6, IO%IU0)
-      CALL XC_FOCK_READER(IO%IU5, IO%IU0, IO%IU6, INFO%SZPREC, DYN%ISIF, SYMM%ISYM, INFO%IALGO, &
+      CALL XC_FOCK_READER(IO%IU5, IO%IU0, IO%IU6, INFO%SZPREC, DYN%ISIF, SYMM%ISYM, INFO%IALGO, & 
          LATT_CUR%OMEGA, T_INFO%NTYP, T_INFO%NIONS, MIX%IMIX, MIX%AMIX, MIX%AMIX_MAG, MIX%BMIX, MIX%BMIX_MAG, IO%LVTOT)
       CALL EGRAD_READER(IO%IU5, IO%IU6, IO%IU0, T_INFO%NTYP)
       CALL CLASSICFIELDS_READER(IO%IU5, IO%IU6, IO%IU0)
@@ -859,7 +899,7 @@
       CALL chain_init( T_INFO, IO)
 !-----------------------------------------------------------------------
 !xml finish copying parameters from INCAR to xml file
-! no INCAR reading from here
+! no INCAR reading from here 
       CALL XML_CLOSE_TAG("incar")
 !-----------------------------------------------------------------------
 #if CUDA_GPU
@@ -892,7 +932,7 @@
 
 
 #ifdef tbdyn
-      !c some MD methods (e.q. Langevin dynamics) do not conserve total momentum!
+      !c some MD methods (e.q. Langevin dynamics) do not conserve total momentum! 
       IF ( T_INFO%LSDYN ) THEN
          CALL SET_SELECTED_VEL_ZERO(T_INFO, DYN%VEL,LATT_CUR)
       ELSE IF (MDALGO/=3 .AND. MDALGO/=31 .AND. DYN%IBRION/=44 .AND. DYN%IBRION/=40) THEN
@@ -956,12 +996,12 @@
 !  number of k-points and k-points in reciprocal lattice
 !=======================================================================
       IF(IO%IU6>=0)  WRITE(TIU6,*)
-      ! use full k-point grid if finite differences are used or
+      ! use full k-point grid if finite differences are used or 
       ! linear response is applied
-      IF (DYN%IBRION==5 .OR. DYN%IBRION==6 .OR. DYN%IBRION==7.OR. DYN%IBRION==8 &
-          .OR. LEPSILON .OR. LVEL .OR. KINTER/=0 .OR. LMAGBLOCH  &
+      IF (DYN%IBRION==5 .OR. DYN%IBRION==6 .OR. DYN%IBRION==7.OR. DYN%IBRION==8 & 
+          .OR. LEPSILON .OR. LVEL .OR. KINTER/=0 .OR. LMAGBLOCH  & 
           .OR. LCHIMAG .OR. LTIME_EVOLUTION) CALL USE_FULL_KPOINTS
-      ! apply preferentially time inversion symmetry to generate orbitals at -k
+      ! apply preferentially time inversion symmetry to generate orbitals at -k    
       IF (WDES%LORBITALREAL) CALL USE_TIME_INVERSION
 
       IF (LBERRY) THEN
@@ -981,7 +1021,7 @@
             .NOT.WDES%LSPIRAL, &
             SYMM%ISYM<0,IO%IU6,IO%IU0)
 
-         CALL SETUP_FULL_KPOINTS(KPOINTS,LATT_CUR,T_INFO%NIOND, &
+         CALL SETUP_FULL_KPOINTS(KPOINTS,LATT_CUR,T_INFO%NIOND, & 
             SYMM%ROTMAP,SYMM%MAGROT,SYMM%ISYM, &
             SYMM%ISYM>=0.AND. &
             .NOT.WDES%LSORBIT.AND. &
@@ -992,7 +1032,7 @@
             SYMM%ISYM>=0.AND..NOT.WDES%LNONCOLLINEAR, &
             SYMM%ISYM<0,IO%IU6,IO%IU0)
 
-         CALL SETUP_FULL_KPOINTS(KPOINTS,LATT_CUR,T_INFO%NIOND, &
+         CALL SETUP_FULL_KPOINTS(KPOINTS,LATT_CUR,T_INFO%NIOND, & 
             SYMM%ROTMAP,SYMM%MAGROT,SYMM%ISYM, &
             SYMM%ISYM>=0.AND..NOT.WDES%LNONCOLLINEAR, &
             IO%IU6,IO%IU0, LSYMGRAD)
@@ -1095,7 +1135,7 @@
      &        ITUT,2,CDUM,1,LDUM,1,IO%IU0,IO%IDIOT)
          CALL VTUTOR('W','NBANDS changed',RTUT,1, &
      &        ITUT,2,CDUM,1,LDUM,1,IO%IU6,IO%IDIOT)
-
+         
       ENDIF
 
       NBANDS=((NBANDS+NPAR-1)/NPAR)*NPAR
@@ -1192,7 +1232,7 @@
          WDES%NRSPINORS = 2
          INFO%RSPIN = 1
       ELSE
-         WDES%NRSPINORS = 1
+         WDES%NRSPINORS = 1 
       ENDIF
       WDES%RSPIN = INFO%RSPIN
 
@@ -1258,7 +1298,7 @@
       ITUT(2)=YCUTOF*WFACT+0.5_q
       ITUT(3)=ZCUTOF*WFACT+0.5_q
       CALL FFTCHK(ITUT(1:3))
-      IF (IO%IU6>=0 .AND. (ITUT(1)/=NGX .OR. ITUT(2)/=NGY .OR. ITUT(3)/=NGZ)) &
+      IF (IO%IU6>=0 .AND. (ITUT(1)/=NGX .OR. ITUT(2)/=NGY .OR. ITUT(3)/=NGZ)) & 
         WRITE(TIU6,72111) ITUT(1),ITUT(2),ITUT(3)
 
 72111 FORMAT(' Based on PREC, I would recommend the following setting:'/ &
@@ -1514,7 +1554,7 @@
           DYN%NSW,DYN%ISIF,PRED%IWAVPR,SYMM%ISYM,DYN%NBLOCK,DYN%KBLOCK,INFO%ENMAX,DYN%POTIM,DYN%TEBEG, &
           DYN%TEEND,DYN%NFREE, &
           PACO%NPACO,PACO%APACO,T_INFO%NTYP,NTYPD,DYN%SMASS,SCALEE,T_INFO%POMASS,T_INFO%DARWIN_V,T_INFO%DARWIN_R,  &
-          T_INFO%RWIGS,INFO%NELECT,INFO%NUP_DOWN,INFO%TIME,KPOINTS%EMIN,KPOINTS%EMAX,KPOINTS%EFERMI, &
+          T_INFO%RWIGS,INFO%NELECT,INFO%NUP_DOWN,INFO%TIME,KPOINTS%EMIN,KPOINTS%EMAX,KPOINTS%EFERMI, & 
           KPOINTS%ISMEAR,KPOINTS%SPACING,KPOINTS%LGAMMA,DYN%PSTRESS,INFO%NDAV, &
           KPOINTS%SIGMA,KPOINTS%LTET,INFO%WEIMIN,INFO%EBREAK,INFO%DEPER,IO%NWRITE,INFO%LCORR, &
           IO%IDIOT,T_INFO%NIONS,T_INFO%NTYPP,IO%LMUSIC,IO%LOPTICS,STM, &
@@ -1596,7 +1636,7 @@
            WRITE(TIU6,*)'relaxation of ions and charge simultaneously'
       ELSE IF (DYN%IBRION==11) THEN
            WRITE(TIU6,*)'interactive mode, write forces and read positions'
-      !tb beg
+      !tb beg 
       ELSE IF (DYN%IBRION==44) THEN
           WRITE(TIU6,*)'improved dimer method for transition state relaxation'
       !tb end
@@ -1714,7 +1754,7 @@
 !  RMM-DIIS + Davidson
       ELSE IF (INFO%IALGO>=60) THEN
         IF(IO%IU6>=0)  WRITE(TIU6,*) 'RMM-DIIS sequential band-by-band and'
-        IF(IO%IU6>=0)  WRITE(TIU6,*) ' variant of blocked Davidson during initial phase'
+        IF(IO%IU6>=0)  WRITE(TIU6,*) ' variant of blocked Davidson during initial phase' 
         INFO%IALGO=INFO%IALGO-60
         INFO%LRMM   =.TRUE.
         INFO%LDAVID =.TRUE.
@@ -2089,7 +2129,7 @@
 ! allocate real space projectors
       CALL NONLR_ALLOC(NONLR_S)
 !  init FFT
-      CALL FFTINI(WDES%NINDPW(1,1),WDES%NGVECTOR(1),KPOINTS%NKPTS,WDES%NGDIM,GRID)
+      CALL FFTINI(WDES%NINDPW(1,1),WDES%NGVECTOR(1),KPOINTS%NKPTS,WDES%NGDIM,GRID) 
 #ifdef MPI
       CALL MAPSET(GRID)   ! generate the communication maps (patterns) for FFT
       IF (IO%IU6 >=0) THEN
@@ -2122,12 +2162,12 @@
       LMDIM   =P(1)%LMDIM
 
 #if defined(CUDA_GPU) && defined(USE_PINNED_MEMORY)
-      CALL nvpinnedmalloc(SV_PTR,DIMREAL(GRID%MPLWV)*NCDIJ*int(c_sizeof(fake),c_size_t))
+      CALL nvpinnedmalloc(SV_PTR,DIMREAL(GRID%MPLWV)*NCDIJ*int(c_sizeof(fake),c_size_t)) 
       CALL c_f_pointer(SV_PTR,SV,(/DIMREAL(GRID%MPLWV),NCDIJ/))
 ! charges, potentials and so on
       CALL nvpinnedmalloc(CHTOT_PTR, GRIDC%MPLWV * NCDIJ*int(c_sizeof(fakec),c_size_t))
       CALL c_f_pointer(CHTOT_PTR, CHTOT, (/GRIDC%MPLWV,NCDIJ/))
-#else
+#else   
       ALLOCATE(CHTOT(GRIDC%MPLWV,NCDIJ),SV(DIMREAL(GRID%MPLWV),NCDIJ))
 #endif
       ALLOCATE(CHTOTL(GRIDC%MPLWV,NCDIJ),DENCOR(GRIDC%RL%NP), &
@@ -2155,14 +2195,14 @@
       ENDIF
 
       CALL ALLOCATE_AVEC(HAMILTONIAN%AVEC, HAMILTONIAN%AVTOT, GRID, GRIDC)
-
+      
       CALL ALLOCATE_MU(HAMILTONIAN%MU, HAMILTONIAN%MUTOT, GRID, GRIDC, WDES)
 ! test_
 !     CALL GENERATE_TAU_HANDLE(KINEDEN, GRIDC, WDES%NCDIJ)
       CALL ALLOCATE_TAU(KINEDEN%TAU,KINEDEN%TAUC,KINEDEN%TAUL,GRIDC,WDES%NCDIJ)
 ! test_
       CALL CREATE_CMBJ_AUX(GRIDC,T_INFO,LATT_CUR)
-
+      
       DWRITE0 'allocation done'
 !
       ALLOCATE(CWORK1(GRID%MPLWV))
@@ -2240,7 +2280,7 @@
 
       IF (INFO%ISTART/=2) LATT_INI=LATT_CUR
 !=======================================================================
-! At this very point everything has been read in
+! At this very point everything has been read in 
 ! and we are ready to write all important information
 ! to the xml file
 !=======================================================================
@@ -2295,7 +2335,7 @@
          ! and reset INICHG to 1 so that CHGCAR is read as well
          INFO%INICHG=1
       ENDIF
-
+ 
       ! then initialize CRHODE and than RHOLM (PAW related occupancies)
       CALL DEPATO(WDES, LMDIM, CRHODE, INFO%LOVERL, P, T_INFO)
       CALL SET_RHO_PAW(WDES, P, T_INFO, INFO%LOVERL, WDES%NCDIJ, LMDIM, &
@@ -2398,7 +2438,7 @@
         IF (INFO%INICHG==0)  INFO%INICHG=2
         ! no magnetization density set it according to MAGMOM
         IF (INFO%INICHG==-1) THEN
-           IF (WDES%NCDIJ>1) &
+           IF (WDES%NCDIJ>1) & 
                 CALL MRHOATO(.FALSE.,GRIDC,T_INFO,LATT_CUR%B,P,CHTOT(1,2),WDES%NCDIJ-1)
            INFO%INICHG=1
            IF( TIU0 >=0) WRITE(TIU0,*)'magnetization density of overlapping atoms calculated'
@@ -2413,7 +2453,7 @@
          ELSE
             CALL RHOATO_PARTICLE_MESH(.FALSE.,.FALSE.,GRIDC,LATT_CUR,T_INFO,INFO,P,CHTOT,IO%IU6)
          ENDIF
-         IF (WDES%NCDIJ>1) &
+         IF (WDES%NCDIJ>1) & 
               CALL MRHOATO(.FALSE.,GRIDC,T_INFO,LATT_CUR%B,P,CHTOT(1,2),WDES%NCDIJ-1)
 
          IF (IO%IU6>=0) WRITE(TIU6,*)'charge density of overlapping atoms calculated'
@@ -2453,8 +2493,8 @@
         WRITE(TIU6,130)
       ENDIF
 
-      ! add Gaussian "charge-transfer" charges, if required
-      CALL RHOADD_GAUSSIANS(T_INFO,LATT_CUR,P,GRIDC,NCDIJ,CHTOT,CSTRF)
+      ! add Gaussian "charge-transfer" charges, if required 
+      CALL RHOADD_GAUSSIANS(T_INFO,LATT_CUR,P,GRIDC,NCDIJ,CHTOT,CSTRF) 
       CALL RHOADD_GAUSSIANS_LIST(LATT_CUR,GRIDC,NCDIJ,CHTOT)
 
       DWRITE0 'atomic charge done'
@@ -2552,7 +2592,7 @@
 !         CALL XML_INCAR_V('FERDO','F',IDUM,W%FERTOT(1,1,INFO%ISPIN),CDUM,LDUM,CHARAC,N)
       ENDIF
       CLOSE(IO%IU5)
-
+ 
 ! if ISMEAR == -2 occupancies will be kept fixed
       IF (KPOINTS%ISMEAR==-2) THEN
          KPOINTS%SIGMA=-ABS(KPOINTS%SIGMA)
@@ -2597,7 +2637,7 @@
 
       CALL CALC_JPAW_HAMIL(T_INFO, P)
       ! set vector potential
-      CALL VECTORPOT(GRID, GRIDC, GRID_SOFT, SOFT_TO_C,  WDES%COMM_INTER, &
+      CALL VECTORPOT(GRID, GRIDC, GRID_SOFT, SOFT_TO_C,  WDES%COMM_INTER, & 
                  LATT_CUR, T_INFO%POSION, HAMILTONIAN%AVEC, HAMILTONIAN%AVTOT)
       ! first call to SETDIJ_AVEC only sets phase twisted projectors
       CALL SETDIJ_AVEC(WDES,GRIDC,GRIDUS,C_TO_US,LATT_CUR,P,T_INFO,INFO%LOVERL, &
@@ -2612,7 +2652,7 @@
 
       CALL PROALL (GRID,LATT_CUR,NONLR_S,NONL_S,W)
       DWRITE0 'proall done'
-
+ 
       CALL ORTHCH(WDES,W, INFO%LOVERL, LMDIM,CQIJ)
       CALL REDIS_PW_OVER_BANDS(WDES, W)
       DWRITE0 'orthch done'
@@ -2641,57 +2681,50 @@
       IF (INFO%INICHG==0 .OR. INFO%INICHG==4 .OR. (.NOT.INFO%LCHCOS .AND. INFO%NELMDL==0)  ) THEN
          IF (IO%IU6>=0) &
               WRITE(TIU6,*)'initial charge from wavefunction'
-
+         
          IF (IO%IU0>=0) &
               WRITE(TIU0,*)'initial charge from wavefunction'
 
-         !IF (IO%IU6>=0) THEN
-         !  write(*,*) KPOINTS_FULL%NKPX,KPOINTS_FULL%NKPY,KPOINTS_FULL%NKPZ
-         !  write(*,*) WDES%NKPTS
-         !  DO NK=1,WDES%NKPTS
-         !     write(*,*) WDES%VKPT(1,NK), WDES%VKPT(2,NK), WDES%VKPT(3,NK), WDES%WTKPT(NK)
-         !  ENDDO
-         !ENDIF
-         !write(*,*) COMM%MPI_COMM, MPI_sum
+         !DMFTwDFT
+  
          inquire(file='dmft_params.dat',exist=LDMFT)
+         !LDMFT=.FALSE.
          if (LDMFT.eq..TRUE.) then
-            IF (IO%IU6>=0) &
+         IF (IO%IU6>=0) &
                 WRITE(TIU6,*)'DFT+DMFT run with DMFTwDFT'
 
-            IF (IO%IU0>=0) &
+         IF (IO%IU0>=0) &
                 WRITE(TIU0,*)'DFT+DMFT run with DMFTwDFT'
 
 
-           num_wann_=0
-           CALL ParseWannier90(num_wann_)
-
-
-           CALL CHECK_FULL_KPOINTS
+           num_wannier=0
+           CALL ParseWannier90(num_wannier)
+           !CALL CHECK_FULL_KPOINTS
            !num_wann_=14
+            num_wann_ = num_wannier
+           !write(*,*) 'hi'
            !allocate(DMFT_eval_(28,KPOINTS_FULL%NKPTS))
            !allocate(DMFT_evec_(28,28,KPOINTS_FULL%NKPTS))
            !allocate(band_win_(2,KPOINTS_FULL%NKPTS))
            allocate(DMFT_eval_(num_wann_,WDES%NKPTS))
            allocate(DMFT_evec_(num_wann_,num_wann_,WDES%NKPTS))
            allocate(band_win_(2,WDES%NKPTS))
-
-           DMFT_eval_ = 0.0_dp
-           DMFT_evec_ = (0.0_dp,0.0_dp)
-           band_win_ = 0
-           !CALL MLWF_WANNIER90_AMN(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
+           !CALL CHECK_FULL_KPOINTS
+           !num_wann_=28
+           !allocate(DMFT_EDM_(17,num_wann_,WDES%NKPTS))
+           !allocate(band_win_(2,WDES%NKPTS))
+           !CALL Compute_tetra_force(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_EDM_)
+           !CALL
+           !MLWF_WANNIER90_AMN(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
            !CALL MPI_barrier( WDES%COMM%MPI_COMM, ierr )
            !write(*,*) 'hi'
+           !CALL
            !CALL Compute_DMFT(KPOINTS_FULL%NKPTS,num_wann_,KPOINTS_FULL%VKPT,KPOINTS_FULL%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
            !write(*,*) 'hi2'
-           !write(*,*) "Computing DMFT..."
+           !CALL Compute_tetra(KPOINTS_FULL%NKPTS,num_wann_,KPOINTS_FULL%VKPT,KPOINTS_FULL%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
            CALL Compute_DMFT(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
-
-            ! Print the eigen values for the wannier manifold for each
-            ! k-point
-
-!            write(*,*) "RSPIN: "
-!            write(*,*) W%WDES%RSPIN
-            DMFT_eval_norm = 0.0_dp
+             ! Print the eigen values for the wannier manifold for each
+             ! k-point
             open(1, file = 'dmft-nkij_eig_vasp.dat',status="REPLACE")
             write(1,*) "k, wk, band, n_kij_eig"
             do eig_k=1,WDES%NKPTS
@@ -2702,11 +2735,12 @@
                 enddo
             enddo
             close(1)
-
-
-
-
-           !CALL Compute_DMFT_from_amn(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
+           !print *, band_win_
+           !STOP
+!           CALL Compute_tetra(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
+           !CALL Compute_tetra_from_amn(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
+           !CALL
+           !Compute_DMFT_from_amn(WDES%NKPTS,num_wann_,WDES%VKPT,WDES%WTKPT,band_win_,DMFT_eval_,DMFT_evec_)
            !IF (IO%IU6>=0) then
            !  DO IK=1,WDES%NKPTS
            !    write(*,*) IK,DMFT_eval_(:,IK),DMFT_evec_(:,1,IK)
@@ -2714,75 +2748,7 @@
            !ENDIF
            !STOP
          endif
-
-!!!!!!!!!  !!!!!!!! Rotate WAVE function !!!!!!!!!!!!!!!!!!
-
-!           ALLOCATE(FERWE(WDES%NBANDS,WDES%NKPTS))
-!           ALLOCATE(WaveW(WDES%NRPLWV,WDES%NB_TOT,WDES%NKPTS))
-!           ALLOCATE(WaveW_tot(WDES%NRPLWV,WDES%NB_TOT,WDES%NKPTS))
-!           ALLOCATE(WProj(WDES%NPRO_TOT,WDES%NB_TOT,WDES%NKPTS))
-!           ALLOCATE(WProj_tot(WDES%NPRO_TOT,WDES%NB_TOT,WDES%NKPTS))
-!           FERWE=0;WaveW=0;WaveW_tot=0;WProj=0;WProj_tot=0
-!           DO NK=1,WDES%NKPTS
-!#ifdef MPI
-!           IF (MOD(NK-1,WDES%COMM_KINTER%NCPU).NE.WDES%COMM_KINTER%NODE_ME-1) CYCLE
-!#endif
-!           DO NB=1,WDES%NBANDS
-!             FERWE(NB,NK)=W%FERWE(NB,NK,1)
-!             DO NP=1,WDES%NRPLWV
-!                WaveW(NP,WDES%NB_LOW+(NB-1)*WDES%NB_PAR,NK)=W%CW(NP,NB,NK,1)!/WDES%COMM_KINTER%NCPU
-!             ENDDO
-!             DO NP=1,WDES%NPRO_TOT
-!                WProj(NP,WDES%NB_LOW+(NB-1)*WDES%NB_PAR,NK)=W%CPROJ(NP,NB,NK,1)!/WDES%COMM_KINTER%NCPU
-!             ENDDO
-!           ENDDO
-!           ENDDO
-!
-!!           write(*,*) 'hi'
-!           CALL MPI_ALLREDUCE(WaveW,WaveW_tot,WDES%NRPLWV*WDES%NB_TOT*WDES%NKPTS,MPI_DOUBLE_COMPLEX,MPI_SUM,WDES%COMM%MPI_COMM,ierr)
-!           CALL MPI_ALLREDUCE(WProj,WProj_tot,WDES%NPRO_TOT*WDES%NB_TOT*WDES%NKPTS,MPI_DOUBLE_COMPLEX,MPI_SUM,WDES%COMM%MPI_COMM,ierr)
-!!           write(*,*) 'hi2'
-!           DO NK=1,WDES%NKPTS
-!#ifdef MPI
-!             IF (MOD(NK-1,WDES%COMM_KINTER%NCPU).NE.WDES%COMM_KINTER%NODE_ME-1) CYCLE
-!#endif
-!             nbmin=band_win_(1,NK); nbmax=band_win_(2,NK)
-!             num_band_max=nbmax-nbmin+1
-!             DO NB=1,WDES%NBANDS
-!               NBG=WDES%NB_LOW+(NB-1)*WDES%NB_PAR
-!               if (NBG .GE. nbmin .AND. NBG .LE. nbmax) then
-!                 W%FERWE(NB,NK,1)=0
-!                 if (NBG-nbmin+1 .LE. num_wann_) W%FERWE(NB,NK,1)=DMFT_EVAL_(NBG-nbmin+1,NK)
-!                 W%CW(:,NB,NK,1)=0
-!                 W%CPROJ(:,NB,NK,1)=0
-!                 DO NP=1,num_band_max
-!                   W%CW(:,NB,NK,1)=W%CW(:,NB,NK,1)+WaveW_tot(:,nbmin+NP-1,NK)*DMFT_EVEC_(NP,NBG-nbmin+1,NK)
-!                   W%CPROJ(:,NB,NK,1)=W%CPROJ(:,NB,NK,1)+WProj_tot(:,nbmin+NP-1,NK)*DMFT_EVEC_(NP,NBG-nbmin+1,NK)
-!                 ENDDO
-!               endif
-!             ENDDO
-!           ENDDO
-!           DEALLOCATE(WaveW_tot)
-!           DEALLOCATE(WProj_tot)
-!         endif
-         !tot_n=0
-         !DO NK=1,WDES%NKPTS
-         !  DO NB=1,WDES%NBANDS
-         !    tot_n=tot_n+W%FERWE(NB,NK,1)*WDES%WTKPT(NK)*2
-         !  ENDDO
-         !ENDDO
-         !write(*,*) WDES%NB_LOW, WDES%COMM_KINTER%NODE_ME,tot_n
-         !STOP
-         !DO NK=1,WDES%NKPTS
-         !  DO NB=1,num_wann_
-         !    tot_n=0
-         !    DO NP=1,num_wann_
-         !      tot_n=tot_n+DMFT_EVEC_(NB,NP,NK)*CONJG(DMFT_EVEC_(NB,NP,NK))
-         !    ENDDO
-         !    !write(*,*) NK,NB,tot_n
-         !  ENDDO
-         !ENDDO
-
+         !LDMFT=.FALSE.
 
          CALL SET_CHARGE(W, WDES, INFO%LOVERL, &
               GRID, GRIDC, GRID_SOFT, GRIDUS, C_TO_US, SOFT_TO_C, &
@@ -2790,26 +2756,10 @@
               CHDEN, LMDIM, CRHODE, CHTOT, RHOLM, N_MIX_PAW, IRDMAX)
 
          CALL SET_KINEDEN(GRID,GRID_SOFT,GRIDC,SOFT_TO_C,LATT_CUR,SYMM, &
-              T_INFO%NIONS,W,WDES,KINEDEN)
-
-!         if (LDMFT.eq..TRUE.) then
-!           DO NK=1,WDES%NKPTS
-!#ifdef MPI
-!             IF (MOD(NK-1,WDES%COMM_KINTER%NCPU).NE.WDES%COMM_KINTER%NODE_ME-1) CYCLE
-!#endif
-!             DO NB=1,WDES%NBANDS
-!                W%FERWE(NB,NK,1)=FERWE(NB,NK)
-!                NBG=WDES%NB_LOW+(NB-1)*WDES%NB_PAR
-!                if (NBG .GE. nbmin .AND. NBG .LE. nbmax) then
-!                  W%CW(:,NB,NK,1)=WaveW(:,NBG,NK)
-!                  W%CPROJ(:,NB,NK,1)=WProj(:,NBG,NK)
-!                endif
-!             ENDDO
-!           ENDDO
-!           DEALLOCATE(FERWE)
-!           DEALLOCATE(WaveW)
-!           DEALLOCATE(WProj)
-!         endif
+              T_INFO%NIONS,W,WDES,KINEDEN)      
+         !print *, band_win_
+         !print *, RHO0(GRIDC, CHTOT(1,1))
+         !STOP
       ENDIF
 
 !=======================================================================
@@ -2920,7 +2870,7 @@
          ! optical properties do not work for conventional GW
          ! because the potential is non-local
          ! OEP are fine however
-            IO%LOPTICS=.FALSE.
+            IO%LOPTICS=.FALSE. 
          ENDIF
          IF (.NOT. LRPAFORCE) THEN
             CALL DO_RPA
@@ -3030,7 +2980,7 @@ io_end
             CALL DEALLOCW(W_G)
             DEALLOCATE(CHAM, CHF)
             ALLOCATE(CHAM(1,1,1,1),CHF (1,1,1,1))
-         ENDIF
+         ENDIF        
       ENDIF
 
 #ifdef VASP2WANNIER90
@@ -3046,12 +2996,19 @@ io_end
                  T_INFO%NIONS,SYMM%ROTMAP,SYMM%MAGROT,SYMM%ISYM,IO%IU6,IO%IU0)
             CALL KPAR_SYNC_ALL(WDES,W)
             CALL RE_GEN_LAYOUT( GRID, WDES, KPOINTS, LATT_CUR, LATT_CUR,-1, IO%IU0)
-            CALL PEAD_RESETUP_WDES(WDES, GRID, KPOINTS, LATT_CUR, LATT_CUR, IO)
+            CALL PEAD_RESETUP_WDES(WDES, GRID, KPOINTS, LATT_CUR, LATT_CUR, IO) 
             CALL REALLOCATE_WAVE( W, GRID, WDES, NONL_S, T_INFO, P, LATT_CUR)
          ENDIF
-         !LWANNIER_RUN=.TRUE.
-         !WRITE_MMN_AMN=.FALSE.
          CALL MLWF_WANNIER90(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
+         !CALL MLWF_WANNIER90_dS(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
+         !DO I=1,T_INFO%NIOND
+         !  DO J=1,3
+         !    POTIM=1E-2_q
+         !    CALL MLWF_WANNIER90_LR(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO,I,J,POTIM)
+         !    POTIM=-1E-2_q
+         !    CALL MLWF_WANNIER90_LR2(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO,I,J,POTIM)
+         !  ENDDO
+         !ENDDO
          IF ((SYMM%ISYM>=0.AND. .NOT.WDES%LGAMMA) .AND. LWRITE_WANPROJ) THEN
             CALL INISYM(LATT_CUR%A,T_INFO%POSION,DYN%VEL,T_INFO%LSFOR, &
                  T_INFO%LSDYN,T_INFO%NTYP,T_INFO%NITYP,T_INFO%NIONS, &
@@ -3172,7 +3129,10 @@ io_end
       ! no forces if potential was read in INFO%INICHG==4
       ! no forces if inner eigenvalue solver are used
       ! no forces for RPA (has already been done)
-      IF ( EXXOEP==0 .AND.  (INFO%LONESW .OR. INFO%LDIAG .OR. INFO%IALGO>4) &
+
+      !DMFTwDFT
+      LDMFT=.FALSE. 
+      IF ( EXXOEP==0 .AND.  (INFO%LONESW .OR. INFO%LDIAG .OR. INFO%IALGO>4) & 
            .AND. INFO%INICHG/=4 .AND. INFO%IHARMONIC==0 .AND. (.NOT. LCHI)) THEN
         CALL FORCE_AND_STRESS( &
           KINEDEN,HAMILTONIAN,P,WDES,NONLR_S,NONL_S,W,LATT_CUR, &
@@ -3193,7 +3153,7 @@ io_end
 
       IF (IO%IU6>=0) THEN
          WRITE(TIU6,130)
-         WRITE(TIU6,7261) '  FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)', &
+         WRITE(TIU6,7261) '  FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)', & 
             TOTEN,TOTEN-E%EENTROPY,TOTEN-E%EENTROPY/(2+NORDER)
       ENDIF
 
@@ -3219,7 +3179,7 @@ io_end
 
 
 ! check the consistency of forces and total energy
-      CALL CHECK(T_INFO%NIONS,DYN%POSION,TIFOR,EWIFOR,TOTEN,E%TEWEN,LATT_CUR%A,IO%IU6)
+      CALL CHECK(T_INFO%NIONS,DYN%POSION,TIFOR,EWIFOR,TOTEN,E%TEWEN,LATT_CUR%A,IO%IU6) 
       IF (IO%IU6>=0) WRITE(IO%IU6,130)
 
 !-----------------------------------------------------------------------
@@ -3228,7 +3188,7 @@ io_end
 !-----------------------------------------------------------------------
       IF (LVCADER) THEN
          ! derivative with respect to VCA parameters
-         CALL VCA_DER( &
+         CALL VCA_DER( & 
               HAMILTONIAN,KINEDEN, &
               P,WDES,NONLR_S,NONL_S,W,LATT_CUR, &
               T_INFO,INFO,IO,KPOINTS,GRID,GRID_SOFT, &
@@ -3284,7 +3244,7 @@ io_end
 !=======================================================================
 !
 !  electronic polarisation
-!
+! 
 !=======================================================================
       IF (LBERRY) THEN
       io_begin
@@ -3333,14 +3293,14 @@ io_end
       ! scale forces and total energy by scaling argument
       ! this allows  integration from ideal gas to liquid state
       ! alternatively if the DYNMATFULL file exists add forces from
-      ! second order Hessian matrix (allows thermodynamic integration from
+      ! second order Hessian matrix (allows thermodynamic integration from 
       ! harmonic model)
       ! maybe this should go over to the force.F file
       ! of course it is unique since it  changes radically energy
       CALL DYNMATFULL_ENERGY_FORCE(SCALEE, T_INFO%NIONS, DYN%POSION, TOTEN, TIFOR, LATT_CUR%A , IO%IU0)
       IF (SCALEE/=1) THEN
          EENTROPY=E%EENTROPY*SCALEE
-         IF (IO%IU6>=0) WRITE(TIU6,7261) '  SCALED FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)', &
+         IF (IO%IU6>=0) WRITE(TIU6,7261) '  SCALED FREE ENERGIE OF THE ION-ELECTRON SYSTEM (eV)', & 
             TOTEN,TOTEN-EENTROPY,TOTEN-EENTROPY/(2+NORDER)
       ENDIF
 
@@ -3352,7 +3312,7 @@ io_end
 
       IF (DYN%IBRION /=5 .AND. DYN%IBRION /=6 .AND. DYN%IBRION /=7 ) &
       CALL SET_SELECTED_FORCES_ZERO(T_INFO,DYN%VEL,TIFOR,LATT_CUR)
-
+  
       EKIN=0
       EKIN_LAT=0
       TEIN=0
@@ -3382,7 +3342,7 @@ io_end
 !
 ! write statement for static calculations with possibly extensive
 ! post processing (GW, dielectric response, ...)
-!
+! 
 !=======================================================================
       IF (DYN%IBRION/=0) THEN
          CALL XML_TAG("energy")
@@ -3532,7 +3492,7 @@ ibrion: IF (DYN%IBRION==0) THEN
              TOTEN-E%EENTROPY/(2+NORDER),EKIN,ES,EPS
         IF (IO%IU0>=0) &
              WRITE(TIU0,7280,ADVANCE='NO')NSTEP,TEIN,ETOTAL,TOTEN, &
-             TOTEN-E%EENTROPY/(2+NORDER),EKIN,ES,EPS
+             TOTEN-E%EENTROPY/(2+NORDER),EKIN,ES,EPS         
         IF (WDES%NCDIJ>=2) THEN
            WRITE(17,77280) RHOTOT(2:WDES%NCDIJ)
            IF (IO%IU0>=0) WRITE(TIU0,77280) RHOTOT(2:WDES%NCDIJ)
@@ -3543,7 +3503,7 @@ ibrion: IF (DYN%IBRION==0) THEN
 
     IF (.NOT. LJ_ONLY) THEN
         WRITE(TIU6,7270) DISMAX
-    END IF
+    END IF        
         io_end
 
 7260  FORMAT(/ &
@@ -3665,8 +3625,16 @@ ibrion: IF (DYN%IBRION==0) THEN
           CHDEN,SV,DOS,DOSI,CHAM, &
           DYN%IBRION,LMDIM,IRDMAX,NEDOS, &
           TOTEN,EFERMI, TIFOR)
+       ! Benny put here
+!#ifdef VASP2WANNIER90
+!         write(*,*) 'Check if MLWF works'
+!         CALL KPAR_SYNC_ALL(WDES,W)
+!         CALL MLWF_WANNIER90(WDES,W,P,CQIJ,T_INFO,LATT_CUR,INFO,IO)
+!#endif
 
        END IF ! LJ_ONLY
+
+
 !=======================================================================
 ! meaning of DYN%ISIF :
 !  DYN%ISIF  calculate                           relax
@@ -3688,7 +3656,7 @@ ibrion: IF (DYN%IBRION==0) THEN
        IF (.NOT. LJ_ONLY) THEN
 ! sum energy of images along chain
         EENTROPY=E%EENTROPY*SCALEE
-
+        
         IF (IMAGES==0) THEN
            CALLMPI_C( sum_chain( TOTEN ))
            CALLMPI_C( sum_chain( EENTROPY ))
@@ -3702,7 +3670,7 @@ ibrion: IF (DYN%IBRION==0) THEN
              TOTEN-EENTROPY/(2+NORDER),TOTEN-TOTENG
 
         IF ( WDES%NCDIJ>=2 ) THEN
-           WRITE(17,77281) RHOTOT(2:WDES%NCDIJ)
+           WRITE(17,77281) RHOTOT(2:WDES%NCDIJ) 
            IF (IO%IU0>=0) WRITE(TIU0,77281) RHOTOT(2:WDES%NCDIJ)
         ELSE
            WRITE(17,*)
@@ -3773,7 +3741,7 @@ ibrion: IF (DYN%IBRION==0) THEN
 !-----------------------------------------------------------------------
         ! change of the energy between two ionic step used as stopping criterion
         INFO%LSTOP=(ABS(TOTEN-TOTENG)<DYN%EDIFFG)
-
+        
         CALLMPI_C ( and_chain( LSTOP2 ))
         CALLMPI_C ( and_chain( INFO%LSTOP ))
 
@@ -3949,7 +3917,7 @@ ibrion: IF (DYN%IBRION==0) THEN
 
 !   if we need to pull the brake, then POSION is reset to POSIOC
 !   except for molecular dynamics, where the next electronic
-!   step should indeed correspond to POSIOC
+!   step should indeed correspond to POSIOC 
       IF ( INFO%LSTOP .AND. DYN%IBRION>0 ) THEN
          LATT_CUR%A=DYN%AC
          DYN%POSION=DYN%POSIOC
@@ -3975,22 +3943,22 @@ ibrion: IF (DYN%IBRION==0) THEN
       IF (SMEAR_LOOP%ISMCNT/=0) THEN
          KPOINTS%ISMEAR=NINT(SMEAR_LOOP%SMEARS(2*SMEAR_LOOP%ISMCNT-1))
          KPOINTS%SIGMA=SMEAR_LOOP%SMEARS(2*SMEAR_LOOP%ISMCNT)
-
+         
          SMEAR_LOOP%ISMCNT=SMEAR_LOOP%ISMCNT-1
-
+         
          io_begin
          IF (IO%IU0>=0) &
               WRITE(TIU0,7283) KPOINTS%ISMEAR,KPOINTS%SIGMA
          WRITE(17,7283) KPOINTS%ISMEAR,KPOINTS%SIGMA
          io_end
-
+         
 7283     FORMAT('ISMEAR = ',I4,' SIGMA = ',F10.3)
-
+         
          KPOINTS%LTET=((KPOINTS%ISMEAR<=-4).OR.(KPOINTS%ISMEAR>=30))
          IF (KPOINTS%ISMEAR==-6) KPOINTS%ISMEAR=-1
          IF (KPOINTS%ISMEAR>=0)  KPOINTS%ISMEAR=MOD(KPOINTS%ISMEAR,30)
          SIGMA=ABS(KPOINTS%SIGMA)
-
+         
          CALL DENSTA( IO%IU0, IO%IU6, WDES, W, KPOINTS, INFO%NELECT, &
               INFO%NUP_DOWN, E%EENTROPY, EFERMI, SIGMA, .FALSE.,  &
               NEDOS, 0, 0, DOS, DOSI, PAR, DOSPAR)
@@ -4062,13 +4030,13 @@ ibrion: IF (DYN%IBRION==0) THEN
 8022   FORMAT(/' mean value of Nose-termostat <S>:',F10.3, &
             &        ' mean value of <T> :',F10.3/ &
             &        ' mean temperature <T/S>/<1/S>  :',F10.3/)
-
+       
        DO  I=0,PACO%NPACO-1
           WRITE(60,'(F7.3)') &
                PCFAK*PACO%SIPACO(I)/ REAL( 3*I*(I+1)+1 ,KIND=q) /SMEANP
        ENDDO
        IF (IO%LOPEN) CALL WFORCE(60)
-
+       
     IF (.NOT. LJ_ONLY) THEN
        DELTAE=(KPOINTS%EMAX-KPOINTS%EMIN)/(NEDOS-1)
 
@@ -4176,8 +4144,8 @@ ibrion: IF (DYN%IBRION==0) THEN
         DO ISP=2,WDES%NCDIJ
            CALL RC_ADD(CHTOT(1,ISP),0.0_q,CHTOT(1,ISP),0.0_q,CHTOT(1,ISP),GRIDC)
         ENDDO
-        ! add Gaussian "charge-transfer" charges, if required
-        CALL RHOADD_GAUSSIANS(T_INFO,LATT_CUR,P,GRIDC,NCDIJ,CHTOT,CSTRF)
+        ! add Gaussian "charge-transfer" charges, if required 
+        CALL RHOADD_GAUSSIANS(T_INFO,LATT_CUR,P,GRIDC,NCDIJ,CHTOT,CSTRF) 
         CALL RHOADD_GAUSSIANS_LIST(LATT_CUR,GRIDC,NCDIJ,CHTOT)
       ENDIF
 
@@ -4341,7 +4309,7 @@ ibrion: IF (DYN%IBRION==0) THEN
            CHDEN, LMDIM, CRHODE, CHTOT, RHOLM, N_MIX_PAW, IRDMAX)
 
       CALL SET_KINEDEN(GRID,GRID_SOFT,GRIDC,SOFT_TO_C,LATT_CUR,SYMM, &
-           T_INFO%NIONS,W,WDES,KINEDEN)
+           T_INFO%NIONS,W,WDES,KINEDEN)      
 
       INFO%LPOTOK=.FALSE.
 
@@ -4432,7 +4400,7 @@ ibrion: IF (DYN%IBRION==0) THEN
          CALL OUTPOS(18,.FALSE.,INFO%SZNAM1,T_INFO,LATT_CUR%SCALE,LATT_CUR%A,.FALSE.,DYN%POSION)
          io_end
 ! if you uncomment the following lines the pseudo core charge density
-! is added to the pseudo charge density
+! is added to the pseudo charge density         
 !         CALL FFT3D(CHTOT(1,1),GRIDC,1)
 !         CALL RL_ADD(CHTOT(1,1),1._q/GRIDC%NPLWV,DENCOR(1),1._q/GRIDC%NPLWV,CHTOT(1,1),GRIDC)
 !         CALL FFT3D(CHTOT(1,1),GRIDC,-1)
@@ -4546,7 +4514,7 @@ ibrion: IF (DYN%IBRION==0) THEN
              GRIDC,GRIDUS,C_TO_US,SOFT_TO_C, &
              CHTOT,DENCOR,CVTOT,CSTRF, &
              CDIJ,CQIJ,CRHODE,N_MIX_PAW,RHOLM, &
-             CHDEN,SV,LMDIM,IRDMAX,EFERMI,NEDOS, &
+             CHDEN,SV,LMDIM,IRDMAX,EFERMI,NEDOS, & 
              LPOT= EXXOEP==0 .AND. INFO%INICHG/=4 .AND.  .NOT. USE_OEP_IN_GW() .AND. .NOT. LDO_METAGGA())
          ! potential must not be updated for OEP methods
          ! if potential was read from a file INFO%INICHG/=4
@@ -4611,14 +4579,14 @@ ibrion: IF (DYN%IBRION==0) THEN
          IF (WDES%COMM_KINTER%NODE_ME.EQ.1) THEN
 #endif
          OPEN(UNIT=99,FILE=DIR_APP(1:DIR_LEN)//'AECCAR2',STATUS='UNKNOWN')
-         io_begin
+         io_begin     
          ! write header
          CALL OUTPOS(99,.FALSE.,INFO%SZNAM1,T_INFO,LATT_CUR%SCALE,LATT_CUR%A, &
         &             .FALSE., DYN%POSION)
          io_end
          ! write AE charge density
          CALL OUTCHG(GRIDC,99,.TRUE.,CHTOT)
-         CLOSE(99)
+         CLOSE(99)     
          ! write Fourier transform of AE charge density
          IF (LWRTSTRF()) THEN
             OPEN(UNIT=99,FILE=DIR_APP(1:DIR_LEN)//'STRFAC',STATUS='UNKNOWN')
@@ -4715,15 +4683,15 @@ ibrion: IF (DYN%IBRION==0) THEN
 !     ELSE IF (JOBPAR/=0 .OR. IO%LORBIT>=10  ) THEN
       IF (JOBPAR/=0 .OR. IO%LORBIT>=10  ) THEN
          DEALLOCATE(PAR,DOSPAR)
-
+         
          IF (IO%LORBIT==1 .OR. IO%LORBIT==2 .OR. (IO%LORBIT>=11 .AND. IO%LORBIT<=14)) THEN
             LPAR=LMDIMP
          ELSE
             LPAR=LDIMP
          ENDIF
-
+         
          ALLOCATE(PAR(WDES%NB_TOT,WDES%NKPTS,LPAR,T_INFO%NIONP,WDES%NCDIJ))
-
+         
          IF (IO%LORBIT>=10) THEN
             CALL SPHPRO_FAST( &
                  GRID,LATT_CUR, P,T_INFO,W, WDES, 71,IO%IU6,&
@@ -4737,11 +4705,11 @@ ibrion: IF (DYN%IBRION==0) THEN
                  GRID,LATT_CUR, P,T_INFO,W, WDES, 71,IO%IU6,&
                  INFO%LOVERL,LMDIM,CQIJ, LPAR, LDIMP, LMDIMP, LTRUNC, IO%LORBIT,PAR)
          ENDIF
-
+         
          CALL CHGLOC(WDES%NB_TOT,KPOINTS%NKPTS,LPAR,T_INFO%NIONS,WDES%ISPIN,PAR,W%FERWE)
-
+         
          !  get and write partial / projected DOS ...
-
+         
          !  some compilers require to remove this statment
          DEALLOCATE(W%CW)         ! make space free so that DOSPAR can take this space
          ALLOCATE (DOSPAR(NEDOS,LPAR,T_INFO%NIONP,WDES%NCDIJ))
@@ -4757,7 +4725,7 @@ ibrion: IF (DYN%IBRION==0) THEN
             EN=KPOINTS%EMIN+DELTAE*(I-1)
             WRITE(16,7062) EN,(DOS(I,ISP)/DYN%KBLOCK,ISP=1,WDES%ISPIN),(DOSI(I,ISP)/DYN%KBLOCK,ISP=1,WDES%ISPIN)
          ENDDO
-
+         
          DO NI=1,T_INFO%NIONP
             WRITE(16,'(2F16.8,I5,2F16.8)') KPOINTS%EMAX,KPOINTS%EMIN,NEDOS,EFERMI,1.0
             DO I=1,NEDOS
@@ -4766,7 +4734,7 @@ ibrion: IF (DYN%IBRION==0) THEN
                     &            EN,((DOSPAR(I,LPRO,NI,ISP),ISP=1,WDES%NCDIJ),LPRO=1,LPAR)
             ENDDO
          ENDDO
-
+         
          CALL XML_DOS(EFERMI, KPOINTS%EMIN, KPOINTS%EMAX, .TRUE., &
               DOS, DOSI, DOSPAR, NEDOS, LPAR, T_INFO%NIONP, WDES%NCDIJ)
          CALL XML_PROCAR(PAR, W%CELTOT, W%FERTOT, WDES%NB_TOT, WDES%NKPTS, LPAR ,T_INFO%NIONP,WDES%NCDIJ)
@@ -4775,7 +4743,7 @@ ibrion: IF (DYN%IBRION==0) THEN
          CALL DENSTA( IO%IU0, IO%IU6, WDES, W, KPOINTS, INFO%NELECT, &
               INFO%NUP_DOWN, E%EENTROPY, EFERMI, KPOINTS%SIGMA, .FALSE.,  &
               NEDOS, 0, 0, DOS, DOSI, PAR, DOSPAR)
-
+         
          io_begin
          DELTAE=(KPOINTS%EMAX-KPOINTS%EMIN)/(NEDOS-1)
 
@@ -4892,7 +4860,6 @@ ibrion: IF (DYN%IBRION==0) THEN
 #endif
       CALLMPI_C(M_exit())
 
-
       CONTAINS
 
 !**********************************************************************
@@ -4975,7 +4942,7 @@ ibrion: IF (DYN%IBRION==0) THEN
 
          ENDIF
       ENDIF
-
+      
       END SUBROUTINE ELECTRONIC_OPTIMIZATION
 
 !**********************************************************************
@@ -5016,7 +4983,7 @@ ibrion: IF (DYN%IBRION==0) THEN
                  CHDEN,SV,DOS,DOSI,CHAM, &
                  8,LMDIM,IRDMAX,NEDOS, &
                  TOTEN,EFERMI, TIFOR)
-
+            
             CALL WRITE_RPA_FORCE( TIFOR, T_INFO, LATT_CUR, SYMM, DYN%POSIOC, DYN%IBRION, IO)
             CALL SEPERATOR_TIMING(IO%IU6)
             CALL STOP_TIMING("LOOPX",IO%IU6,'LINEAR')

@@ -45,6 +45,8 @@
       complex*16,allocatable:: UOPTU(:,:), UOPTU2(:,:)
       complex*16,allocatable:: DMFT_M(:,:)
       complex*16,allocatable:: DMFT_U(:),t_DMFT_U(:)
+      ! Updates to read non-disentangled bands
+      integer :: N, ii, ikk
 
       call MPI_init(ierr)
       call MPI_Comm_size(MPI_Comm_World, size, ierr)
@@ -206,6 +208,7 @@
          read(20) checkpoint             ! checkpoint
          read(20) have_disentangled      ! whether a disentanglement has been performed
          if (have_disentangled) then
+            write(*,*) 'distangled bands detected.'
             read(20) omega_invariant     ! omega invariant
          ! lwindow
             allocate(lwindow(num_bands,num_kpts))
@@ -218,13 +221,49 @@
             read(20) (((u_matrix_opt(i,j,nkp),i=1,num_bands),
      1               j=1,num_wann),nkp=1,num_kpts)
          else
-            write(*,*) 'No U_matrix_opt ? Probably set identity'
-            STOP
+            write(*,*) 'no distangled bands detected.'
+             if (.not. allocated(lwindow)) then
+                 allocate (lwindow(num_bands, num_kpts), stat=ierr)
+                 if (ierr /= 0) write (*,*) 'Error allocating lwindow
+     &             in Read_wan_chk'
          endif
+            if (.not. allocated(u_matrix_opt)) then
+                allocate (u_matrix_opt(num_bands,num_wann,num_kpts)
+     &             ,stat=ierr)
+                if (ierr /= 0) write (*,*) 'Error allocating
+     &               u_matrix_opt in Read_wan_chk'
+            endif
+            do nkp=1,num_kpts
+                do j=1, num_bands
+                    lwindow(j,nkp)=.TRUE.
+                    do i=1, num_wann
+                        if (i.eq.j) u_matrix_opt(j,i,nkp)=1.0
+                    enddo
+                enddo
+            enddo
+        endif ! end 'have_disentangled' if block
+
+            ! write(*,*) 'No U_matrix_opt ? Probably set identity'
+            ! allocate(u_matrix_opt(num_bands,num_wann,num_kpts))
+            ! allocate(lwindow(num_bands,num_kpts))
+            ! write(*,*) num_bands, num_wann, num_kpts
+            ! u_matrix_opt = (0.0, 0.0)
+            ! N = num_bands
+            ! DO ikk=1,num_kpts
+            !     DO ii=1,N
+            !         u_matrix_opt(ii,ii,ikk) = 1
+            !     ENDDO
+            ! ENDDO
+            !STOP
          ! U_matrix
-         allocate(u_matrix(num_wann,num_wann,num_kpts))
-         read(20) (((u_matrix(i,j,k),i=1,num_wann),j=1,num_wann)
-     1            ,k=1,num_kpts)
+        if (.not. allocated(u_matrix)) then
+            allocate (u_matrix(num_wann,num_wann,num_kpts),
+     &        stat=ierr)
+            if (ierr /= 0) write (*,*) 'Error allocating
+     &       u_matrix in Read_wan_chk'
+        endif
+        read(20) (((u_matrix(i,j,k),
+     &       i=1,num_wann),j=1,num_wann),k=1,num_kpts)
          close(20)
       endif
 
@@ -251,7 +290,8 @@
         IF (num_band_max<nbmax-nbmin+1) num_band_max=nbmax-nbmin+1
       ENDDO
 
-      allocate(eigvals(num_tot_bands,num_kpts))
+      !allocate(eigvals(num_tot_bands,num_kpts))
+      allocate(eigvals(num_bands,num_kpts))
       inquire(file='wannier90.eig',exist=iffile)
       if (iffile.eqv. .false.)then
          write(*,*) 'wannier90.eig must be present!!'
@@ -260,7 +300,7 @@
          open(unit=20,file='wannier90.eig',status='old',
      1           form='formatted')
       DO nkp=1,num_kpts
-        DO nb=1,num_tot_bands
+        DO nb=1, num_bands ! num_tot_bands
           read(20,*) x,y,eigvals(nb,nkp)
         ENDDO
       ENDDO

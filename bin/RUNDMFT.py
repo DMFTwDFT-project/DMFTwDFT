@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 import argparse
 import glob
@@ -137,7 +137,7 @@ if __name__ == "__main__":
     main_out.flush()
 
     DMFT_iter.write(
-        "%9s %13s %13s %13s %13s %13s %13s"
+        "%12s %12s %12s %12s %12s %12s %12s' "
         % ("# mu", "TOT_ELEC", "Nd[0]", "Nd[-1]", "EKIN", "Sigoo-Vdc", "<d_epsk>")
     )
     DMFT_iter.write("\n")
@@ -342,7 +342,8 @@ if __name__ == "__main__":
             main_out.write("\n")
             main_out.flush()
 
-            Ed_loc = array(loadtxt("Ed.out"))
+            # Ed_loc = array(loadtxt("Ed.out"))
+            Ed_loc = array(loadtxt("Ed.out"), ndmin=1)
             print "\nEd.out:", Ed_loc
             Ed = []
             om_loc, Delta = Fileio.Read_complex_multilines("Delta.out")
@@ -452,7 +453,6 @@ if __name__ == "__main__":
 
                 DFT.Read_NBANDS()
                 DFT.Read_EFERMI()
-                print ("Total energy = %s eV" % str(DFT.E))
 
                 # Setting num_bands in .win file.
                 # If set to False num_bands is set to number of DFT bands.
@@ -486,8 +486,12 @@ if __name__ == "__main__":
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
-                print ("wannier90 calculation complete.")
-                print out  # , err
+                if os.path.isfile("wannier90.chk"):
+                    print ("wannier90 calculation complete.")
+                    print out  # , err
+                else:
+                    print ("wannier90 calculation failed! Exiting.")
+                    sys.exit()
 
             elif args.dft == "siesta":
 
@@ -498,10 +502,10 @@ if __name__ == "__main__":
                 print ("\n--- Running siesta ---\n")
 
                 # Renaming wannier90.win files to siesta files.
-                shutil.copy("wannier90.eig", args.structurename + ".eig")
-                shutil.copy("wannier90.amn", args.structurename + ".amn")
-                shutil.copy("wannier90.chk", args.structurename + ".chk")
-                shutil.copy("wannier90.win", args.structurename + ".win")
+                # shutil.copy("wannier90.eig", args.structurename + ".eig")
+                # shutil.copy("wannier90.amn", args.structurename + ".amn")
+                # shutil.copy("wannier90.chk", args.structurename + ".chk")
+                # shutil.copy("wannier90.win", args.structurename + ".win")
 
                 # Copying the .psf and .fdf files from top directory
                 fdfsource = "../" + args.structurename + ".fdf"
@@ -553,7 +557,6 @@ if __name__ == "__main__":
                 # Update Bands and Fermi energy
                 DFT.Read_NBANDS()
                 DFT.Read_EFERMI()
-                print ("Total energy = %s eV" % str(DFT.E))
 
                 # Setting num_bands in .win file.
                 # If set to False num_bands is set to number of DFT bands.
@@ -566,15 +569,21 @@ if __name__ == "__main__":
                 else:
                     wanbands = DFT.NBANDS
 
+                # Copying seedname.win to wannier90.win to update bands and fermi.
+                shutil.copy(args.structurename + ".win", "wannier90.win")
                 # Updating .win
                 DFT.Update_win(
-                    DFT.NBANDS, DFT.EFERMI + p["ewin"][0], DFT.EFERMI + p["ewin"][1]
+                    wanbands, DFT.EFERMI + p["ewin"][0], DFT.EFERMI + p["ewin"][1]
                 )
+                # Copying back to seedname.win
                 shutil.copy("wannier90.win", args.structurename + ".win")
 
                 # Running wannier90
-                print os.popen("rm wannier90.chk").read()
-                print os.popen("rm wannier90.chk.fmt").read()
+                chk_seedname_rm = "rm " + args.structurename + ".chk"
+                chk_seedname_fmt_rm = "rm " + args.structurename + ".chk.fmt"
+
+                print os.popen(chk_seedname_rm).read()
+                print os.popen(chk_seedname_fmt_rm).read()
                 main_out.write(
                     "-------------- Running wannier 90 "
                     + str(itt + 1)
@@ -596,14 +605,18 @@ if __name__ == "__main__":
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
-                print ("wannier90 calculation complete.")
-                print out  # , err
+                if os.path.isfile(args.structurename + ".chk"):
+                    print ("wannier90 calculation complete.")
+                    print out  # , err
+                else:
+                    print ("wannier90 calculation failed! Exiting.")
+                    sys.exit()
 
                 # Renaming siesta files to wannier90 files
-                shutil.copy(args.structurename + ".eig", "wannier90.eig")
-                shutil.copy(args.structurename + ".chk", "wannier90.chk")
-                shutil.copy(args.structurename + ".win", "wannier90.win")
-                shutil.copy(args.structurename + ".amn", "wannier90.amn")
+                # shutil.copy(args.structurename + ".eig", "wannier90.eig")
+                # shutil.copy(args.structurename + ".chk", "wannier90.chk")
+                # shutil.copy(args.structurename + ".win", "wannier90.win")
+                # shutil.copy(args.structurename + ".amn", "wannier90.amn")
 
     main_out.write("Calculation Ends" + now())
     print ("\nCalculation complete.")

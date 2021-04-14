@@ -6,7 +6,7 @@ REALMAKEFILE=../Makefile.2
 FORTKPTTOOLSMAKEFILE=Makefile
 DMFTKSUMMAKEFILE=Makefile
 
-all: lib DMFTwDFT dos copy
+all: lib dos DMFTwDFT copy
 
 default: all
 

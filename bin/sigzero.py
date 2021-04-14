@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # @Copyright 2007 Kristjan Haule
 import sys,re,os,shutil
 import optparse, subprocess
@@ -66,6 +66,7 @@ if __name__=='__main__':
     if os.path.exists('INPUT.py'): 
        execfile('INPUT.py')
        nc=0
+       Emag=1.0 # Zeeman energy = 2*Emag
        for i,ats in enumerate(p['cor_at']):
           for j,orbs in enumerate(p['cor_orb'][i]):
              if len(orbs)>0: nc+=1
@@ -100,6 +101,7 @@ if __name__=='__main__':
     
     if options.nom==None and options.T>0:
         options.nom = int((300./options.T-1)/(2.*pi))+1
+    else: options.nom = 1
         
 #    env = utils.W2kEnvironment()
 #    case = env.case
@@ -178,8 +180,14 @@ if __name__=='__main__':
     fo = open(options.outsig, 'w')
     print >> fo, '# nom,ncor_orb=', options.nom-1, options.Nc
     print >> fo, '# T=', (options.T)
+    if p['nspin']==1:
     print >> fo, '# s_oo-Vdc=', ("0.0 "*(options.Nc))
+    else:
+       print >> fo, '# s_oo-Vdc=', ((str(-Emag)+" ")*(options.Nc/2)), ((str(Emag)+" ")*(options.Nc/2))
+    if p['nspin']==1:
     print >> fo, '# s_oo=', (ones(options.Nc)*options.Edc).tolist()
+    else:
+       print >> fo, '# s_oo=', (ones(options.Nc/2)*(options.Edc-Emag)).tolist()+(ones(options.Nc/2)*(options.Edc+Emag)).tolist()
     print >> fo, '# Vdc=', (ones(options.Nc)*options.Edc).tolist()
     for iom,om in enumerate(omega):
         print >> fo, ("%20.15f "%om), ("0.0 "*(2*options.Nc))

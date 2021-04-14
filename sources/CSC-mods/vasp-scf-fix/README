@@ -1,0 +1,26 @@
+Step by step guide to install full charge self-consistent DFTwDMFT calculation in VASP
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+(1) Generate libdmft.a by the Compiling sources code that will  be needed to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. 
+
+(2) Change the VASP makefile file. Specify libraries and/or objects to be linked against, in the usual ways:
+
+
+FIND and CHANGE: 
+
+LLIBS += -Lparser -lparser -lstdc++ /home/uthpala/wannier90/wannier90-1.2/libwannier.a
+         /home/uthpala/Dropbox/git/DMFTwDFT/sources/libdmft.a
+
+
+
+(3) Before modifying the source code of VASP, we first need to install the VASP as it is. The user should follow the VASP installation instructions from the VASP web site.
+
+
+(4) First copy the modified mlwf.F VASP file from the sources/CSC-mods directory to the VASP source directory and install the VASP again. This step will create some dependenices for next step.
+
+
+(5) Next, copy the other modified/required VASP files such as charge.F,  electron.F,  main.F, and us.F from the sources/CSC-mods directory to the VASP source directory.
+
+
+(6)  Finally, recompile VASP. Then rename this vasp executable to vaspDMFT and copy it to teh DMFTwDFT/bin directory.

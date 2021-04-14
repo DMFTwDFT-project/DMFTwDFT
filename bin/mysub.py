@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 import os,sys
 
 # this is a class which defines default program parameters and allows them to be updated 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
 import os
@@ -92,7 +92,7 @@ class DMFTLauncher:
 
         # VASP calculation
         if self.dft == "vasp":
-            self.vasp_exec = "vaspDMFT"  # vasp executable
+            self.vasp_exec = "vasp_std"  # vasp executable
 
         # Siesta calculation
         elif self.dft == "siesta":
@@ -121,6 +121,11 @@ class DMFTLauncher:
 
         elif args.hf:
             self.type = "HF"
+        # Creating seedname.dat for non-VASP calculations
+        if self.structurename:
+            fi = open("seedname.dat", "w")
+            fi.write(str(self.structurename))
+            fi.close()
 
         # Launch DMFT calculation
         self.run_dmft()
@@ -358,18 +363,7 @@ class DMFTLauncher:
             os.makedirs(self.type)
 
         # copying files into DMFT or HF directory
-        if self.structurename != None and self.dft != None:
-            cmd = (
-                "cd "
-                + self.type
-                + " && Copy_input.py ../ "
-                + "-structurename "
-                + self.structurename
-                + " -dft "
-                + self.dft
-            )
-        else:
-            cmd = "cd " + self.type + " && Copy_input.py ../ "
+        cmd = "cd " + self.type + " && Copy_input.py ../ "
         out, err = subprocess.Popen(cmd, shell=True).communicate()
         if err:
             print("File copy failed!\n")
@@ -535,7 +529,7 @@ class DMFTLauncher:
         # self.cell, self.symbols and self.positions is set from
         # read_poscar().
 
-        elif self.dft == "qe" and self.aiida == False:
+        elif self.dft == "qe" and self.aiida is False:
 
             # reading poscar that should be generated.
             self.read_poscar()
@@ -686,14 +680,14 @@ class DMFTLauncher:
                 self.run_wan90(self.structurename)
 
             # renaming files
-            shutil.copy(self.structurename + ".eig", "wannier90.eig")
-            shutil.copy(self.structurename + ".chk", "wannier90.chk")
-            shutil.copy(self.structurename + ".win", "wannier90.win")
-            shutil.copy(self.structurename + ".amn", "wannier90.amn")
+            # shutil.copy(self.structurename + ".eig", "wannier90.eig")
+            # shutil.copy(self.structurename + ".chk", "wannier90.chk")
+            # shutil.copy(self.structurename + ".win", "wannier90.win")
+            # shutil.copy(self.structurename + ".amn", "wannier90.amn")
             self.copy_files()
 
         # Quantum Espresso (Without aiida)
-        elif self.dft == "qe" and self.aiida == False:
+        elif self.dft == "qe" and self.aiida is False:
             if not self.nowin:
                 self.gen_win()  # Assume POSCAR is present.
                 shutil.copy("wannier90.win", self.structurename + ".win")
@@ -749,7 +743,9 @@ class DMFTLauncher:
             # Save the Total energy from the SCF calculation.
             # Number of bands and fermi energy are updated when
             # update_win() is called.
-            self.DFT.Read_OSZICAR()
+            # UPDATE: Not needed. I don't know why I put this here in
+            # the first place! Required only in RUNDMFT.py.
+            # self.DFT.Read_OSZICAR()
 
             # Updating .win file.
             if not self.nowin:
@@ -770,10 +766,10 @@ class DMFTLauncher:
             self.run_wan90(self.structurename)
 
             # renaming files
-            shutil.copy(self.structurename + ".eig", "wannier90.eig")
-            shutil.copy(self.structurename + ".chk", "wannier90.chk")
-            shutil.copy(self.structurename + ".win", "wannier90.win")
-            shutil.copy(self.structurename + ".amn", "wannier90.amn")
+            # shutil.copy(self.structurename + ".eig", "wannier90.eig")
+            # shutil.copy(self.structurename + ".chk", "wannier90.chk")
+            # shutil.copy(self.structurename + ".win", "wannier90.win")
+            # shutil.copy(self.structurename + ".amn", "wannier90.amn")
             self.copy_files()
 
         # aiida

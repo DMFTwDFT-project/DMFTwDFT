@@ -19,6 +19,8 @@ program DMFTwDFT_dos
 
   implicit none
 
+! check if seedname.dat is present
+  call check_seedname() 
   call comms_setup
   call Read_wan_chk() 
   call Read_wan_eig() 

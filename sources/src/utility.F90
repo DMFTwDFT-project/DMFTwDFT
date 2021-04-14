@@ -22,12 +22,12 @@ module utility
   private
 
   public :: quicksort_cmplx
-  public :: SVD
-  public :: fermi
-  public :: EIGENVAL
-  public :: EIGENVALH
-  public :: EIGEN
-  public :: EIGENH
+  public :: SVD    
+  public :: fermi    
+  public :: EIGENVAL 
+  public :: EIGENVALH 
+  public :: EIGEN 
+  public :: EIGENH 
   public :: MAT_INV
   public :: utility_inv3
   public :: utility_inv2
@@ -71,12 +71,12 @@ contains
     complex(kind=dp) :: t
     integer :: first = 1, last
     integer :: i, j
-
+  
     last = size(a, 1)
     x = real(a( (first+last) / 2 ))
     i = first
     j = last
-
+    
     do
        do while (real(a(i)) < x)
           i=i+1
@@ -89,7 +89,7 @@ contains
        i=i+1
        j=j-1
     end do
-
+    
     if (first < i - 1) call quicksort_cmplx(a(first : i - 1))
     if (j + 1 < last)  call quicksort_cmplx(a(j + 1 : last))
   end subroutine quicksort_cmplx
@@ -676,7 +676,7 @@ contains
     return
   end subroutine utility_translate_home
 
-
+  
   function fermi(eps)
 
     use constants, only: dp, cmplx_0
@@ -705,11 +705,11 @@ contains
     INTEGER ::  i
 
     scalprod = cmplx_0
-    DO i=1,dim
+    DO i=1,dim 
        scalprod = scalprod + a(i)*b(i)
     ENDDO
-  end function scalprod
-
+  end function scalprod 
+ 
 
 
   subroutine orthonormalize_Hermitian_eigvec(dim,evalue,evector)
@@ -719,7 +719,7 @@ contains
 
     integer, intent(in)           :: dim
     real(kind=dp), intent(in) ::  evalue(dim)
-    complex(kind=dp), intent(inout) :: evector(dim,dim)
+    complex(kind=dp), intent(inout) :: evector(dim,dim) 
     real(kind=dp) :: ctmp
     real(kind=dp) :: scaler(dim)
     integer :: i,j
@@ -735,7 +735,7 @@ contains
       ENDDO
     ENDDO
      !========= Normalize eigenvectors =============================
-
+     
     scaler=0.0_dp
     DO i = 1,dim
       ctmp = 0.0_dp
@@ -758,8 +758,8 @@ contains
 
     integer, intent(in)           :: dim
     complex(kind=dp), intent(in) ::  evalue(dim)
-    complex(kind=dp), intent(inout) :: evl(dim,dim)
-    complex(kind=dp), intent(inout) :: evr(dim,dim)
+    complex(kind=dp), intent(inout) :: evl(dim,dim) 
+    complex(kind=dp), intent(inout) :: evr(dim,dim) 
     complex(kind=dp) :: ctmp
     complex(kind=dp) :: scaler(dim)
     integer :: i,j
@@ -817,7 +817,7 @@ contains
     cvdag = CONJG(TRANSPOSE(cvdag))
     call orthonormalize_Hermitian_eigvec(dim2,evalue,cvdag)
     cvdag = CONJG(TRANSPOSE(cvdag))
-
+    
   end subroutine SVD
 
 
@@ -826,24 +826,22 @@ contains
     !============================================================!
     !                                                            !
     !! Diagonalize the dim x dim  hermitian matrix 'mat' and
-    !! return the eigenvalues 'eig'
+    !! return the eigenvalues 'eig' 
     !                                                            !
     !============================================================!
 
     use constants, only: dp, cmplx_0
     use io, only: io_error, stdout
 
-    external ZHEEVD
-
     integer, intent(in)           :: dim
     complex(kind=dp), intent(in)  :: mat(dim, dim)
     real(kind=dp), intent(out)    :: eig(dim)
     !complex(kind=dp) :: rot(dim, dim)
-
+    
 
     complex(kind=dp)   :: work(2*dim+dim**2)
     real(kind=dp)      :: rwork(1+5*dim+2*dim**2)
-    integer            :: i, j, info, iwork(3+5*dim)
+    integer            :: i, j, info, iwork(3+5*dim) 
 
     eig = 0.0_dp; work = cmplx_0; rwork = 0.0_dp; iwork = 0
     call ZHEEVD('N', 'U', dim, mat, dim, eig, work, 2*dim+dim**2, &
@@ -865,7 +863,7 @@ contains
     !============================================================!
     !                                                            !
     !! Diagonalize the dim x dim  hermitian matrix 'mat' and
-    !! return the eigenvalues 'eig' and the eigenvectors 'mat'
+    !! return the eigenvalues 'eig' and the eigenvectors 'mat' 
     !                                                            !
     !============================================================!
 
@@ -876,11 +874,11 @@ contains
     complex(kind=dp), intent(inout)  :: mat(dim, dim)
     real(kind=dp), intent(out)    :: eig(dim)
     !complex(kind=dp) :: rot(dim, dim)
-
+    
 
     complex(kind=dp)   :: work(2*dim+dim**2)
     real(kind=dp)      :: rwork(1+5*dim+2*dim**2)
-    integer            :: i, j, info, iwork(3+5*dim)
+    integer            :: i, j, info, iwork(3+5*dim) 
 
     eig = 0.0_dp; work = cmplx_0; rwork = 0.0_dp; iwork = 0
     call ZHEEVD('V', 'U', dim, mat, dim, eig, work, 2*dim+dim**2, &
@@ -904,7 +902,7 @@ contains
     !============================================================!
     !                                                            !
     !! Diagonalize the dim x dim  general matrix 'mat' and
-    !! return the eigenvalues 'eig'
+    !! return the eigenvalues 'eig' 
     !                                                            !
     !============================================================!
 
@@ -915,7 +913,7 @@ contains
     complex(kind=dp), intent(in)  :: mat(dim, dim)
     complex(kind=dp), intent(out)    :: eig(dim)
     !complex(kind=dp) :: rot(dim, dim)
-
+    
 
     complex(kind=dp)   :: evl(dim,dim)
     complex(kind=dp)   :: evr(dim,dim)
@@ -954,7 +952,7 @@ contains
     complex(kind=dp), intent(in)  :: mat(dim, dim)
     complex(kind=dp), intent(out)    :: eig(dim)
     !complex(kind=dp) :: rot(dim, dim)
-
+    
 
     complex(kind=dp), intent(out)   :: evl(dim,dim)
     complex(kind=dp), intent(out)   :: evr(dim,dim)
@@ -986,7 +984,7 @@ contains
     !============================================================!
     !                                                            !
     !! Diagonalize the dim x dim  hermitian matrix 'mat' and
-    !! return the eigenvalues 'eig'
+    !! return the eigenvalues 'eig' 
     !                                                            !
     !============================================================!
 
@@ -1022,7 +1020,7 @@ contains
       enddo
     enddo
 
-  end subroutine MAT_INV
+  end subroutine MAT_INV 
 
   !============================================================!
   subroutine utility_diagonalize(mat, dim, eig, rot)
