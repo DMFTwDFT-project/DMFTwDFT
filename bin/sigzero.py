@@ -28,7 +28,7 @@ def GiveTanMesh(x0,L,Nw):
         w=x[1]
         #print 'd=', d, 'w=', w
         return array([L-w/tan(d), x0-w*tan(pi/(2*Nw)-d/Nw) ])
-    
+
     xi=x0/L
     d0 = Nw/2.*(tan(pi/(2*Nw))-sqrt(tan(pi/(2*Nw))**2 - 4*xi/Nw))
     w0 = L*d0
@@ -37,11 +37,11 @@ def GiveTanMesh(x0,L,Nw):
     (d,w) = sol.x
     om = w*tan(linspace(0,1,2*Nw+1)*(pi-2*d) -pi/2+d)
     return om
-    
+
 def default_realaxis_mesh():
     # Probably should allow user to control the mesh generation
     # to some extent view program options...
-    
+
     # use gaumesh.py to generate standard mesh
     gaumesh = os.path.join( utils.DmftEnvironment().ROOT, 'gaumesh.py' )
     args = [
@@ -63,7 +63,7 @@ if __name__=='__main__':
     Create a zero input self-energy for dmft0, dmft1 and dmft0
     """
     # n==(200/T-1)/2.
-    if os.path.exists('INPUT.py'): 
+    if os.path.exists('INPUT.py'):
        execfile('INPUT.py')
        nc=0
        Emag=1.0 # Zeeman energy = 2*Emag
@@ -84,7 +84,7 @@ if __name__=='__main__':
        parser.add_option("-x", "--x0",    dest="x",     type="float", default=0.05, help="energy range on real axis")
        parser.add_option("-N", "--Nom",  dest="Nom",    type="int", default=400, help="Number of frequency points on real axis")
 
-    else: 
+    else:
        parser = optparse.OptionParser(usage)
        parser.add_option("-c", "--Nc",  dest="Nc",    type="int", default=1, help="Number of correlated orbitals")
        parser.add_option("-e", "--Edc",  dest="Edc",    type="float", default=0.0, help="Starting double counting and Hartree value of the self-energy. Should be close to U(n-1/2)")
@@ -98,11 +98,11 @@ if __name__=='__main__':
 
     # Next, parse the arguments
     (options, args) = parser.parse_args()
-    
+
     if options.nom==None and options.T>0:
         options.nom = int((300./options.T-1)/(2.*pi))+1
     else: options.nom = 1
-        
+
 #    env = utils.W2kEnvironment()
 #    case = env.case
 #
@@ -134,7 +134,7 @@ if __name__=='__main__':
 #            Found=False
 #            if os.path.isfile('params.dat'):
 #                execfile('params.dat')
-#                if iparams0.has_key('beta'): 
+#                if iparams0.has_key('beta'):
 #                    Found=True
 #                    beta = iparams0['beta'][0]
 #                    if options.nom==None: options.nom = (300*beta-1)/(2.*pi)
@@ -144,7 +144,7 @@ if __name__=='__main__':
 #                print '..... Could not find '+options.insig+'. Do not know the temperature. Can not create self-energy!'
 #                print '..... Boiling out.....'
 #                sys.exit(1)
-#        
+#
 #    print '..... Going over all correlated blocks'
 #    cols=[]
 #    for icix in inl.siginds.keys():    # over all imp.problems, even those that are equivalent
@@ -173,23 +173,23 @@ if __name__=='__main__':
 #            J = iparams0['J'][0]
 #            nf = iparams0['nf0'][0]
 #            options.Edc = U*(nf-0.5)-0.5*J*(nf-1.)
-            
-        
+
+
     omega = (arange(1,options.nom,1)*2-1)*pi*options.T
     # writing to the file
     fo = open(options.outsig, 'w')
     print >> fo, '# nom,ncor_orb=', options.nom-1, options.Nc
     print >> fo, '# T=', (options.T)
     if p['nspin']==1:
-    print >> fo, '# s_oo-Vdc=', ("0.0 "*(options.Nc))
+        print >> fo, '# s_oo-Vdc=', ("0.0 "*(options.Nc))
     else:
        print >> fo, '# s_oo-Vdc=', ((str(-Emag)+" ")*(options.Nc/2)), ((str(Emag)+" ")*(options.Nc/2))
     if p['nspin']==1:
-    print >> fo, '# s_oo=', (ones(options.Nc)*options.Edc).tolist()
+        print >> fo, '# s_oo=', (ones(options.Nc)*options.Edc).tolist()
     else:
        print >> fo, '# s_oo=', (ones(options.Nc/2)*(options.Edc-Emag)).tolist()+(ones(options.Nc/2)*(options.Edc+Emag)).tolist()
     print >> fo, '# Vdc=', (ones(options.Nc)*options.Edc).tolist()
     for iom,om in enumerate(omega):
         print >> fo, ("%20.15f "%om), ("0.0 "*(2*options.Nc))
-        
+
     print(options.outsig,'written to the disc.')
