@@ -26,7 +26,10 @@ as set in INPUT.py. Please modify according to your requirements.
 
 import matplotlib.pyplot as plt
 import glob
+import os
 
+if not os.path.exists("plots"):
+    os.makedirs("plots")
 
 # plotting Green's functions
 gf_file = sorted(
@@ -48,8 +51,8 @@ plt.title("Real Green function")
 plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Re $G(i{\omega_n})$")
 plt.legend()
-plt.savefig("Gf_real.png")
-#plt.show()
+plt.savefig("./plots/gf-real.png")
+# plt.show()
 
 plt.figure(2)
 plt.plot(x, y1_imag, label="eg")
@@ -58,8 +61,8 @@ plt.title("Imaginary Green function")
 plt.legend()
 plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Im $G(i{\omega_n})$")
-plt.savefig("Gf_imag.png")
-#plt.show()
+plt.savefig("./plots/gf-imaginary.png")
+# plt.show()
 f.close()
 
 # plotting Self-energies
@@ -84,8 +87,8 @@ plt.title("Real Self-Energy")
 plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Re $\Sigma(i{\omega_n})$")
 plt.legend()
-plt.savefig("Selfenergy_real.png")
-#plt.show()
+plt.savefig("./plots/self-energy-real.png")
+# plt.show()
 
 plt.figure(4)
 plt.plot(x, y1_imag, label="eg")
@@ -94,8 +97,8 @@ plt.title("Imaginary Self-Energy")
 plt.legend()
 plt.xlabel("$i{\omega_n}$")
 plt.ylabel("Im $\Sigma(i{\omega_n})$")
-plt.savefig("Selfenergy_imaginary.png")
-#plt.show()
+plt.savefig("./plots/self-energy-imaginary.png")
+# plt.show()
 f.close()
 
 # plotting analytically continued Self-energies
@@ -117,8 +120,8 @@ plt.legend()
 # plt.ylim(-0.1,0.1)
 plt.xlabel("$\omega$")
 plt.ylabel("Re $\Sigma(\omega})$")
-plt.savefig("RealSelf-EnergyAnalyticallycontinued.png")
-#plt.show()
+plt.savefig("./plots/ac-self-energy-real.png")
+# plt.show()
 
 plt.figure(6)
 plt.plot(x, y1_imag, label="eg")
@@ -128,6 +131,6 @@ plt.legend()
 # plt.ylim(-0.1,0.1)
 plt.xlabel("$\omega$")
 plt.ylabel("Im $\Sigma(\omega})$")
-plt.savefig("Imaginary Self-Energy Analytically continued.png")
-#plt.show()
+plt.savefig("./plots/ac-self-energy-imaginary.png")
+# plt.show()
 f.close()
