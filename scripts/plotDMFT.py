@@ -212,14 +212,12 @@ def plot_dmft(args):
         ax1.set_title("Analytically continued self energy (Re)")
         ax1.set_xlabel("$i{\omega_n}$")
         ax1.set_ylabel("Re $\Sigma(i{\omega_n})$")
-        ax1.set_xlim(xmin=0)
         ax1.legend()
         fig1.savefig("./plots/sigma-ac-real.pdf")
 
         ax2.set_title("Analytically continued self energy (Im)")
         ax2.set_xlabel("$i{\omega_n}$")
         ax2.set_ylabel("Im $\Sigma(i{\omega_n})$")
-        ax2.set_xlim(xmin=0)
         ax2.legend()
         fig2.savefig("./plots/sigma-ac-imag.pdf")
 
