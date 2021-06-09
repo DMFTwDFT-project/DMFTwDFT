@@ -73,7 +73,7 @@ def store_data(args):
     filestr = "DMFT-total-energy_" + str(dirname) + ".xlsx"
     if os.path.exists(filestr):
         os.remove(filestr)
-    df.to_excel(filestr, index=False)
+    df.to_excel(filestr, index=False, options={"strings_to_numbers": True})
 
 
 if __name__ == "__main__":
