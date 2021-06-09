@@ -9,8 +9,8 @@ import pandas as pd
 
 def store_data(args):
     """
-	This stores the DMFT energies in an excel sheet.
-	"""
+    This stores the DMFT energies in an excel sheet.
+    """
 
     # creating dataframe
     df = pd.DataFrame(
@@ -18,7 +18,9 @@ def store_data(args):
     )
 
     # iterating over folders
-    pathlist = sorted([int(d) for d in os.listdir(args.path) if os.path.isdir(d)])
+    pathlist = sorted(
+        [int(d) for d in os.listdir(args.path) if os.path.isdir(d) and d.isnumeric()]
+    )
     print(pathlist)
     dirname = os.getcwd().split("/")[-1]
 
@@ -74,6 +76,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="This script stores the DMFT energies in a spreadsheet."
     )
-    parser.add_argument("path", type=str, default="./", help="Path to DMFT directory")
+    parser.add_argument("path", type=str, default="./", help="Path to root directory.")
     args = parser.parse_args()
     store_data(args)

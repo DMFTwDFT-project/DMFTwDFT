@@ -104,7 +104,10 @@ def plot_dmft(args):
     ax1.set_title("Green's function (Re)")
     ax1.set_xlabel("$i{\omega_n}$")
     ax1.set_ylabel("Re $G(i{\omega_n})$")
-    ax1.set_xlim(xmin=0)
+    if args.xlim:
+        ax1.set_xlim(args.xlim)
+    else:
+        ax1.set_xlim(xmin=0)
     ax1.legend(loc="best")
     ax1.grid(color="gainsboro", ls="--", lw=0.6)
     fig1.savefig("./plots/gf-real.pdf")
@@ -112,7 +115,10 @@ def plot_dmft(args):
     ax2.set_title("Green's function (Im)")
     ax2.set_xlabel("$i{\omega_n}$")
     ax2.set_ylabel("Im $G(i{\omega_n})$")
-    ax2.set_xlim(xmin=0)
+    if args.xlim:
+        ax2.set_xlim(args.xlim)
+    else:
+        ax2.set_xlim(xmin=0)
     ax2.legend(loc="best")
     ax2.grid(color="gainsboro", ls="--", lw=0.6)
     fig2.savefig("./plots/gf-imag.pdf")
@@ -171,7 +177,10 @@ def plot_dmft(args):
     ax1.set_title("Self energy (Re)")
     ax1.set_xlabel("$i{\omega_n}$")
     ax1.set_ylabel("Re $\Sigma(i{\omega_n})$")
-    ax1.set_xlim(xmin=0)
+    if args.xlim:
+        ax1.set_xlim(args.xlim)
+    else:
+        ax1.set_xlim(xmin=0)
     ax1.legend(loc="best")
     ax1.grid(color="gainsboro", ls="--", lw=0.6)
     fig1.savefig("./plots/sigma-real.pdf")
@@ -179,7 +188,10 @@ def plot_dmft(args):
     ax2.set_title("Self energy (Im)")
     ax2.set_xlabel("$i{\omega_n}$")
     ax2.set_ylabel("Im $\Sigma(i{\omega_n})$")
-    ax2.set_xlim(xmin=0)
+    if args.xlim:
+        ax2.set_xlim(args.xlim)
+    else:
+        ax2.set_xlim(xmin=0)
     ax2.legend(loc="best")
     ax2.grid(color="gainsboro", ls="--", lw=0.6)
     fig2.savefig("./plots/sigma-imag.pdf")
@@ -259,7 +271,7 @@ if __name__ == "__main__":
             default=["orbital1"],
             help="List of cor_orb names.",
         )
-
+        parser.add_argument("-xlim", type=float, nargs=2, help="x-axis range to plot")
         args = parser.parse_args()
         plot_dmft(args)
     else:
