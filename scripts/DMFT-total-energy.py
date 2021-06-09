@@ -17,6 +17,10 @@ def store_data(args):
         columns=["Configuration", "Etot (Migdal-Galisky)", "Etot (ctqmc sampling)"]
     )
 
+    # directory
+    if args.path is None:
+        args.path = os.getcwd()
+
     # iterating over folders
     pathlist = sorted(
         [int(d) for d in os.listdir(args.path) if os.path.isdir(d) and d.isnumeric()]
@@ -46,12 +50,12 @@ def store_data(args):
                 etot2 = lastline.split()[7]
 
             else:
-                print("Calculation incomplete.")
+                print("Calculation incomplete at %s." % path)
                 etot1 = ""
                 etot2 = ""
 
         else:
-            print("Calculation incomplete.")
+            print("Calculation incomplete at %s." % path)
             etot1 = ""
             etot2 = ""
 
@@ -66,7 +70,7 @@ def store_data(args):
         )
 
     # store in spreadsheet
-    filestr = "mldata_" + str(dirname) + ".xlsx"
+    filestr = "DMFT-total-energy_" + str(dirname) + ".xlsx"
     if os.path.exists(filestr):
         os.remove(filestr)
     df.to_excel(filestr, index=False)
@@ -76,6 +80,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="This script stores the DMFT energies in a spreadsheet."
     )
-    parser.add_argument("path", type=str, default="./", help="Path to root directory.")
+    parser.add_argument("path", type=str, default=".", help="Path to root directory.")
     args = parser.parse_args()
     store_data(args)
