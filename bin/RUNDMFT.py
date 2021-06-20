@@ -157,8 +157,8 @@ if __name__ == "__main__":
         para_com2 = ""
 
     # delete dSigma.dat file on start
-    if os.path.exists("./DMFT/dSigma.dat"):
-        os.remove("./DMFT/dSigma.dat")
+    if os.path.exists("dSigma.dat"):
+        os.remove("dSigma.dat")
 
     ########### Global variables ###########################
 
