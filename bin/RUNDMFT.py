@@ -52,7 +52,7 @@ def check_convergence():
     sigdiff_array = []
 
     # file to save self-energy difference
-    dSig.open("dSigma.dat", "a+")
+    dSig = open("dSigma.dat", "a+")
 
     for i in range(1, 4):
         # opening INFO_ITER
