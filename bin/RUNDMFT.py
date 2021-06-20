@@ -41,6 +41,41 @@ def CreateINCAR(params_vasp):
     f.close()
 
 
+def check_convergence():
+    """
+    Check if DMFT convergence is reached by checking self-energy of
+    last 3 iterations
+    """
+    # sigdiff tolerance
+    sigdifftol = 1e-03
+
+    sigdiff_array = []
+    for i in range(1, 4):
+        # opening INFO_ITER
+        fi = open("INFO_ITER", "r")
+        lastline = fi.readlines()[-i]
+        fi.close()
+
+        # self energies
+        sig1 = float(lastline.split()[4])
+        sig2 = float(lastline.split()[5])
+
+        sigdiff = abs(sig1 - sig2)
+
+        if i == 1:
+            print ("dSigma = {:.4f}".format(sigdiff))
+
+        if sigdiff < sigdifftol:
+            sigdiff_array.append(True)
+        else:
+            sigdiff_array.append(False)
+
+    if all(sigdiff_array):
+        return True
+    else:
+        return False
+
+
 if __name__ == "__main__":
     # top level parser
     des = "This script performs the  DMFT calculation."
@@ -417,6 +452,21 @@ if __name__ == "__main__":
             E_iter.write("\n")
             E_iter.flush()
 
+            if itt > 2 or it > 2:
+                # Check if convergence is reached
+                sigdiff = check_convergence()
+
+                if sigdiff:
+                    print ("\nConvergence reached.")
+                    print ("\nCalculation complete.")
+                    main_out.write("Convergence reached." + now())
+                    main_out.write("Calculation Ends" + now())
+                    main_out.write("\n")
+                    main_out.flush()
+                    sys.exit()
+                else:
+                    pass
+
         # ------------------------- Full charge self-consistent DFT+DMFT calculation -------------------------------------
 
         if itt < p["Niter"] - 1:
@@ -619,6 +669,6 @@ if __name__ == "__main__":
                 # shutil.copy(args.structurename + ".amn", "wannier90.amn")
 
     main_out.write("Calculation Ends" + now())
-    print ("\nCalculation complete.")
+    print ("\nCalculation Ends.")
     main_out.write("\n")
     main_out.flush()

@@ -6,6 +6,7 @@ import re
 import shutil
 import subprocess
 import sys
+import glob
 from argparse import RawTextHelpFormatter
 from itertools import groupby
 from shutil import copyfile
@@ -19,62 +20,34 @@ from splash import welcome
 
 
 class DMFTLauncher:
-    """ DMFTwDFT Initialization and Calculation (Python 2.x version).
+    """DMFTwDFT Initialization and Calculation (Python 2.x version).
 
-	This class contains methods to run the initial DFT and wannier90 calculations
-	to generate inputs for the DMFT calculation and performs it.
+    This class contains methods to run the initial DFT and wannier90 calculations
+    to generate inputs for the DMFT calculation and performs it.
 
-        This version does not support ionic covergence. Please use an optimized structure for the calculation.
+    This version does not support ionic covergence. Please use an optimized structure for the calculation.
 
-	Run with:
-	DMFT.py <options>
+    Run with:
+    DMFT.py <options>
 
-	<options>:
-	-dft <vasp,siesta,qe>
-	-dmft : This flag performs dmft calculation
-	-hf : This flag performs Hartree-Fock calcualtion
-	-force : This flag forces a dmft or hf calculation even if it has been completed
-	-kmeshtol : k-mesh tolerance for wannier90
-        -aiida : Flag for aiida calculations
-        -nowin : Flag to disable automatic generation of .win file
-        -v : Enable verbosity
+    <options>:
+    -dft <vasp,siesta,qe>
+    -dmft : This flag performs dmft calculation
+    -hf : This flag performs Hartree-Fock calcualtion
+    -force : This flag forces a dmft or hf calculation even if it has been completed
+    -kmeshtol : k-mesh tolerance for wannier90
+    -aiida : Flag for aiida calculations
+    -nowin : Flag to disable automatic generation of .win file
+    -v : Enable verbosity
 
-	"""
+    """
 
     def __init__(self, args):
         """
-	Contains common functions for all methods.
-	This launches the dmft calculation as well.
-	"""
+        Contains common functions for all methods.
+        This launches the dmft calculation as well.
+        """
 
-        print("Initializing calculation...\n")
-
-        if os.path.exists("para_com.dat"):
-            fipa = open("para_com.dat", "r")
-            self.para_com = str(fipa.readline())[:-1]
-            fipa.close()
-        else:
-            self.para_com = "mpirun -np 40"
-
-        if os.path.exists("para_com_dft.dat"):
-            fid = open("para_com_dft.dat")
-            self.para_com_dft = str(fid.readline())[:-1]
-            fid.close()
-        else:
-            self.para_com_dft = self.para_com
-
-        # initial chemical potential
-        self.create_DFTmu()
-
-        # import the VASP class. This can be used for other DFT codes as well.
-        self.DFT = VASP.VASP_class(
-            dft=args.dft, aiida=args.aiida, structurename=args.structurename
-        )
-
-        self.dir = os.getcwd()  # dft running directory (current directory)
-        self.structurename = (
-            args.structurename
-        )  # name of structure. Required for siesta (structurename.fdf).
         self.kmeshtol = args.kmeshtol  # kmesh tolerence for wannier mesh
         self.force = args.force  # force dmft calculation True of False
         self.v = args.v  # Verbosity
@@ -82,6 +55,7 @@ class DMFTLauncher:
         self.aiida = args.aiida  # Flag for aiida calculation
         self.lowdin = args.lowdin  # Flag for Siesta Lowdin
         self.nowin = args.nowin  # Flag for .win generation
+        self.resume = args.resume  # Flag to resume existing calculation
 
         ####### DFT and wannier90 initialization #######
 
@@ -110,10 +84,51 @@ class DMFTLauncher:
         if self.aiida:
             self.win_to_poscar(input="aiida.win")
 
-        ####### DMFT initialization #######
+        # setting up parallelization
+        if os.path.exists("para_com.dat"):
+            fipa = open("para_com.dat", "r")
+            self.para_com = str(fipa.readline())[:-1]
+            fipa.close()
+        else:
+            self.para_com = "mpirun -np 40"
 
-        # Generate initial self energy.
-        self.gen_sig()
+        if os.path.exists("para_com_dft.dat"):
+            fid = open("para_com_dft.dat")
+            self.para_com_dft = str(fid.readline())[:-1]
+            fid.close()
+        else:
+            self.para_com_dft = self.para_com
+
+        ####### DMFT initialization #######
+        if not self.resume:
+            print("Initializing calculation...\n")
+
+            # initial chemical potential
+            self.create_DFTmu()
+
+            # Generate initial self energy.
+            self.gen_sig()
+
+        else:
+            print("Resuming calculation...\n")
+
+            # cleaning DMFT directory to prepare for resumed calculation
+            for chgcar in glob.glob("./DMFT/CHGCAR.*"):
+                os.remove(chgcar)
+            for gloc in glob.glob("./DMFT/G_loc.out.*"):
+                os.remove(gloc)
+            for sig in glob.glob("./DMFT/sig.inp.*"):
+                os.remove(sig)
+
+        # import the VASP class. This can be used for other DFT codes as well.
+        self.DFT = VASP.VASP_class(
+            dft=args.dft, aiida=args.aiida, structurename=args.structurename
+        )
+
+        self.dir = os.getcwd()  # dft running directory (current directory)
+        self.structurename = (
+            args.structurename
+        )  # name of structure. Required for siesta (structurename.fdf).
 
         # Setting  DMFT type
         if args.dmft:
@@ -162,8 +177,8 @@ class DMFTLauncher:
 
     def fdf_to_poscar(self):
         """
-	This function converts the siesta .fdf format to POSCAR for further calculations.
-	"""
+        This function converts the siesta .fdf format to POSCAR for further calculations.
+        """
         # file = pychemia.code.siesta.SiestaInput(self.structurename + ".fdf")
         # self.st = file.get_structure()
         # pychemia.code.vasp.write_poscar(
@@ -223,7 +238,7 @@ class DMFTLauncher:
 
     def qe_to_poscar(self):
         """Creates a POSCAR from a Quantum Espressso scf input file.
-           CELL_PARAMETERS must be defined.
+        CELL_PARAMETERS must be defined.
         """
         fname = self.structurename + ".scf.in"
         file = open(fname, "r")
@@ -583,7 +598,7 @@ class DMFTLauncher:
         """
         This updates the wannier90.win file with the number of bands and fermi energy
         from the initial DFT calculation.
-	"""
+        """
         # Updating wannier90.win with the number of DFT bands
         if self.updatewanbands:
             self.DFT.Read_NBANDS()
@@ -609,7 +624,7 @@ class DMFTLauncher:
 
     def run_wan90_pp(self):
         """
-	This function performs the wannier90 pre-processing required by some DFT codes like siesta.
+        This function performs the wannier90 pre-processing required by some DFT codes like siesta.
         Outputs a .nnkp file which is required for the DFT calculaiton.
         """
         cmd = self.wannier90_exec + " -pp" + " " + self.structurename
@@ -783,8 +798,8 @@ class DMFTLauncher:
 
     def vasp_run(self, dir):
         """
-	This method runs the inital VASP calculation.
-	"""
+        This method runs the inital VASP calculation.
+        """
 
         # initial VASP run
         print("Running VASP in %s" % dir)
@@ -810,7 +825,7 @@ class DMFTLauncher:
 
     def siesta_run(self, dir):
         """
-	This method runs the initial siesta calculation.
+        This method runs the initial siesta calculation.
         """
         # wannier90 pre-processing
         if not self.lowdin:
@@ -977,7 +992,8 @@ class DMFTLauncher:
                 if self.force:
                     # forcing DMFT calculation
                     print("-force flag enabled. Restarting " + self.type + "...")
-                    self.run_dft()
+                    if not self.resume:
+                        self.run_dft()
                     print(separator_art)
                     print(
                         "*-*-*-*-*- Starting "
@@ -1040,7 +1056,10 @@ class DMFTLauncher:
                             cmd = "cd " + self.type + " && " + "RUNDMFT.py "
 
                     if self.v:
-                        subprocess.Popen(cmd, shell=True,).communicate()
+                        subprocess.Popen(
+                            cmd,
+                            shell=True,
+                        ).communicate()
 
                     else:
                         out, err = subprocess.Popen(
@@ -1077,7 +1096,8 @@ class DMFTLauncher:
             else:
                 # Incomplete DMFT calculation.
                 print("Incomplete " + self.type + " calculation found.")
-                self.run_dft()
+                if not self.resume:
+                    self.run_dft()
                 print(separator_art)
                 print("*-*-*-*-*- Starting " + self.type + " calculation -*-*-*-*-* \n")
                 if self.dft != None and self.structurename != None:
@@ -1130,11 +1150,17 @@ class DMFTLauncher:
                         cmd = "cd " + self.type + " && " + "RUNDMFT.py "
 
                 if self.v:
-                    subprocess.Popen(cmd, shell=True,).communicate()
+                    subprocess.Popen(
+                        cmd,
+                        shell=True,
+                    ).communicate()
 
                 else:
                     out, err = subprocess.Popen(
-                        cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                        cmd,
+                        shell=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.PIPE,
                     ).communicate()
 
                     if err:
@@ -1211,11 +1237,17 @@ class DMFTLauncher:
                     cmd = "cd " + self.type + " && " + "RUNDMFT.py "
 
             if self.v:
-                subprocess.Popen(cmd, shell=True,).communicate()
+                subprocess.Popen(
+                    cmd,
+                    shell=True,
+                ).communicate()
 
             else:
                 out, err = subprocess.Popen(
-                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                    cmd,
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
                 ).communicate()
 
                 if err:
@@ -1287,7 +1319,9 @@ if __name__ == "__main__":
             help="The tolerance to control if two k-points belong to the same shell in wannier90.",
         )
         parser.add_argument(
-            "-lowdin", action="store_true", help="Flag to use Siesta Lowdin version.",
+            "-lowdin",
+            action="store_true",
+            help="Flag to use Siesta Lowdin version.",
         )
 
         parser.add_argument(
@@ -1297,7 +1331,15 @@ if __name__ == "__main__":
         )
 
         parser.add_argument(
-            "-v", action="store_true", help="Enable verbosity.",
+            "-resume",
+            action="store_true",
+            help="Flag to resume incomplete DMFT calculation.",
+        )
+
+        parser.add_argument(
+            "-v",
+            action="store_true",
+            help="Enable verbosity.",
         )
 
         args = parser.parse_args()
