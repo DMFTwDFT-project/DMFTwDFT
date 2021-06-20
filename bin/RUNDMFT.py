@@ -47,7 +47,13 @@ def check_convergence():
     last 3 iterations
     """
     # sigdiff tolerance
-    sigdifftol = 1e-03
+    if list(p.keys()).count("sig_tol"):
+        if p["sig_tol"]:
+            sigdifftol = p["sig_tol"]
+        else:
+            sigdifftol = 1e-03
+    else:
+        sigdifftol = 1e-03
 
     sigdiff_array = []
 
@@ -67,8 +73,8 @@ def check_convergence():
         sigdiff = abs(sig1 - sig2)
 
         if i == 1:
-            print ("dSigma = {:.4f}".format(sigdiff))
-            dSig.write("dSigma = {:.4f}\n".format(sigdiff))
+            print ("dSigma = {:.6f}".format(sigdiff))
+            dSig.write("{:.6f}\n".format(sigdiff))
 
         if sigdiff < sigdifftol:
             sigdiff_array.append(True)
