@@ -100,6 +100,14 @@ class DMFTLauncher:
             self.para_com_dft = self.para_com
 
         ####### DMFT initialization #######
+
+        # Setting  DMFT type
+        if args.dmft:
+            self.type = "DMFT"
+
+        elif args.hf:
+            self.type = "HF"
+
         if not self.resume:
             print("Initializing calculation...\n")
 
@@ -112,13 +120,28 @@ class DMFTLauncher:
         else:
             print("Resuming calculation...\n")
 
-            # cleaning DMFT directory to prepare for resumed calculation
-            for chgcar in glob.glob("./DMFT/CHGCAR.*"):
-                os.remove(chgcar)
-            for gloc in glob.glob("./DMFT/G_loc.out.*"):
-                os.remove(gloc)
-            for sig in glob.glob("./DMFT/sig.inp.*"):
-                os.remove(sig)
+            # Checking if previous DMFT calculation exists
+            pathstr = self.type + os.sep + "INFO_TIME"
+
+            if os.path.exists(pathstr):
+
+                # cleaning DMFT directory to prepare for resumed calculation
+                for chgcar in glob.glob("./DMFT/CHGCAR.*"):
+                    os.remove(chgcar)
+                for gloc in glob.glob("./DMFT/G_loc.out.*"):
+                    os.remove(gloc)
+                for sig in glob.glob("./DMFT/sig.inp.*"):
+                    os.remove(sig)
+            else:
+                print("No previous DMFT calculation has been initialized!")
+                print("Running from scratch...")
+                self.resume = False
+
+                # initial chemical potential
+                self.create_DFTmu()
+
+                # Generate initial self energy.
+                self.gen_sig()
 
         # import the VASP class. This can be used for other DFT codes as well.
         self.DFT = VASP.VASP_class(
@@ -130,12 +153,6 @@ class DMFTLauncher:
             args.structurename
         )  # name of structure. Required for siesta (structurename.fdf).
 
-        # Setting  DMFT type
-        if args.dmft:
-            self.type = "DMFT"
-
-        elif args.hf:
-            self.type = "HF"
         # Creating seedname.dat for non-VASP calculations
         if self.structurename:
             fi = open("seedname.dat", "w")
