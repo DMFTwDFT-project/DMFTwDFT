@@ -50,6 +50,10 @@ def check_convergence():
     sigdifftol = 1e-03
 
     sigdiff_array = []
+
+    # file to save self-energy difference
+    dSig.open("dSigma.dat", "a+")
+
     for i in range(1, 4):
         # opening INFO_ITER
         fi = open("INFO_ITER", "r")
@@ -64,11 +68,14 @@ def check_convergence():
 
         if i == 1:
             print ("dSigma = {:.4f}".format(sigdiff))
+            dSig.write("dSigma = {:.4f}\n".format(sigdiff))
 
         if sigdiff < sigdifftol:
             sigdiff_array.append(True)
         else:
             sigdiff_array.append(False)
+
+    dSig.close()
 
     if all(sigdiff_array):
         return True
@@ -142,6 +149,10 @@ if __name__ == "__main__":
         fipa.close()
     else:
         para_com2 = ""
+
+    # delete dSigma.dat file on start
+    if os.path.exists("./DMFT/dSigma.dat"):
+        os.remove("./DMFT/dSigma.dat")
 
     ########### Global variables ###########################
 
