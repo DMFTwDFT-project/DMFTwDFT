@@ -36,7 +36,7 @@ def count_complete(args):
 	done_counter = 0
 
 	try:
-		pathlist = sorted([int(d) for d in os.listdir('.') if os.path.isdir(d)])
+		pathlist = sorted([int(d) for d in os.listdir('.') if os.path.isdir(d) and d.isnumeric()])
 		print(pathlist)
 	except:
 		pathlist = [os.getcwd()]

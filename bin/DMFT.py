@@ -660,17 +660,26 @@ class DMFTLauncher:
         """
 
         print("Running wannier90...")
+        os.popen("rm -f wannier90.chk")
+        os.popen("rm -f wannier90.chk.fmt")
         cmd = self.para_com + " " + self.wannier90_exec + " " + filename
         out, err = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         ).communicate()
-        if err:
-            print("wannier90 calculation failed!")
-            print(err.decode("utf-8"))
-            sys.exit()
-        else:
+        if os.path.isfile("wannier90.chk"):
             print("wannier90 calculation complete.")
-            print(out.decode("utf-8"))
+            print(out)  # , err
+        else:
+            print("wannier90 calculation failed! Exiting.")
+            sys.exit()
+
+        # if err:
+        #     print("wannier90 calculation failed!")
+        #     print(err.decode("utf-8"))
+        #     sys.exit()
+        # else:
+        #     print("wannier90 calculation complete.")
+        #     print(out.decode("utf-8"))
 
     # -------------------------------- DFT ----------------------------------------------
 
