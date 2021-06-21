@@ -476,8 +476,8 @@ if __name__ == "__main__":
                 if sigdiff:
                     print ("\nConvergence reached.")
                     print ("\nCalculation complete.")
-                    main_out.write("Convergence reached." + now())
-                    main_out.write("Calculation Ends" + now())
+                    main_out.write("\nConvergence reached." + now())
+                    main_out.write("\nCalculation Ends" + now())
                     main_out.write("\n")
                     main_out.flush()
                     sys.exit()

@@ -110,6 +110,7 @@ class WANNIER:
         # wannier_spreads=[float(fi_chk.readline()) for i in range(num_wann)]
 
         num_tot_bands = num_exclude_bands + num_bands
+        
         lexclude_band = zeros(num_tot_bands, dtype=int)
         for i in range(num_exclude_bands):
             lexclude_band[excl_bands[i]] = 1
@@ -136,6 +137,7 @@ class WANNIER:
         self.band_win = array(band_win)
         self.num_exclude_bands = num_exclude_bands
 
+   
         if num_exclude_bands > 0:
             self.WANU = zeros(
                 (num_kpts, num_wann, (num_band_max - num_exclude_bands)), dtype=complex
