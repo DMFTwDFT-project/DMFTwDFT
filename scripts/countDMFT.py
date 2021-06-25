@@ -94,6 +94,7 @@ def count_complete(args):
 
             else:
                 print("%s calculation incomplete at %s" % (args.type.upper(), path))
+                incomplete_list.append(path)
 
         else:
             print("INFO_TIME/INFO_ITER does not exist at %s" % path)
