@@ -99,11 +99,10 @@ def count_complete(args):
                     + filedic[i]
                 )
                 if os.path.exists(postpathstr):
-                    print("%s complete." % i)
+                    print("%s complete at %s ." % (i, path))
                 else:
-                    print("%s incomplete." % i)
+                    print("%s incomplete at %s." % (i, path))
                     incomplete_list_post.append(path)
-            print("\n")
 
     if not args.post:
         print(
