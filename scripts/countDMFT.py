@@ -36,6 +36,7 @@ def count_complete(args):
 
     done_counter = 0
     incomplete_list = []
+    incomplete_list_post = []
 
     try:
         pathlist = sorted(
@@ -47,66 +48,81 @@ def count_complete(args):
 
     for path in pathlist:
 
-        pathstr = str(path) + os.sep + args.type.upper() + os.sep + "INFO_TIME"
-        pathstriter = str(path) + os.sep + args.type.upper() + os.sep + "INFO_ITER"
+        if not args.post:
 
-        if os.path.exists(pathstr) and os.path.exists(pathstriter):
-            fi = open(pathstr, "r")
-            done_word = fi.readlines()[-1]
-            fi.close()
-            fi = open(pathstriter, "r")
-            done_word_iter = fi.readlines()[-1].split()
-            fi.close()
+            pathstr = str(path) + os.sep + args.type.upper() + os.sep + "INFO_TIME"
+            pathstriter = str(path) + os.sep + args.type.upper() + os.sep + "INFO_ITER"
 
-            if done_word.split()[0] == "Calculation":
-                done_counter += 1
-                print(
-                    "%s calculation complete at %s with %d DFT and %d %s iterations."
-                    % (
-                        args.type.upper(),
-                        path,
-                        int(done_word_iter[0]),
-                        int(done_word_iter[1]),
-                        args.type.upper(),
-                    )
-                )
+            if os.path.exists(pathstr) and os.path.exists(pathstriter):
+                fi = open(pathstr, "r")
+                done_word = fi.readlines()[-1]
+                fi.close()
+                fi = open(pathstriter, "r")
+                done_word_iter = fi.readlines()[-1].split()
+                fi.close()
 
-                if args.post:
-                    for i in args.post:
-                        if i == "plainbands" or i == "partialbands":
-                            ii = "bands"
-                        else:
-                            ii = i
-                        postpathstr = (
-                            str(path)
-                            + os.sep
-                            + args.type.upper()
-                            + os.sep
-                            + ii
-                            + os.sep
-                            + filedic[i]
+                if done_word.split()[0] == "Calculation":
+                    done_counter += 1
+                    print(
+                        "%s calculation complete at %s with %d DFT and %d %s iterations."
+                        % (
+                            args.type.upper(),
+                            path,
+                            int(done_word_iter[0]),
+                            int(done_word_iter[1]),
+                            args.type.upper(),
                         )
-                        if os.path.exists(postpathstr):
-                            print("%s complete." % i)
-                        else:
-                            print("%s incomplete." % i)
-                    print("\n")
+                    )
+
+                else:
+                    print("%s calculation incomplete at %s" % (args.type.upper(), path))
+                    incomplete_list.append(path)
 
             else:
-                print("%s calculation incomplete at %s" % (args.type.upper(), path))
+                print("INFO_TIME/INFO_ITER does not exist at %s" % path)
                 incomplete_list.append(path)
 
-        else:
-            print("INFO_TIME/INFO_ITER does not exist at %s" % path)
-            incomplete_list.append(path)
+        # Post processing completeness check
+        elif args.post:
+            for i in args.post:
+                if i == "plainbands" or i == "partialbands":
+                    ii = "bands"
+                else:
+                    ii = i
+                postpathstr = (
+                    str(path)
+                    + os.sep
+                    + args.type.upper()
+                    + os.sep
+                    + ii
+                    + os.sep
+                    + filedic[i]
+                )
+                if os.path.exists(postpathstr):
+                    print("%s complete." % i)
+                else:
+                    print("%s incomplete." % i)
+                    incomplete_list_post.append(path)
+            print("\n")
 
-    print("%d %s calculations have been completed." % (done_counter, args.type.upper()))
+    if not args.post:
+        print(
+            "%d %s calculations have been completed."
+            % (done_counter, args.type.upper())
+        )
 
-    # save incomplete calculations in list
-    fi = open("incomplete_list.dat", "w")
-    for i in incomplete_list:
-        fi.write(str(i) + "\t")
-    fi.close()
+        # save incomplete calculations in list
+        fi = open("incomplete_list.dat", "w")
+        for i in incomplete_list:
+            fi.write(str(i) + "\t")
+        fi.close()
+
+    elif args.post:
+        # save incomplete post calculations in list
+        fi = open("incomplete_list_post.dat", "w")
+        for i in incomplete_list_post:
+            fi.write(str(i) + "\t")
+        fi.close()
 
 
 if __name__ == "__main__":
