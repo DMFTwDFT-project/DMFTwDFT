@@ -85,8 +85,8 @@ class ElectronOccupation:
 
     def fdf_to_poscar(self):
         """
-	This function converts the siesta .fdf format to POSCAR for further calculations.
-	"""
+        This function converts the siesta .fdf format to POSCAR for further calculations.
+        """
         fname = self.structurename + ".fdf"
         file = open(fname, "r")
         data = file.read()
@@ -276,7 +276,7 @@ class ElectronOccupation:
         """
         This updates the wannier90.win file with the number of bands and fermi energy
         from the initial DFT calculation.
-	"""
+        """
         # Updating wannier90.win with the number of DFT bands
         if self.updatewanbands:
             self.DFT.Read_NBANDS()
@@ -314,7 +314,7 @@ class ElectronOccupation:
                 self.dos_project_line = ln + 1
 
     def dft_run(self):
-        """ DFT runner.
+        """DFT runner.
         This method performs the initial DFT calculation and the wannier90 calculation..
         """
 
@@ -334,19 +334,32 @@ class ElectronOccupation:
             out, err = subprocess.Popen(
                 cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
             ).communicate()
-            if err:
+
+            outcar = "OUTCAR"
+            if os.path.isfile(outcar):
+                fi = open(outcar, "r")
+                outcarlines = fi.readlines()
+                fi.close()
+
+                if outcarlines[-1].split()[0] == "Voluntary":
+                    print("DFT calculation complete.\n")
+                    outdir = "dft.out"
+                    f = open(outdir, "wb")
+                    f.write(out)
+                    f.close()
+                else:
+                    errdir = "dft.error"
+                    f = open(errdir, "wb")
+                    f.write(err)
+                    f.close()
+                    sys.exit()
+            else:
                 print("DFT calculation failed! Check dft.error for details.\n")
                 errdir = "dft.error"
                 f = open(errdir, "wb")
                 f.write(err)
                 f.close()
                 sys.exit()
-            else:
-                print("DFT calculation complete.\n")
-                outdir = "dft.out"
-                f = open(outdir, "wb")
-                f.write(out)
-                f.close()
 
             # Updating .win file and running wannier90.x.
             self.update_win()
@@ -414,7 +427,7 @@ class ElectronOccupation:
 
     def run_wan90_pp(self):
         """
-	This function performs the wannier90 pre-processing required by some DFT codes like siesta.
+        This function performs the wannier90 pre-processing required by some DFT codes like siesta.
         Outputs a .nnkp file which is required for the DFT calculaiton.
         """
         cmd = "wannier90.x -pp" + " " + self.structurename

@@ -856,6 +856,7 @@ class DMFTLauncher:
                 sys.exit()
         else:
             print("DFT calculation failed! Check dft.error for details.\n")
+            errdir = dir + os.sep + "dft.error"
             f = open(errdir, "wb")
             f.write(err)
             f.close()
