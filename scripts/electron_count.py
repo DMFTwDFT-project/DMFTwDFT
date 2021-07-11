@@ -445,18 +445,19 @@ class ElectronOccupation:
         Running wannier90.x to generate .chk file.
         """
 
-        print("\nRunning wannier90.x ...")
+        print("Running wannier90...")
+        os.popen("rm -f wannier90.chk")
+        os.popen("rm -f wannier90.chk.fmt")
         cmd = "mpirun -np" + " " + str(self.np) + " " + "wannier90.x" + " " + filename
         out, err = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         ).communicate()
-        if err:
-            print("wannier90 calculation failed!")
-            print(err.decode("utf-8"))
-            sys.exit()
-        else:
+        if os.path.isfile("wannier90.chk"):
             print("wannier90 calculation complete.")
-            print(out.decode("utf-8"))
+            print(out)  # , err
+        else:
+            print("wannier90 calculation failed! Exiting.")
+            sys.exit()
 
     def postw90_run(self):
         NUM_OF_ORBT = int(self.num_wann)  ## NUMBER OF WANNIER BAND
