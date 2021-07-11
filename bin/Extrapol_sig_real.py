@@ -10,12 +10,22 @@ if __name__ == "__main__":
     emax = 300
     rom = 3000
     broaden = 0.03
-    headerline = 2
+    headerline = 5
+    headerlineskip = 3
+
+    # old format only has 2 headers.
+    # new has 5. Only need to last 2.
+
     om, Sig = Fileio.Read_complex_multilines("sig.inp", headerline)
     s_oo = None
     Vdc = None
     fi = open("sig.inp", "r")
-    for i in range(headerline):
+
+    # Skip first 3 headerlines from new format
+    for i in range(headerlineskip):
+        line = fi.readline()
+
+    for i in range(headerline - headerlineskip):
         line = fi.readline()
         m = re.search("#(.*)", line)
         exec(m.group(1).strip())

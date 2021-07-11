@@ -835,19 +835,31 @@ class DMFTLauncher:
         out, err = subprocess.Popen(
             cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
         ).communicate()
-        if err:
+
+        outcar = dir + os.sep + "OUTCAR"
+        if os.path.isfile(outcar):
+            fi = open(outcar, "r")
+            outcarlines = fi.readlines()
+            fi.close()
+
+            if outcarlines[-1].split()[0] == "Voluntary":
+                print("DFT calculation complete.\n")
+                outdir = dir + os.sep + "dft.out"
+                f = open(outdir, "wb")
+                f.write(out)
+                f.close()
+            else:
+                errdir = dir + os.sep + "dft.error"
+                f = open(errdir, "wb")
+                f.write(err)
+                f.close()
+                sys.exit()
+        else:
             print("DFT calculation failed! Check dft.error for details.\n")
-            errdir = dir + os.sep + "dft.error"
             f = open(errdir, "wb")
             f.write(err)
             f.close()
             sys.exit()
-        else:
-            print("DFT calculation complete.\n")
-            outdir = dir + os.sep + "dft.out"
-            f = open(outdir, "wb")
-            f.write(out)
-            f.close()
 
     def siesta_run(self, dir):
         """
