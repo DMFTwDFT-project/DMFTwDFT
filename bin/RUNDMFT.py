@@ -342,6 +342,17 @@ if __name__ == "__main__":
 
                 DMFT.EKIN0 = 0
                 print ("Running XHF0...")
+
+                # XHF0.py and WAN90.py require wannier90. files instead of
+                # structurename. files. Therefore, we need to rename them to
+                # wannier90. format when running with Siesta or Quantum Espresso.
+
+                if args.dft == "siesta" or args.dft == "qe":
+                    shutil.copy(args.structurename + ".eig", "wannier90.eig")
+                    shutil.copy(args.structurename + ".chk", "wannier90.chk")
+                    shutil.copy(args.structurename + ".win", "wannier90.win")
+                    shutil.copy(args.structurename + ".amn", "wannier90.amn")
+
                 cmd = (
                     para_com
                     + " "

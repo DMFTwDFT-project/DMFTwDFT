@@ -64,11 +64,14 @@ class DMFTLauncher:
         self.wanbands = 0
         self.updatewanbands = True
 
+        self.structurename = (
+            args.structurename
+        )  # name of structure. Required for siesta (structurename.fdf).
+
         # VASP calculation
         if self.dft == "vasp":
             self.vasp_exec = "vasp_std"  # vasp executable
 
-        # Siesta calculation
         elif self.dft == "siesta":
             self.siesta_exec = "siesta"  # siesta executable
             self.fdf_to_poscar()
@@ -149,9 +152,6 @@ class DMFTLauncher:
         )
 
         self.dir = os.getcwd()  # dft running directory (current directory)
-        self.structurename = (
-            args.structurename
-        )  # name of structure. Required for siesta (structurename.fdf).
 
         # Creating seedname.dat for non-VASP calculations
         if self.structurename:
@@ -660,26 +660,41 @@ class DMFTLauncher:
         """
 
         print("Running wannier90...")
-        os.popen("rm -f wannier90.chk")
-        os.popen("rm -f wannier90.chk.fmt")
-        cmd = self.para_com + " " + self.wannier90_exec + " " + filename
-        out, err = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        ).communicate()
-        if os.path.isfile("wannier90.chk"):
-            print("wannier90 calculation complete.")
-            print(out)  # , err
-        else:
-            print("wannier90 calculation failed! Exiting.")
-            sys.exit()
 
-        # if err:
-        #     print("wannier90 calculation failed!")
-        #     print(err.decode("utf-8"))
-        #     sys.exit()
-        # else:
-        #     print("wannier90 calculation complete.")
-        #     print(out.decode("utf-8"))
+        # VASP
+        if self.dft == "vasp":
+            os.popen("rm -f wannier90.chk")
+            os.popen("rm -f wannier90.chk.fmt")
+            cmd = self.para_com + " " + self.wannier90_exec + " " + filename
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+            if os.path.isfile("wannier90.chk"):
+                print("wannier90 calculation complete.")
+                print(out)  # , err
+            else:
+                print("wannier90 calculation failed! Exiting.")
+                sys.exit()
+
+        # siesta and qe
+        else:
+            chk_seedname_rm = "rm " + filename + ".chk"
+            chk_seedname_fmt_rm = "rm " + filename + ".chk.fmt"
+
+            os.popen(chk_seedname_rm)
+            os.popen(chk_seedname_fmt_rm)
+
+            cmd = self.para_com + " " + self.wannier90_exec + " " + filename
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+
+            if os.path.isfile(filename + ".chk"):
+                print("wannier90 calculation complete.")
+                print(out)  # , err
+            else:
+                print("wannier90 calculation failed! Exiting.")
+                sys.exit()
 
     # -------------------------------- DFT ----------------------------------------------
 
