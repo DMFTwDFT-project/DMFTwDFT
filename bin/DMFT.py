@@ -208,7 +208,7 @@ class DMFTLauncher:
 
         atoms = []
         lattice_constant = float(re.findall(r"LatticeConstant\s*([\d.]*)", data)[0])
-        lattice_vectors = re.findall(r"LatticeVectors\s*([\d.\s]*)%endblock", data)
+        lattice_vectors = re.findall(r"LatticeVectors\s*([-+\d.\s]*)%endblock", data)
 
         # creating a numpy array with lattice vectors
         lattice_vec = np.array(lattice_vectors[0].split(), dtype="float64")
@@ -216,7 +216,7 @@ class DMFTLauncher:
         self.cell = lattice_constant * lattice_vec
 
         atomic_coordinates = re.findall(
-            r"AtomicCoordinatesAndAtomicSpecies\s*([\d.\sa-zA-Z]*)%endblock", data
+            r"AtomicCoordinatesAndAtomicSpecies\s*([-+\d.\sa-zA-Z]*)%endblock", data
         )
         atomic_coordinates_lines = atomic_coordinates[0].split("\n")
 
