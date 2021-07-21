@@ -446,18 +446,43 @@ class ElectronOccupation:
         """
 
         print("Running wannier90...")
-        os.popen("rm -f wannier90.chk")
-        os.popen("rm -f wannier90.chk.fmt")
-        cmd = "mpirun -np" + " " + str(self.np) + " " + "wannier90.x" + " " + filename
-        out, err = subprocess.Popen(
-            cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        ).communicate()
-        if os.path.isfile("wannier90.chk"):
-            print("wannier90 calculation complete.")
-            print(out)  # , err
+
+        # VASP
+        if self.dft == "vasp":
+            os.popen("rm -f wannier90.chk")
+            os.popen("rm -f wannier90.chk.fmt")
+            cmd = (
+                "mpirun -np" + " " + str(self.np) + " " + "wannier90.x" + " " + filename
+            )
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+            if os.path.isfile("wannier90.chk"):
+                print("wannier90 calculation complete.")
+                print(out)  # , err
+            else:
+                print("wannier90 calculation failed! Exiting.")
+                sys.exit()
+
+        # siesta and qe
         else:
-            print("wannier90 calculation failed! Exiting.")
-            sys.exit()
+            chk_seedname_rm = "rm -f " + filename + ".chk"
+            chk_seedname_fmt_rm = "rm -f " + filename + ".chk.fmt"
+            os.popen(chk_seedname_rm)
+            os.popen(chk_seedname_fmt_rm)
+            cmd = (
+                "mpirun -np" + " " + str(self.np) + " " + "wannier90.x" + " " + filename
+            )
+            out, err = subprocess.Popen(
+                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            ).communicate()
+
+            if os.path.isfile(filename + ".chk"):
+                print("wannier90 calculation complete.")
+                print(out)  # , err
+            else:
+                print("wannier90 calculation failed! Exiting.")
+                sys.exit()
 
     def postw90_run(self):
         NUM_OF_ORBT = int(self.num_wann)  ## NUMBER OF WANNIER BAND
