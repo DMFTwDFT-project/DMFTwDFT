@@ -18,12 +18,11 @@ def store_data(args):
     )
 
     # directory
-    if args.path is None:
-        args.path = os.getcwd()
+    dirpath = os.getcwd()
 
     # iterating over folders
     pathlist = sorted(
-        [int(d) for d in os.listdir(args.path) if os.path.isdir(d) and d.isnumeric()]
+        [int(d) for d in os.listdir(dirpath) if os.path.isdir(d) and d.isnumeric()]
     )
     print(pathlist)
     dirname = os.getcwd().split("/")[-1]
@@ -41,13 +40,30 @@ def store_data(args):
 
             if done_word.split()[0] == "Calculation":
 
-                # opening INFO_ITER if calculation is done
-                fi = open(pathstr_infoiter, "r")
-                lastline = fi.readlines()[-1]
-                fi.close()
+                if args.navg == 1:
+                    # opening INFO_ITER if calculation is done
+                    fi = open(pathstr_infoiter, "r")
+                    lastline = fi.readlines()[-1]
+                    fi.close()
 
-                etot1 = lastline.split()[6]
-                etot2 = lastline.split()[7]
+                    etot1 = lastline.split()[6]
+                    etot2 = lastline.split()[7]
+
+                else:
+                    # opening INFO_ITER if calculation is done
+                    fi = open(pathstr_infoiter, "r")
+                    lastlines = fi.readlines()[-args.navg :]
+                    fi.close()
+
+                    etot1_list = []
+                    etot2_list = []
+
+                    for i in range(len(args.navg)):
+                        etot1_list.append(float(lastlines[i].split()[6]))
+                        etot2_list.append(float(lastlines[i].split()[7]))
+
+                    etot1 = sum(etot1_list) / len(etot1_list)
+                    etot2 = sum(etot2_list) / len(etot2_list)
 
             else:
                 print("Calculation incomplete at %s." % path)
@@ -80,6 +96,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="This script stores the DMFT energies in a spreadsheet."
     )
-    parser.add_argument("path", type=str, default=".", help="Path to root directory.")
+    # parser.add_argument("path", type=str, default=".", help="Path to root directory.")
+    parser.add_argument(
+        "-navg", type=int, default="1", help="Number of last iterations to average."
+    )
     args = parser.parse_args()
     store_data(args)
