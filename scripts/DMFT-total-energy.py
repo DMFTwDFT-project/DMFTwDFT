@@ -58,7 +58,7 @@ def store_data(args):
                     etot1_list = []
                     etot2_list = []
 
-                    for i in range(len(args.navg)):
+                    for i in range(args.navg):
                         etot1_list.append(float(lastlines[i].split()[6]))
                         etot2_list.append(float(lastlines[i].split()[7]))
 
