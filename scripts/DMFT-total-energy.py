@@ -46,8 +46,8 @@ def store_data(args):
                     lastline = fi.readlines()[-1]
                     fi.close()
 
-                    etot1 = lastline.split()[6]
-                    etot2 = lastline.split()[7]
+                    etot1 = float(lastline.split()[6])
+                    etot2 = float(lastline.split()[7])
 
                 else:
                     # opening INFO_ITER if calculation is done
