@@ -42,49 +42,59 @@ def store_data(args):
         pathstr_infotime = str(path) + os.sep + "DMFT" + os.sep + "INFO_TIME"
         pathstr_infoiter = str(path) + os.sep + "DMFT" + os.sep + "INFO_ITER"
 
-        # first check if calculation is complete
+        # Check if calculation is complete
         if os.path.exists(pathstr_infotime):
             fi = open(pathstr_infotime, "r")
             done_word = fi.readlines()[-1]
             fi.close()
 
+            # Check if calculation is completed or not
             if done_word.split()[0] == "Calculation":
-
-                if args.navg == 1:
-                    # opening INFO_ITER if calculation is done
-                    fi = open(pathstr_infoiter, "r")
-                    lastline = fi.readlines()[-1]
-                    fi.close()
-
-                    etot1 = float(lastline.split()[6])
-                    etot2 = float(lastline.split()[7])
-
-                else:
-                    # opening INFO_ITER if calculation is done
-                    fi = open(pathstr_infoiter, "r")
-                    lastlines = fi.readlines()[-args.navg :]
-                    fi.close()
-
-                    etot1_list = []
-                    etot2_list = []
-
-                    for i in range(args.navg):
-                        etot1_list.append(float(lastlines[i].split()[6]))
-                        etot2_list.append(float(lastlines[i].split()[7]))
-
-                    # Averaging
-                    etot1 = sum(etot1_list) / len(etot1_list)
-                    etot2 = sum(etot2_list) / len(etot2_list)
-
+                print("Calculation complete at %s." % path)
             else:
                 print("Calculation incomplete at %s." % path)
                 etot1 = ""
                 etot2 = ""
 
         else:
-            print("Calculation incomplete at %s." % path)
+            print("INFO_TIME does not exist at %s." % path)
             etot1 = ""
             etot2 = ""
+
+        # Getting total energy
+        if args.navg == 1:
+            # opening INFO_ITER if exists
+            if os.path.exists(pathstr_infoiter):
+                fi = open(pathstr_infoiter, "r")
+                lastline = fi.readlines()[-1]
+                fi.close()
+
+                etot1 = float(lastline.split()[6])
+                etot2 = float(lastline.split()[7])
+            else:
+                print("INFO_ITER does not exist at %s" % path)
+
+        else:
+            # opening INFO_ITER if exists
+            if os.path.exists(pathstr_infoiter):
+
+                fi = open(pathstr_infoiter, "r")
+                lastlines = fi.readlines()[-args.navg :]
+                fi.close()
+
+                etot1_list = []
+                etot2_list = []
+
+                for i in range(args.navg):
+                    etot1_list.append(float(lastlines[i].split()[6]))
+                    etot2_list.append(float(lastlines[i].split()[7]))
+
+                # Averaging
+                etot1 = sum(etot1_list) / len(etot1_list)
+                etot2 = sum(etot2_list) / len(etot2_list)
+
+            else:
+                print("INFO_ITER does not exist at %s" % path)
 
         # appending data to dataframe
         df = df.append(
