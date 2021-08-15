@@ -42,6 +42,10 @@ def store_data(args):
         pathstr_infotime = str(path) + os.sep + "DMFT" + os.sep + "INFO_TIME"
         pathstr_infoiter = str(path) + os.sep + "DMFT" + os.sep + "INFO_ITER"
 
+        # Initializing variables
+        etot1_list = []
+        etot2_list = []
+
         # Check if calculation is complete
         if os.path.exists(pathstr_infotime):
             fi = open(pathstr_infotime, "r")
@@ -81,9 +85,6 @@ def store_data(args):
                 fi = open(pathstr_infoiter, "r")
                 lastlines = fi.readlines()[-args.navg :]
                 fi.close()
-
-                etot1_list = []
-                etot2_list = []
 
                 for i in range(args.navg):
                     etot1_list.append(float(lastlines[i].split()[6]))
