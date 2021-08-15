@@ -16,7 +16,15 @@ def store_data(args):
 
     # creating dataframe
     df = pd.DataFrame(
-        columns=["Configuration", "Etot (Migdal-Galisky)", "Etot (ctqmc sampling)"]
+        columns=[
+            "Configuration",
+            "Avg Etot (Migdal-Galisky)",
+            "Avg Etot (ctqmc sampling)",
+            "E1_std",
+            "E2_std",
+            "E1_sem",
+            "E2_sem",
+        ]
     )
 
     # directory
@@ -68,16 +76,6 @@ def store_data(args):
                     etot1 = sum(etot1_list) / len(etot1_list)
                     etot2 = sum(etot2_list) / len(etot2_list)
 
-                    # statistics
-                    print("\n-------------------------------")
-                    print("E1_avg : {:0.5f}".format(etot1))
-                    print("E1_std : {:0.5f}".format(statistics.stdv(etot1_list)))
-                    print("E1_sem : {:0.5f}".format(sem(etot1_list)))
-                    print("\n")
-                    print("E2_avg : {:0.5f}".format(etot2))
-                    print("E2_std : {:0.5f}".format(statistics.stdv(etot2_list)))
-                    print("E2_sem : {:0.5f}".format(sem(etot2_list)))
-
             else:
                 print("Calculation incomplete at %s." % path)
                 etot1 = ""
@@ -92,8 +90,12 @@ def store_data(args):
         df = df.append(
             {
                 "Configuration": path,
-                "Etot (Migdal-Galisky)": etot1,
-                "Etot (ctqmc sampling)": etot2,
+                "Avg Etot (Migdal-Galisky)": etot1,
+                "Avg Etot (ctqmc sampling)": etot2,
+                "E1_std": statistics.stdv(etot1_list),
+                "E2_std": statistics.stdv(etot2_list),
+                "E1_sem": sem(etot1_list),
+                "E2_sem": sem(etot2_list),
             },
             ignore_index=True,
         )
