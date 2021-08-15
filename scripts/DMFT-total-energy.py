@@ -5,6 +5,8 @@ import os
 
 import numpy as np
 import pandas as pd
+import statistics
+from scipy.stats import sem
 
 
 def store_data(args):
@@ -62,8 +64,19 @@ def store_data(args):
                         etot1_list.append(float(lastlines[i].split()[6]))
                         etot2_list.append(float(lastlines[i].split()[7]))
 
+                    # Averaging
                     etot1 = sum(etot1_list) / len(etot1_list)
                     etot2 = sum(etot2_list) / len(etot2_list)
+
+                    # statistics
+                    print("\n-------------------------------")
+                    print("E1_avg : {:0.5f}".format(etot1))
+                    print("E1_std : {:0.5f}".format(statistics.stdv(etot1_list)))
+                    print("E1_sem : {:0.5f}".format(sem(etot1_list)))
+                    print("\n")
+                    print("E2_avg : {:0.5f}".format(etot2))
+                    print("E2_std : {:0.5f}".format(statistics.stdv(etot2_list)))
+                    print("E2_sem : {:0.5f}".format(sem(etot2_list)))
 
             else:
                 print("Calculation incomplete at %s." % path)
