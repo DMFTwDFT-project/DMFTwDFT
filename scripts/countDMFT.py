@@ -75,7 +75,16 @@ def count_complete(args):
                     )
 
                 else:
-                    print("%s calculation incomplete at %s" % (args.type.upper(), path))
+                    print(
+                        "%s calculation incomplete at %s with %d DFT and %d %s iterations."
+                        % (
+                            args.type.upper(),
+                            path,
+                            int(done_word_iter[0]),
+                            int(done_word_iter[1]),
+                            args.type.upper(),
+                        )
+                    )
                     incomplete_list.append(path)
 
             else:
