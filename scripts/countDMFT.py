@@ -86,9 +86,10 @@ def count_complete(args):
                                 args.type.upper(),
                             )
                         )
-                        incomplete_list.append(path)
                     else:
                         print("INFO_ITER incomplete at %s." % path)
+
+                    incomplete_list.append(path)
 
             else:
                 print("INFO_TIME/INFO_ITER does not exist at %s" % path)
