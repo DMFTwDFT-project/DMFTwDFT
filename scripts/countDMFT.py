@@ -75,17 +75,20 @@ def count_complete(args):
                     )
 
                 else:
-                    print(
-                        "%s calculation incomplete at %s with %d DFT and %d %s iterations."
-                        % (
-                            args.type.upper(),
-                            path,
-                            int(done_word_iter[0]),
-                            int(done_word_iter[1]),
-                            args.type.upper(),
+                    if done_word_iter[0].isdigit() and done_word_iter[1].isdigit():
+                        print(
+                            "%s calculation incomplete at %s with %d DFT and %d %s iterations."
+                            % (
+                                args.type.upper(),
+                                path,
+                                int(done_word_iter[0]),
+                                int(done_word_iter[1]),
+                                args.type.upper(),
+                            )
                         )
-                    )
-                    incomplete_list.append(path)
+                        incomplete_list.append(path)
+                    else:
+                        print("INFO_ITER incomplete at %s." % path)
 
             else:
                 print("INFO_TIME/INFO_ITER does not exist at %s" % path)
