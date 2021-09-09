@@ -135,6 +135,14 @@ class DMFTLauncher:
                     os.remove(gloc)
                 for sig in glob.glob("./DMFT/sig.inp.*"):
                     os.remove(sig)
+
+                # Copy INPUT.py, para_com.dat, para_com_dft.dat into DMFT directory
+                shutil.copy("INPUT.py", "./DMFT/INPUT.py")
+                shutil.copy("para_com.dat", "./DMFT/para_com.dat")
+
+                if os.path.exists("para_com_dft.dat"):
+                    shutil.copy("para_com_dft.dat", "./DMFT/para_com_dft.dat")
+
             else:
                 print("No previous DMFT calculation has been initialized!")
                 print("Running from scratch...")
