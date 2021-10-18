@@ -304,6 +304,7 @@ class VASP_class:
         emax=10.0,
         kmesh_tol=0.0001,
         num_iter=500,
+        dis_num_iter=500,
     ):
         if len(L_rot) != len(atomnames):
             print "Check INPUT.py for atomnames and L_rot!"
@@ -324,6 +325,7 @@ class VASP_class:
         print >> fi, "num_wann   = " + str(nwann)
         print >> fi, "kmesh_tol   = " + str(kmesh_tol)
         print >> fi, "num_iter   = " + str(num_iter)
+        print >> fi, "dis_num_iter   = " + str(dis_num_iter)
         print >> fi, ""
         print >> fi, "begin projections"
         for i, at in enumerate(atomnames):

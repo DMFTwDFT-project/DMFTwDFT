@@ -131,9 +131,9 @@ def RUN_CTQMC(p, pC, pD, it, itt, para_com, mu, ed, vdc, hf):
                     print os.popen("tar xzvf status" + str(i) + ".tar.gz").read()
                     print os.popen("rm status" + str(i) + ".tar.gz").read()
 
-            if p["orbs"][i] == "f":
+            if p["orbs"][0] == "f":
                 pD["l="] = 3
-            elif p["orbs"][i] == "d":
+            elif p["orbs"][0] == "d":
                 pD["l="] = 2
             pD["J="] = float(J[i])
 
