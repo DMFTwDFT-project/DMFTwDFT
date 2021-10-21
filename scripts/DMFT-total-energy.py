@@ -56,12 +56,13 @@ def store_data(args):
             if done_word.split()[0] == "Calculation":
                 print("Calculation complete at %s." % path)
             else:
-                print("Calculation incomplete at %s." % path)
+                print("Calculation in-progress at %s." % path)
                 etot1 = ""
                 etot2 = ""
 
         else:
-            print("INFO_TIME does not exist at %s." % path)
+            # print("INFO_TIME does not exist at %s." % path)
+            print("Calculation waiting at %s." % path)
             etot1 = ""
             etot2 = ""
 
@@ -69,47 +70,82 @@ def store_data(args):
         if args.navg == 1:
             # opening INFO_ITER if exists
             if os.path.exists(pathstr_infoiter):
-                fi = open(pathstr_infoiter, "r")
-                lastline = fi.readlines()[-1]
-                fi.close()
+                try:
+                    fi = open(pathstr_infoiter, "r")
+                    lastline = fi.readlines()[-1]
+                    fi.close()
 
-                etot1 = float(lastline.split()[6])
-                etot2 = float(lastline.split()[7])
+                    etot1 = float(lastline.split()[6])
+                    etot2 = float(lastline.split()[7])
+                except ValueError:
+                    etot1 = ""
+                    etot2 = ""
+
+                # appending data to dataframe
+                df = df.append(
+                    {
+                        "Configuration": path,
+                        "Avg Etot (Migdal-Galisky)": etot1,
+                        "Avg Etot (ctqmc sampling)": etot2,
+                    },
+                    ignore_index=True,
+                )
+
             else:
-                print("INFO_ITER does not exist at %s" % path)
+                pass
+                # print("INFO_ITER does not exist at %s" % path)
 
         else:
             # opening INFO_ITER if exists
             if os.path.exists(pathstr_infoiter):
 
-                fi = open(pathstr_infoiter, "r")
-                lastlines = fi.readlines()[-args.navg :]
-                fi.close()
+                try:
+                    fi = open(pathstr_infoiter, "r")
+                    lastlines = fi.readlines()[-args.navg :]
+                    fi.close()
 
-                for i in range(args.navg):
-                    etot1_list.append(float(lastlines[i].split()[6]))
-                    etot2_list.append(float(lastlines[i].split()[7]))
+                    for i in range(args.navg):
+                        etot1_list.append(float(lastlines[i].split()[6]))
+                        etot2_list.append(float(lastlines[i].split()[7]))
 
-                # Averaging
-                etot1 = sum(etot1_list) / len(etot1_list)
-                etot2 = sum(etot2_list) / len(etot2_list)
+                    # Averaging
+                    etot1 = sum(etot1_list) / len(etot1_list)
+                    etot2 = sum(etot2_list) / len(etot2_list)
+
+                    # appending data to dataframe
+                    df = df.append(
+                        {
+                            "Configuration": path,
+                            "Avg Etot (Migdal-Galisky)": etot1,
+                            "Avg Etot (ctqmc sampling)": etot2,
+                            "E1_std": statistics.stdev(etot1_list),
+                            "E2_std": statistics.stdev(etot2_list),
+                            "E1_sem": sem(etot1_list),
+                            "E2_sem": sem(etot2_list),
+                        },
+                        ignore_index=True,
+                    )
+
+                except ValueError:
+
+                    # appending data to dataframe
+                    df = df.append(
+                        {
+                            "Configuration": path,
+                            "Avg Etot (Migdal-Galisky)": "",
+                            "Avg Etot (ctqmc sampling)": "",
+                            "E1_std": "",
+                            "E2_std": "",
+                            "E1_sem": "",
+                            "E2_sem": "",
+                        },
+                        ignore_index=True,
+                    )
 
             else:
-                print("INFO_ITER does not exist at %s" % path)
+                pass
+                # print("INFO_ITER does not exist at %s" % path)
 
-        # appending data to dataframe
-        df = df.append(
-            {
-                "Configuration": path,
-                "Avg Etot (Migdal-Galisky)": etot1,
-                "Avg Etot (ctqmc sampling)": etot2,
-                "E1_std": statistics.stdev(etot1_list),
-                "E2_std": statistics.stdev(etot2_list),
-                "E1_sem": sem(etot1_list),
-                "E2_sem": sem(etot2_list),
-            },
-            ignore_index=True,
-        )
 
     # store in spreadsheet
     filestr = "DMFT-total-energy_" + str(dirname) + ".xlsx"

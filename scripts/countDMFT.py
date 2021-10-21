@@ -77,7 +77,7 @@ def count_complete(args):
                 else:
                     if done_word_iter[0].isdigit() and done_word_iter[1].isdigit():
                         print(
-                            "%s calculation incomplete at %s with %d DFT and %d %s iterations."
+                            "%s calculation in-progress at %s with %d DFT and %d %s iterations."
                             % (
                                 args.type.upper(),
                                 path,
@@ -87,12 +87,12 @@ def count_complete(args):
                             )
                         )
                     else:
-                        print("INFO_ITER incomplete at %s." % path)
+                        print("Calculation waiting at %s." % path)
 
                     incomplete_list.append(path)
 
             else:
-                print("INFO_TIME/INFO_ITER does not exist at %s" % path)
+                print("Calculation initializing at %s" % path)
                 incomplete_list.append(path)
 
         # Post processing completeness check
