@@ -292,18 +292,7 @@
 
       CONTAINS
 
-
-!************************ SUBROUTINE DEPSUM ****************************
-!
-! this subroutine calculates  the total one center (on site) "occupancy" 
-! matrix of each ll'mm'augmentation channel from the FERMI weights, 
-! the weight of each k-point WTKPT and  the wavefunction character 
-! of all bands
-! result is stored in CRHODE (thesis gK 10.32)
-!
-!
-!***********************************************************************
-
+      !DMFTwDFT
       SUBROUTINE DEPSUM_DMFT_IBZ(W,WDES, LMDIM, CRHODE, LOVERL)
       USE prec
       USE wave
@@ -320,11 +309,11 @@
 
       INTEGER ISP, NT, NK, N, ISPINOR, ISPINOR_, LMBASE, LMBASE_, NIS, &
            LMMAXC, NI, L, LP
-      REAL(q) WEIGHT
+      REAL(q) WEIGHT, norm, tot_n
       TYPE (wavedes1)     WDES1
       TYPE (wavefun1)     W1
       INTEGER :: ierr,N2,NBG
-      COMPLEX(q),ALLOCATABLE  :: CPROJ_TOT(:,:),CPROJ_TOT2(:,:)
+      COMPLEX(q),ALLOCATABLE  :: CPROJ_TOT(:,:)!,CPROJ_TOT2(:,:)
 
       PROFILING_START('depsum')
 
@@ -341,6 +330,7 @@
 ! initialise to zero
 !=======================================================================
       CRHODE=0
+
 !=======================================================================
 ! loop over all bands and k-points
 !=======================================================================
@@ -362,21 +352,39 @@
            CPROJ_TOT(:,NBG-band_win_(1,NK)+1)=W1%CPROJ(:)
          endif
       ENDDO
-      !CALL MPI_ALLREDUCE(CPROJ_TOT,CPROJ_TOT2,WDES%NPROD*num_band_max,MPI_DOUBLE_COMPLEX,MPI_SUM,WDES%COMM%MPI_COMM,ierr)
-      !DEALLOCATE(CPROJ_TOT)
+      !CALL
+      !MPI_ALLREDUCE(CPROJ_TOT,CPROJ_TOT2,WDES%NPROD*num_band_max,MPI_DOUBLE_COMPLEX,MPI_SUM,WDES%COMM%MPI_COMM,ierr)
 
       band:   DO N=1,WDES%NBANDS
       CALL W1_COPY(ELEMENT(W, WDES1, N, ISP), W1)
       NBG=WDES%NB_LOW+(N-1)*WDES%NB_PAR
-      if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
+      !if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
+      if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(1,NK)+num_wann_-1) then
+         !print *, NBG
+         norm=0._q
          W1%CPROJ=0._q
-         DO N2=1,num_band_max
-            W1%CPROJ(:)=W1%CPROJ(:)+CPROJ_TOT(:,N2)*DMFT_EVEC_(N2,NBG-band_win_(1,NK)+1,NK)
+         !DO N2=1,num_band_max
+         DO N2=1,num_wann_
+         !   norm=norm+real(DMFT_evec_(N2,NBG-band_win_(1,NK)+1,NK)*conjg(DMFT_evec_(N2,NBG-band_win_(1,NK)+1,NK)))
+            W1%CPROJ(:)=W1%CPROJ(:)+CPROJ_TOT(:,N2)*DMFT_evec_(N2,NBG-band_win_(1,NK)+1,NK)
          ENDDO
-         WEIGHT=WDES%RSPIN*WDES%WTKPT(NK)*DMFT_EVAL_(NBG-band_win_(1,NK)+1,NK)
-      else
+         WEIGHT=WDES%RSPIN*WDES%WTKPT(NK)*DMFT_eval_(NBG-band_win_(1,NK)+1,NK)
+         !if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(1,NK)+31) then
+         !else
+         !   WEIGHT=0
+         !endif
+         !WEIGHT=WDES%RSPIN*WDES%WTKPT(NK)
+         !print *, NK,NBG,DMFT_eval_(NBG-band_win_(1,NK)+1,NK)
+         !if (abs(norm-1.0).GE.1e-6) then 
+         !   print *, NK, NBG, norm !DMFT_eval_(NBG-band_win_(1,NK)+1,NK),W%FERWE(N,NK,ISP)
+         !endif
+      else if (NBG .LT. band_win_(1,NK)) then
+         !WEIGHT=0._q
          WEIGHT=WDES%RSPIN*WDES%WTKPT(NK)*W%FERWE(N,NK,ISP)
+      else
+         WEIGHT=0._q
       endif
+      tot_n=tot_n+WEIGHT
       !WEIGHT=WDES%RSPIN*W%FERWE(N,NK,ISP)*WDES%WTKPT(NK)
 
       spinor: DO ISPINOR =0,WDES%NRSPINORS-1
@@ -390,18 +398,19 @@
       IF (LMMAXC==0) GOTO 210
 
       ion: DO NI=NIS,WDES%NITYP(NT)+NIS-1
-
+      
 !DIR$ IVDEP
 !OCL NOVREC
         DO L=1,LMMAXC
 !DIR$ IVDEP
 !OCL NOVREC
         DO LP=1,LMMAXC
-           CRHODE(LP,L,NI,ISP+ISPINOR_+2*ISPINOR)=CRHODE(LP,L,NI,ISP+ISPINOR_+2*ISPINOR)+ &
+           CRHODE(LP,L,NI,ISP+ISPINOR_+2*ISPINOR)=CRHODE(LP,L,NI,ISP+ISPINOR_+2*ISPINOR)+&
+              !WEIGHT*W%CPROJ(L+LMBASE,N,NK,ISP)*GCONJG(W%CPROJ(LP+LMBASE_,N,NK,ISP))
               WEIGHT*W1%CPROJ(L+LMBASE)*GCONJG(W1%CPROJ(LP+LMBASE_))
         ENDDO
         ENDDO
-      
+
       LMBASE = LMMAXC+LMBASE
       LMBASE_= LMMAXC+LMBASE_
 
@@ -416,20 +425,34 @@
       DEALLOCATE(CPROJ_TOT)
       ENDDO kpoint
       ENDDO spin
+      !STOP
+      !print *, tot_n
       ! sum over all bands
 #ifdef realmode
-      CALLMPI( M_sum_d(WDES%COMM_INTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
-      CALLMPI( M_sum_d(WDES%COMM_KINTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
+      CALLMPI(M_sum_d(WDES%COMM_INTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
+      CALLMPI(M_sum_d(WDES%COMM_KINTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
 #else
-      CALLMPI( M_sum_z(WDES%COMM_INTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
-      CALLMPI( M_sum_z(WDES%COMM_KINTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
+      CALLMPI(M_sum_z(WDES%COMM_INTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
+      CALLMPI(M_sum_z(WDES%COMM_KINTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
 #endif
-      CALL DELWAV(W1, .FALSE.)
 
       PROFILING_STOP('depsum')
 
       RETURN
       END SUBROUTINE
+
+
+!************************ SUBROUTINE DEPSUM ****************************
+!
+! this subroutine calculates  the total one center (on site) "occupancy" 
+! matrix of each ll'mm'augmentation channel from the FERMI weights, 
+! the weight of each k-point WTKPT and  the wavefunction character 
+! of all bands
+! result is stored in CRHODE (thesis gK 10.32)
+!
+!
+!***********************************************************************
+
 
       SUBROUTINE DEPSUM(W,WDES, LMDIM, CRHODE, LOVERL)
       USE prec
@@ -519,181 +542,6 @@
       RETURN
       END SUBROUTINE
 
-    SUBROUTINE DEPSUM_DMFT(W,WDES, LMDIM, CRHODE, LOVERL, P, LATT_CUR)
-      USE prec
-      USE sym_prec
-      USE wave_high
-      USE full_kpoints
-      USE pseudo
-      USE lattice
-      USE mlwf
-      USE pead
-
-      IMPLICIT NONE
-
-      TYPE (wavespin)    W
-      TYPE (wavedes)     WDES
-      LOGICAL LOVERL
-      INTEGER LMDIM
-      OVERLAP CRHODE(LMDIM,LMDIM,WDES%NIONS,WDES%NCDIJ)
-      TYPE (potcar)       P(:)
-      TYPE (latt) LATT_CUR
-      
-   ! local
-      INTEGER ISP, ISP_IRZ, NT, NK, N, ISPINOR, ISPINOR_, LMBASE, LMBASE_, NIS, &
-           LMMAXC, NI, L, LP
-      LOGICAL :: LSHIFT
-      TYPE( rotation_handle), POINTER :: ROT_HANDLE
-      TYPE (wavedes1)     WDES1, WDES1_IRZ
-      TYPE (wavefun1)     W1
-      REAL(q) WEIGHT
-      INTEGER :: ierr,N2,NBG
-      COMPLEX(q),ALLOCATABLE  :: CPROJ_TOT(:,:),CPROJ_TOT2(:,:)
-      TYPE (wavespin)    WORIG
-      TYPE(wavefuna) WK
-
-
-      PROFILING_START('depsum_sym')
-
-      IF (.NOT.LOVERL) THEN
-         PROFILING_STOP('depsum_sym')
-         RETURN
-      ENDIF
-
-      WORIG=W
-      WORIG%WDES=>WDES_FULL_PEAD
-      CALL CHECK_FULL_KPOINTS
-      NULLIFY(ROT_HANDLE)
-
-      CALL SETWDES(WORIG%WDES, WDES1, 0)
-      CALL NEWWAV(W1 , WDES1, .FALSE.)
-!=======================================================================
-! initialise to zero
-!=======================================================================
-      CRHODE=0
-!=======================================================================
-! loop over all bands and k-points
-!=======================================================================
-      spin:   DO ISP=1,WDES%ISPIN
-      kpoint: DO NK=1,KPOINTS_FULL%NKPTS
-#ifdef MPI
-         IF (MOD(NK-1,WORIG%WDES%COMM_KINTER%NCPU).NE.WORIG%WDES%COMM_KINTER%NODE_ME-1) CYCLE
-#endif
-         NULLIFY(ROT_HANDLE)
-         CALL SETWDES(WORIG%WDES,WDES1,NK)
-         IF (NK==KPOINTS_FULL%NEQUIV(NK)) THEN
-            ! k is a kpoint in the IBZ
-            WK=ELEMENTS(WORIG,WDES1,ISP)
-         ELSE
-            ! k is not a kpoint in the IBZ
-            CALL NEWWAVA(WK,WDES1,WDES1%NBANDS)
-            CALL PEAD_WA_ROTATE(WORIG,P,LATT_CUR,ISP,WK)
-         ENDIF
-
-         num_band_max=band_win_(2,NK)-band_win_(1,NK)+1
-         ALLOCATE(CPROJ_TOT(WDES%NPROD,num_band_max))
-         !ALLOCATE(CPROJ_TOT2(WDES%NPROD,num_band_max2))
-         CPROJ_TOT=0._q!;CPROJ_TOT2=0._q;
-         DO N=1,WDES%NBANDS
-            CALL W1_COPY(ELEMENT(WK, N), W1)
-
-            NBG=WDES%NB_LOW+(N-1)*WDES%NB_PAR
-            if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
-              CPROJ_TOT(:,NBG-band_win_(1,NK)+1)=W1%CPROJ(:)
-            endif
-         ENDDO
-
-!         CALL SETWDES(WDES, WDES1, NK)
-!         CALL SETWDES(WDES, WDES1_IRZ, KPOINTS_FULL%NEQUIV(NK))
-!         
-!         ISP_IRZ=ISP
-!         IF (KPOINTS_FULL%SPINFLIP(NK)==1) THEN
-!            ISP_IRZ=3-ISP
-!         ENDIF
-         
-         !write(*,*) 'I am depsum'
-         band:   DO N=1,WDES%NBANDS
-            CALL W1_COPY(ELEMENT(WK, N), W1)
-            NBG=WDES%NB_LOW+(N-1)*WDES%NB_PAR
-            if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
-              W1%CPROJ=0._q
-              DO N2=1,num_band_max
-                W1%CPROJ(:)=W1%CPROJ(:)+CPROJ_TOT(:,N2)*DMFT_EVEC_(N2,NBG-band_win_(1,NK)+1,NK)
-              ENDDO
-              WEIGHT=WDES%RSPIN*KPOINTS_FULL%WTKPT(NK)*DMFT_EVAL_(NBG-band_win_(1,NK)+1,NK)
-            else
-              WEIGHT=WDES%RSPIN*KPOINTS_FULL%WTKPT(NK)*W%FERWE(N,KPOINTS_FULL%NEQUIV(NK),ISP)
-            endif
-
-
-!            WEIGHT=WDES%RSPIN*KPOINTS_FULL%WTKPT(NK)*W%FERWE(N,KPOINTS_FULL%NEQUIV(NK),ISP)
-!
-!            IF (NK <= WDES%NKPTS) THEN
-!               CALL W1_COPY(ELEMENT(W, WDES1, N, ISP), W1)
-!            ELSE
-!#ifndef gammareal
-!           ! 
-!           ! use symmetry to construct wave function charakter at k
-!               CALL ROTATE_WAVE_CHARACTER(ROT_HANDLE, P, LATT_CUR, WDES1, ELEMENT(W, WDES1_IRZ, N, ISP_IRZ), W1)
-!#endif
-!            ENDIF
-
-            spinor: DO ISPINOR =0,WDES%NRSPINORS-1
-               DO ISPINOR_=0,WDES%NRSPINORS-1
-
-                  LMBASE =ISPINOR *(WDES%NPRO/2)
-                  LMBASE_=ISPINOR_*(WDES%NPRO/2)
-                  
-                  NIS   =1
-                  typ:  DO NT=1,WDES%NTYP
-                     LMMAXC=WDES%LMMAX(NT)
-                     IF (LMMAXC==0) GOTO 210
-
-                     ion: DO NI=NIS,WDES%NITYP(NT)+NIS-1
-!DIR$ IVDEP
-!OCL NOVREC
-                        DO L=1,LMMAXC
-!DIR$ IVDEP
-!OCL NOVREC
-                           DO LP=1,LMMAXC
-                              CRHODE(LP,L,NI,ISP+ISPINOR_+2*ISPINOR)=CRHODE(LP,L,NI,ISP+ISPINOR_+2*ISPINOR)+ &
-                                   WEIGHT*W1%CPROJ(L+LMBASE)*GCONJG(W1%CPROJ(LP+LMBASE_))
-                           ENDDO
-                        ENDDO
-                        
-                        LMBASE = LMMAXC+LMBASE
-                        LMBASE_= LMMAXC+LMBASE_
-
-                     ENDDO ion
-
-210                  NIS = NIS+WDES%NITYP(NT)
-                  ENDDO typ
-               ENDDO
-            ENDDO spinor
-
-         ENDDO band
-         DEALLOCATE(CPROJ_TOT)
-         CALL DEALLOCATE_ROT_HANDLE(ROT_HANDLE)
-         IF (NK/=KPOINTS_FULL%NEQUIV(NK)) CALL DELWAVA(WK)
-         !CALL DELWAVA(WK)
-      ENDDO kpoint
-      ENDDO spin
-      ! sum over all bands
-#ifdef realmode
-      CALLMPI( M_sum_d(WDES%COMM_INTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
-      CALLMPI( M_sum_d(WDES%COMM_KINTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
-#else
-      CALLMPI( M_sum_z(WDES%COMM_INTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
-      CALLMPI( M_sum_z(WDES%COMM_KINTER,CRHODE,LMDIM*LMDIM*WDES%NIONS*WDES%NCDIJ))
-#endif
-
-      CALL DEALLOCATE_ROT_HANDLE(ROT_HANDLE)
-      CALL DELWAV(W1, .FALSE.)
-
-      PROFILING_STOP('depsum_sym')
-
-      RETURN
-    END SUBROUTINE DEPSUM_DMFT
 
 !************************ SUBROUTINE DEPSUM_SYM ************************
 !
@@ -1408,7 +1256,9 @@
       INTEGER N_MIX_PAW
       REAL(q)  RHOLM(N_MIX_PAW,WDES%NCDIJ)
 ! on return the following arrays are set
+      OVERLAP     CRHODE_cor(LMDIM,LMDIM,WDES%NIONS,WDES%NCDIJ) ! occupancy of augmentation channels
       OVERLAP     CRHODE(LMDIM,LMDIM,WDES%NIONS,WDES%NCDIJ) ! occupancy of augmentation channels
+      COMPLEX(q)  CHDEN_cor(GRID_SOFT%MPLWV,WDES%NCDIJ)         ! soft pseudo charge
       COMPLEX(q)  CHDEN(GRID_SOFT%MPLWV,WDES%NCDIJ)         ! soft pseudo charge
       COMPLEX(q)  CHTOT(GRIDC%MPLWV,WDES%NCDIJ)             ! total charge
       LOGICAL LOVERL
@@ -1416,16 +1266,19 @@
 
       PROFILING_START('set_charge')
 
-      !write(*,*) 'hi'
       IF (SYMM%ISYM==3) THEN
          CALL SOFT_CHARGE_SYM(GRID,GRID_SOFT,W, WDES, CHDEN)
       ELSE
+        !DMFTwDFT
          if (LDMFT.eq..TRUE.) then
             !CALL SOFT_CHARGE_DMFT(GRID,GRID_SOFT,W, WDES, CHDEN, P, LATT_CUR)
+            !CALL SOFT_CHARGE(GRID,GRID_SOFT,W, WDES, CHDEN)
             CALL SOFT_CHARGE_DMFT_IBZ(GRID,GRID_SOFT,W, WDES, CHDEN)
+            !CHDEN(:,:)=CHDEN(:,:)+CHDEN_cor(:,:)
          else
             CALL SOFT_CHARGE(GRID,GRID_SOFT,W, WDES, CHDEN)
          endif
+         !CALL SOFT_CHARGE(GRID,GRID_SOFT,W, WDES, CHDEN)
       ENDIF
 
       ! change storage convention to (total, magnetization)
@@ -1446,12 +1299,16 @@
       IF (SYMM%ISYM==3) THEN
          CALL DEPSUM_SYM(W, WDES, LMDIM, CRHODE, LOVERL, P, LATT_CUR)
       ELSE
+         !DMFTwDFT
          if (LDMFT.eq..TRUE.) then
             !CALL DEPSUM_DMFT(W, WDES, LMDIM, CRHODE, LOVERL,P,LATT_CUR)
+            !CALL DEPSUM(W, WDES, LMDIM, CRHODE, LOVERL)
             CALL DEPSUM_DMFT_IBZ(W, WDES, LMDIM, CRHODE, LOVERL)
+            !CRHODE(:,:,:,:)=CRHODE(:,:,:,:)+CRHODE_cor(:,:,:,:)
          else
             CALL DEPSUM(W, WDES, LMDIM, CRHODE, LOVERL)
          endif
+         !CALL DEPSUM(W, WDES, LMDIM, CRHODE, LOVERL)
       ENDIF
 
       ! change storage convention to (total, magnetization)

@@ -31,16 +31,7 @@ MODULE charge
   
 CONTAINS
 
-!********************* SOFT_CHARGE *************************************
-!
-! subroutine constructs the electronic charge density according
-! to the current wavefunctions and fermi-weights
-!  rho(r) = \sum_n,k phi_nk(r) phi_nk^*(r) * f_nk
-! where f_nk are the single electron occupancies (FERWE)
-! the phi_nk are the pseudowavefunctions 
-!
-!***********************************************************************
-
+  !DMFTwDFT
   SUBROUTINE SOFT_CHARGE_DMFT_IBZ(GRID,GRID_SOFT,W,WDES, CHDEN)
     USE wave_high
     USE gridq
@@ -67,7 +58,7 @@ CONTAINS
     TYPE (GRIDQUANT) :: CHARGE_REAL_SPACE, CHARGE
     INTEGER I
     INTEGER :: ierr,N2,NBG,ISP, NK, N
-    REAL(q) :: WEIGHT
+    REAL(q) :: WEIGHT, tot_n, norm
     COMPLEX(q),ALLOCATABLE  :: CR_TOT(:,:),CR_TOT2(:,:)
 
     PROFILING_START('soft_charge')
@@ -85,12 +76,14 @@ CONTAINS
     CALL SETWDES(WDES, WDES1, 0)
     CALL NEWWAV_R(W1, WDES1)
 
-    CALL GENERATE_GRID_QUANTITY(CHARGE, GRID_SOFT, CHDEN) 
+    CALL GENERATE_GRID_QUANTITY(CHARGE, GRID_SOFT, CHDEN)
     CALL ALLOCATE_GRID_QUANTITY_FORCE_RL(CHARGE_REAL_SPACE, GRID, GRID_SOFT, WDES%NCDIJ)
 
     CHARGE_REAL_SPACE=0.0_q
     CHARGE_REAL_SPACE%REALSPACE =.TRUE.
 
+    tot_n=0.0_q
+    norm=0._q
     spin: DO ISP=1,WDES%ISPIN
 
        kpoints: DO NK=1,WDES%NKPTS
@@ -117,7 +110,7 @@ CONTAINS
              IF (W%OVER_BAND) THEN
                 CALL REDIS_PW_STOP (WDES, W%CW(1,N,NK,ISP), N, H_PW)
                 IF (N+NSTRIP<=WDES%NBANDS) &
-                     CALL REDIS_PW_START(WDES, W%CW(1,N+NSTRIP,NK,ISP), N+NSTRIP, H_PW)
+                     CALL REDIS_PW_START(WDES, W%CW(1,N+NSTRIP,NK,ISP),N+NSTRIP, H_PW)
              ENDIF
              CALL W1_COPY(ELEMENT(W, WDES1, N, ISP), W1)
              !write(*,*) 'a',NK
@@ -130,12 +123,14 @@ CONTAINS
           ENDDO
           !write(*,*) 'b',NK
           !write(*,*) WDES1%GRID%MPLWV,num_band_max,CR_TOT(1,1),CR_TOT2(1,1)
-          !CALL MPI_ALLREDUCE(CR_TOT,CR_TOT2,WDES1%GRID%MPLWV*num_band_max,MPI_DOUBLE_COMPLEX,MPI_SUM,WDES%COMM%MPI_COMM,ierr)
+          !CALL
+          !MPI_ALLREDUCE(CR_TOT,CR_TOT2,WDES1%GRID%MPLWV*num_band_max,MPI_DOUBLE_COMPLEX,MPI_SUM,WDES%COMM%MPI_COMM,ierr)
           !DEALLOCATE(CR_TOT)
           !write(*,*) 'c',NK
 !
 !#ifdef MPI
-!          IF (MOD(NK-1,WDES%COMM_KINTER%NCPU).NE.WDES%COMM_KINTER%NODE_ME-1) DEALLOCATE(CR_TOT2); CYCLE
+!          IF (MOD(NK-1,WDES%COMM_KINTER%NCPU).NE.WDES%COMM_KINTER%NODE_ME-1)
+!          DEALLOCATE(CR_TOT2); CYCLE
 !#endif
           !write(*,*) 'd',NK
 
@@ -145,29 +140,60 @@ CONTAINS
              IF (W%OVER_BAND) THEN
                 CALL REDIS_PW_STOP (WDES, W%CW(1,N,NK,ISP), N, H_PW)
                 IF (N+NSTRIP<=WDES%NBANDS) &
-                     CALL REDIS_PW_START(WDES, W%CW(1,N+NSTRIP,NK,ISP), N+NSTRIP, H_PW)
+                     CALL REDIS_PW_START(WDES, W%CW(1,N+NSTRIP,NK,ISP),N+NSTRIP, H_PW)
              ENDIF
 
              CALL W1_COPY(ELEMENT(W, WDES1, N, ISP), W1)
              CALL FFTWAV_W1(W1)
              NBG=W%WDES%NB_LOW+(N-1)*W%WDES%NB_PAR
-             if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
+             !if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
+             if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(1,NK)+num_wann_-1) then
                W1%CR=0._q
-               DO N2=1,num_band_max
-                 W1%CR(:)=W1%CR(:)+CR_TOT(:,N2)*DMFT_EVEC_(N2,NBG-band_win_(1,NK)+1,NK)
+               !W1%CR(:)=CR_TOT(:,NBG-band_win_(1,NK)+1)
+               DO N2=1,num_wann_
+               !DO N2=1,num_band_max
+                 !norm=norm+real(DMFT_evec_(N2,NBG-band_win_(1,NK)+1,NK)*conjg(DMFT_evec_(N2,NBG-band_win_(1,NK)+1,NK)))
+                 W1%CR(:)=W1%CR(:)+CR_TOT(:,N2)*DMFT_evec_(N2,NBG-band_win_(1,NK)+1,NK)
                ENDDO
-               WEIGHT=W%WDES%RSPIN*W%WDES%WTKPT(NK)*DMFT_EVAL_(NBG-band_win_(1,NK)+1,NK)
+               !if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(1,NK)+31) then
+               !   WEIGHT=WDES%RSPIN*WDES%WTKPT(NK)!*DMFT_eval_(NBG-band_win_(1,NK)+1,NK)
+               !else
+               !   WEIGHT=0
+               !endif
+               !WEIGHT=W%WDES%RSPIN*W%WDES%WTKPT(NK)*W%FERWE(N,NK,ISP)
+               WEIGHT=W%WDES%RSPIN*W%WDES%WTKPT(NK)*DMFT_eval_(NBG-band_win_(1,NK)+1,NK)
+               !WEIGHT=W%WDES%RSPIN*W%WDES%WTKPT(NK)
+               !print *, NK,NBG,WEIGHT
+               !DO N2=1,WDES1%GRID%MPLWV
+               !  norm=norm+real(W1%CR(N2)*conjg(W1%CR(N2)))!*WEIGHT
+               !ENDDO
+             !  tot_n=tot_n+WEIGHT
+               !print *, WEIGHT
+               !if (abs(norm-1.0).GE.1e-6) then
+               !   print *, NK, NBG, norm
+               !endif
+             else if (NBG .LT. band_win_(1,NK)) then
+               !WEIGHT=0._q
+               WEIGHT=WDES%RSPIN*WDES%WTKPT(NK)*W%FERWE(N,NK,ISP)
              else
-               WEIGHT=W%WDES%RSPIN*W%WDES%WTKPT(NK)*W%FERWE(N,NK,ISP)
+               WEIGHT=0._q
+             !else
+             !  !WEIGHT=0._q
+             !  WEIGHT=W%WDES%RSPIN*W%WDES%WTKPT(NK)*W%FERWE(N,NK,ISP)
              endif
+             tot_n=tot_n+WEIGHT
+            
 
              !WEIGHT=WDES%RSPIN*WDES%WTKPT(NK)*W%FERWE(N,NK,ISP)
              IF (WEIGHT==0) CYCLE
-             CALL PW_CHARGE(WDES1, CHARGE_REAL_SPACE%RG(1,ISP), SIZE(CHARGE_REAL_SPACE%RG,1), W1%CR(1), W1%CR(1), WEIGHT )
+             CALL PW_CHARGE(WDES1, CHARGE_REAL_SPACE%RG(1,ISP),SIZE(CHARGE_REAL_SPACE%RG,1), W1%CR(1), W1%CR(1), WEIGHT )
           ENDDO band
           DEALLOCATE(CR_TOT)
        ENDDO kpoints
     ENDDO spin
+    !print *, tot_n
+    !print *, norm 
+    !STOP
 
     IF (W%OVER_BAND) THEN
        W%OVER_BAND=.FALSE.
@@ -184,18 +210,18 @@ CONTAINS
     IF (WDES%COMM_KINTER%NCPU.GT.1) THEN
        DO I=1,CHARGE_REAL_SPACE%NCDIJ
 #ifdef realmode
-          CALLMPI( M_sum_d(WDES%COMM_KINTER, CHARGE_REAL_SPACE%RG(1,I),CHARGE_REAL_SPACE%GRID%RL%NP) )
+          CALLMPI( M_sum_d(WDES%COMM_KINTER,CHARGE_REAL_SPACE%RG(1,I),CHARGE_REAL_SPACE%GRID%RL%NP) )
 #else
-          CALLMPI( M_sum_z(WDES%COMM_KINTER, CHARGE_REAL_SPACE%RG(1,I),CHARGE_REAL_SPACE%GRID%RL%NP) )
+          CALLMPI( M_sum_z(WDES%COMM_KINTER,CHARGE_REAL_SPACE%RG(1,I),CHARGE_REAL_SPACE%GRID%RL%NP) )
 #endif
        END DO
     END IF
 #endif
 
     CALL SUMRL_GQ( CHARGE_REAL_SPACE, CHARGE, WDES%COMM_INTER)
-    
+
     CALL FFT_GQ(CHARGE)
-      
+
     ! set the charge-density of unbalanced lattice vectors to 0
     CALL SETUNB_GQ(CHARGE)
 
@@ -205,6 +231,16 @@ CONTAINS
     PROFILING_STOP('soft_charge')
 
   END SUBROUTINE SOFT_CHARGE_DMFT_IBZ
+
+!********************* SOFT_CHARGE *************************************
+!
+! subroutine constructs the electronic charge density according
+! to the current wavefunctions and fermi-weights
+!  rho(r) = \sum_n,k phi_nk(r) phi_nk^*(r) * f_nk
+! where f_nk are the single electron occupancies (FERWE)
+! the phi_nk are the pseudowavefunctions 
+!
+!***********************************************************************
 
   SUBROUTINE SOFT_CHARGE(GRID,GRID_SOFT,W,WDES, CHDEN)
     USE wave_high
@@ -317,186 +353,6 @@ CONTAINS
 
   END SUBROUTINE SOFT_CHARGE
 
-  SUBROUTINE SOFT_CHARGE_DMFT(GRID,GRID_SOFT,W,WDES, CHDEN ,P, LATT_CUR)
-    USE wave_high
-    USE gridq
-    USE hamil
-    USE full_kpoints
-    USE pseudo
-    USE lattice
-    USE sym_prec
-    USE mlwf
-    USE pead
-
-    IMPLICIT NONE
-
-    TYPE (wavedes)     WDES
-    TYPE (wavespin)    W
-    TYPE (grid_3d)     GRID,GRID_SOFT
-    COMPLEX(q)   CHDEN(GRID_SOFT%MPLWV,WDES%NCDIJ)
-  ! local
-    INTEGER :: ISP, NK, N, ISP_IRZ
-    REAL(q) :: WEIGHT
-    LOGICAL :: LSHIFT
-    TYPE (wavedes1)     WDES1, WDES1_IRZ
-    TYPE (wavefun1)     W1
-    INTEGER ISPINOR
-    TYPE (REDIS_PW_CTR),POINTER :: H_PW
-    TYPE (GRIDQUANT) :: CHARGE_REAL_SPACE, CHARGE
-    INTEGER I
-    INTEGER :: ierr,N2,NBG
-    COMPLEX(q),ALLOCATABLE  :: CR_TOT(:,:),CR_TOT2(:,:)
-    TYPE(rotation_handle), POINTER :: ROT_HANDLE
-    TYPE(potcar) P(:)
-    TYPE (latt)     LATT_CUR
-    TYPE (wavespin)    WORIG
-    TYPE(wavefuna) WK
-
-
-    PROFILING_START('soft_charge_sym')
-
-    IF (W%OVER_BAND) THEN
-       W%OVER_BAND=.FALSE.
-       WRITE(0,*) "internal error in SOFT_CHARGE_SYM: W%OVER_BAND is not supported"
-       STOP
-    ENDIF
-    WORIG=W
-    WORIG%WDES=>WDES_FULL_PEAD
-    !write(*,*) WDES_FULL_PEAD%NKPTS
-
-    CALL CHECK_FULL_KPOINTS
-
-    CALL SETWDES(WORIG%WDES, WDES1, 0)
-    CALL NEWWAV(W1 , WDES1,.TRUE.)
-
-    CALL GENERATE_GRID_QUANTITY(CHARGE, GRID_SOFT, CHDEN) 
-    CALL ALLOCATE_GRID_QUANTITY_FORCE_RL(CHARGE_REAL_SPACE, GRID, GRID_SOFT, WDES%NCDIJ)
-
-    CHARGE_REAL_SPACE=0.0_q
-    CHARGE_REAL_SPACE%REALSPACE =.TRUE.
-    !write(*,*) 'hihi'
-
-    spin: DO ISP=1,WORIG%WDES%ISPIN
-
-       kpoints: DO NK=1,KPOINTS_FULL%NKPTS
-#ifdef MPI
-          IF (MOD(NK-1,WORIG%WDES%COMM_KINTER%NCPU).NE.WORIG%WDES%COMM_KINTER%NODE_ME-1) CYCLE
-#endif
-          !write(*,*) 'hihi'
-          NULLIFY(ROT_HANDLE)
-          CALL SETWDES(WORIG%WDES,WDES1,NK)
-          !write(*,*) 'hihi2'
-          IF (NK==KPOINTS_FULL%NEQUIV(NK)) THEN
-             ! k is a kpoint in the IBZ
-             WK=ELEMENTS(WORIG,WDES1,ISP)
-          ELSE
-             ! k is not a kpoint in the IBZ
-             CALL NEWWAVA(WK,WDES1,WDES1%NBANDS)
-             CALL PEAD_WA_ROTATE(WORIG,P,LATT_CUR,ISP,WK)
-          ENDIF
-
-          !CALL SETWDES(WDES, WDES1, NK)
-          !!CALL SETWDES(WDES, WDES1_IRZ, KPOINTS_FULL%NEQUIV(NK))
-          !
-          !ISP_IRZ=ISP
-          !IF (KPOINTS_FULL%SPINFLIP(NK)==1) THEN
-          !   ISP_IRZ=3-ISP
-          !ENDIF
-
-          num_band_max=band_win_(2,NK)-band_win_(1,NK)+1
-          ALLOCATE(CR_TOT(WDES1%GRID%MPLWV,num_band_max))
-          !ALLOCATE(CR_TOT2(WDES1%GRID%MPLWV,num_band_max2))
-          CR_TOT=0._q!;CR_TOT2=0._q;
-          DO N=1,WDES1%NBANDS
-             CALL W1_COPY(ELEMENT(WK, N), W1)
-             CALL FFTWAV_W1(W1)
-             NBG=WORIG%WDES%NB_LOW+(N-1)*WORIG%WDES%NB_PAR
-             if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
-               CR_TOT(:,NBG-band_win_(1,NK)+1)=W1%CR(:)
-             endif
-          ENDDO
-          !write(*,*) 'hihi3'
-         
-          band: DO N=1,WORIG%WDES%NBANDS
-             CALL W1_COPY(ELEMENT(WK, N), W1)
-             CALL FFTWAV_W1(W1)
-             NBG=WORIG%WDES%NB_LOW+(N-1)*WORIG%WDES%NB_PAR
-             if (NBG .GE. band_win_(1,NK) .AND. NBG .LE. band_win_(2,NK)) then
-               W1%CR=0._q
-               DO N2=1,num_band_max
-                 W1%CR(:)=W1%CR(:)+CR_TOT(:,N2)*DMFT_EVEC_(N2,NBG-band_win_(1,NK)+1,NK)
-               ENDDO
-               WEIGHT=WORIG%WDES%RSPIN*KPOINTS_FULL%WTKPT(NK)*DMFT_EVAL_(NBG-band_win_(1,NK)+1,NK)
-             else
-               WEIGHT=WORIG%WDES%RSPIN*KPOINTS_FULL%WTKPT(NK)*W%FERWE(N,KPOINTS_FULL%NEQUIV(NK),ISP)
-             endif
-
-             !WEIGHT=WDES%RSPIN*KPOINTS_FULL%WTKPT(NK)*W%FERWE(N,KPOINTS_FULL%NEQUIV(NK),ISP)
-
-             IF (WEIGHT==0) CYCLE
-
-             !IF (NK <= WDES%NKPTS) THEN
-             !   CALL W1_COPY(ELEMENT(W, WDES1, N, ISP), W1)
-             !   CALL FFTWAV_W1(W1)
-             !ELSE
-#ifndef gammareal
-           ! 
-           ! symmetry must be considered if the wavefunctions for this
-           ! k-point NK (containing all k-points in the entire BZ) 
-           ! are not stored in W
-           !
-                !LSHIFT=.FALSE.
-                !IF ((ABS(KPOINTS_FULL%TRANS(1,NK)) >TINY) .OR. &
-                !     (ABS(KPOINTS_FULL%TRANS(2,NK))>TINY) .OR. &
-                !     (ABS(KPOINTS_FULL%TRANS(3,NK))>TINY)) LSHIFT=.TRUE.
-                !CALL W1_ROTATE_AND_FFT_NO_PROJ(W1, ELEMENT(W, WDES1_IRZ, N, ISP_IRZ), LSHIFT)
-#endif
-             !ENDIF
-
-
-             CALL PW_CHARGE(WDES1, CHARGE_REAL_SPACE%RG(1,ISP), SIZE(CHARGE_REAL_SPACE%RG,1), W1%CR(1), W1%CR(1), WEIGHT )
-          ENDDO band
-          CALL DEALLOCATE_ROT_HANDLE(ROT_HANDLE)
-          IF (NK/=KPOINTS_FULL%NEQUIV(NK)) CALL DELWAVA(WK)
-          !CALL DELWAVA(WK)
-          DEALLOCATE(CR_TOT)
-       ENDDO kpoints
-       
-
-    ENDDO spin
-
-
-    ! fourier-transformation of charge-density using GRID_SOFT
-    ! only input data from first in-band-group is used, and all nodes
-    ! are involved in the FFT, final result is distributed among nodes
-    ! (see SET_RL_GRID() in mgrid.F, and M_divide() in mpi.F)
-
-    ! merge charge from all bands
-#ifdef MPI
-    IF (WDES%COMM_KINTER%NCPU.GT.1) THEN
-       DO I=1,CHARGE_REAL_SPACE%NCDIJ
-#ifdef realmode
-          CALLMPI( M_sum_d(WDES%COMM_KINTER, CHARGE_REAL_SPACE%RG(1,I),CHARGE_REAL_SPACE%GRID%RL%NP) )
-#else
-          CALLMPI( M_sum_z(WDES%COMM_KINTER, CHARGE_REAL_SPACE%RG(1,I),CHARGE_REAL_SPACE%GRID%RL%NP) )
-#endif
-       END DO
-    END IF
-#endif
-
-    CALL SUMRL_GQ( CHARGE_REAL_SPACE, CHARGE, WDES%COMM_INTER)
-    
-    CALL FFT_GQ(CHARGE)
-      
-    ! set the charge-density of unbalanced lattice vectors to 0
-    CALL SETUNB_GQ(CHARGE)
-
-    CALL DELWAV(W1, .TRUE.)
-    CALL DEALLOCATE_GRID_QUANTITY(CHARGE_REAL_SPACE)
-
-    PROFILING_STOP('soft_charge_sym')
-
-  END SUBROUTINE SOFT_CHARGE_DMFT
 
 !********************* SOFT_CHARGE *************************************
 !
