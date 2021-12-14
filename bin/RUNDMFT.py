@@ -88,6 +88,28 @@ def check_convergence():
     else:
         return False
 
+def write_iterations_log(itt, it):
+    """Writes to iterations.log to preserve iterations history
+    through resumed calculations."""
+
+    if itt == 1 and it == 1:
+        # add new line to each new DMFT calculation
+        with open("iterations.log","a") as fi:
+            fi.write(" ")
+
+    # read the last line
+    fi = open("iterations.log","r")
+    lines = fi.readlines()
+    fi.close()
+
+    # now edit the last line of the list of lines
+    new_last_line = "{:d} {:d}\n".format(itt, it)
+    lines[-1] = new_last_line
+
+    # now write the modified list back out to the file
+    with open("iterations.log",'w') as fi:
+        fi.writelines(lines)
+
 
 if __name__ == "__main__":
     # top level parser
@@ -184,7 +206,7 @@ if __name__ == "__main__":
     main_out.write("\n")
     main_out.flush()
 
-    main_out.write("Caculation Starts" + now())
+    main_out.write("Calculation Starts" + now())
     main_out.write("\n")
     main_out.flush()
 
@@ -341,7 +363,8 @@ if __name__ == "__main__":
             if it == 0:
 
                 DMFT.EKIN0 = 0
-                print ("Running XHF0...")
+                #print ("Running dmft0.x...")
+                print ("Running XHF0.py...")
 
                 # XHF0.py and WAN90.py require wannier90. files instead of
                 # structurename. files. Therefore, we need to rename them to
@@ -353,12 +376,19 @@ if __name__ == "__main__":
                     shutil.copy(args.structurename + ".win", "wannier90.win")
                     shutil.copy(args.structurename + ".amn", "wannier90.amn")
 
+                # cmd = (
+                #     para_com
+                #     + " "
+                #     + p["path_bin"]
+                #     + "dmft0.x > ksum_output_dmft0.x 2> ksum_error_dmft0.x"
+                # )
                 cmd = (
                     para_com
                     + " "
                     + p["path_bin"]
                     + "XHF0.py > ksum_output_XHF0 2> ksum_error_XHF0"
                 )
+
                 out, err = subprocess.Popen(
                     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
                 ).communicate()
@@ -467,6 +497,9 @@ if __name__ == "__main__":
             )
             main_iter.write("\n")
             main_iter.flush()
+
+            # write to iteratinos.log
+            write_iterations_log(itt+1, it+1)
 
             E_iter.write(
                 "%14.6f %14.6f %14.6f %14.6f"

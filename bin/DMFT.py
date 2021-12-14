@@ -120,6 +120,10 @@ class DMFTLauncher:
             # Generate initial self energy.
             self.gen_sig()
 
+            # clear iterations.log file
+            if os.path.exists("./DMFT/iterations.log"):
+                os.remove("./DMFT/iterations.log")
+
         else:
             print("Resuming calculation...\n")
 
@@ -153,6 +157,10 @@ class DMFTLauncher:
 
                 # Generate initial self energy.
                 self.gen_sig()
+
+                # clear iterations.log file
+                if os.path.exists("./DMFT/iterations.log"):
+                    os.remove("./DMFT/iterations.log")
 
         # import the VASP class. This can be used for other DFT codes as well.
         self.DFT = VASP.VASP_class(
