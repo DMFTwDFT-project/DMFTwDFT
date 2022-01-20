@@ -667,7 +667,9 @@ class PostProcess:
         for i in atm_sqn:
             len_sf = 0
             for j in range(i):
-                len_sf += max(Make_coor_list(TB.TB_orbs[cor_at[j][0]], cor_orb[j])) + 1
+                len_sf += (
+                    max(self.Make_coor_list(TB.TB_orbs[cor_at[j][0]], cor_orb[j])) + 1
+                )
             orb_idx = self.Make_coor_list(TB.TB_orbs[cor_at[i][0]], cor_orb[i])
             for idx in orb_idx:
                 orb_sqn.append(idx + len_sf)
