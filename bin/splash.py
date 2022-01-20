@@ -2,8 +2,8 @@
 
 import sys
 
-version = "1.1"
-date = "May 11th, 2020"
+version = "1.2"
+date = "Jan 20th, 2022"
 
 
 def welcome():
@@ -24,7 +24,10 @@ def welcome():
     )
     print("\nVersion %s updated on %s.\n" % (version, date))
     print(
-        "Please cite:\nVijay Singh, Uthpala Herath, Benny Wah, Xingyu Liao, Aldo H. Romero, Hyowon Park,. DMFTwDFT: An open-source code combining Dynamical Mean Field Theory with various Density Functional Theory packages,. arXiv:2002.00068 [cond-mat.str-el].\n"
+        "Please cite:\n \
+Vijay Singh, Uthpala Herath, Benny Wah, Xingyu Liao, Aldo H. Romero, Hyowon Park.,\n \
+DMFTwDFT: An open-source code combining Dynamical Mean Field Theory with various Density Functional Theory packages.,\n \
+Computer Physics Communications 261 (2021):107778.\n"
     )
 
     separator_art = """
