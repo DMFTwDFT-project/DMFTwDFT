@@ -310,13 +310,14 @@ class PostProcess:
         return np.array(klist), np.array(dist_K), np.array(dist_SK)
 
     def genksum(self, rom, kpband):
+        T = 1 / float(pC["beta"][0])
         fp = open("./bands/ksum.input", "w")
         fp.write("%d" % kpband)
         fp.write("\n%d" % rom)
         fp.write("\n%d" % p["nspin"])
-        fp.write("\n%d" % 5)
-        fp.write("\n%d" % 5)
-        fp.write("\n%f" % 0.01)
+        fp.write("\n%d" % self.TB.ncor_orb)
+        fp.write("\n%d" % self.TB.max_cor_orb)
+        fp.write("\n%f" % T)
         fp.write("\n%d" % p["n_tot"])
         fp.write("\n%d" % p["mu_iter"])
         fp.close()
@@ -655,10 +656,10 @@ class PostProcess:
         #############################Xingu's contribution###################################################################################
 
         #########################Read POSCAR ###################################################
-        TB = Struct.TBstructure("POSCAR", p["atomnames"], p["orbs"])
+        self.TB = Struct.TBstructure("POSCAR", p["atomnames"], p["orbs"])
         cor_at = p["cor_at"]
         cor_orb = p["cor_orb"]
-        TB.Compute_cor_idx(cor_at, cor_orb)
+        self.TB.Compute_cor_idx(cor_at, cor_orb)
         ############################# Generate sequence list ##################################
         sort_atm = sorted([atm for atms in cor_at for atm in atms])
         atm_sqn = self.Make_coor_list(sort_atm, cor_at)
@@ -668,9 +669,10 @@ class PostProcess:
             len_sf = 0
             for j in range(i):
                 len_sf += (
-                    max(self.Make_coor_list(TB.TB_orbs[cor_at[j][0]], cor_orb[j])) + 1
+                    max(self.Make_coor_list(self.TB.TB_orbs[cor_at[j][0]], cor_orb[j]))
+                    + 1
                 )
-            orb_idx = self.Make_coor_list(TB.TB_orbs[cor_at[i][0]], cor_orb[i])
+            orb_idx = self.Make_coor_list(self.TB.TB_orbs[cor_at[i][0]], cor_orb[i])
             for idx in orb_idx:
                 orb_sqn.append(idx + len_sf)
         # print("orb_sqn : %s" % orb_sqn)
@@ -951,7 +953,7 @@ class PostProcess:
         ax.set_xticks(SKP)
         ax.set_xticklabels(SKPoints)
         ax.set_xlabel(r"$k$-path")
-        ax.set_ylabel(r"$E-E_F$ [eV]")
+        ax.set_ylabel(r"$E-E_F$ (eV)")
         ax.axhline(y=0, color="black", ls="--")
 
         fig.tight_layout()
@@ -1089,7 +1091,7 @@ class PostProcess:
         ax.set_xticks(SKP)
         ax.set_xticklabels(SKPoints)
         ax.set_xlabel(r"$k$-path")
-        ax.set_ylabel(r"$E-E_F$ [eV]")
+        ax.set_ylabel(r"$E-E_F$ (eV)")
         ax.axhline(y=0, color="black", ls="--")
 
         fig.tight_layout()
@@ -1269,7 +1271,7 @@ class PostProcess:
 
             # Set common labels
             ax.set_xlabel(r"$k$-path")
-            ax.set_ylabel(r"$E-E_F$")
+            ax.set_ylabel(r"$E-E_F$ (eV)")
 
             # Set common labels
             # fig.text(0.2, 0.04, "$k$-path", ha="center", va="center")
@@ -1320,7 +1322,7 @@ class PostProcess:
             ax.set_xticks(SKP)
             ax.set_xticklabels(SKPoints)
             ax.set_xlabel(r"$k$-path")
-            ax.set_ylabel(r"$E-E_F$ [eV]")
+            ax.set_ylabel(r"$E-E_F$ (eV)")
             ax.axhline(y=0, color="black", ls="--")
 
             fig.tight_layout()
@@ -1359,7 +1361,7 @@ class PostProcess:
             ax.set_xticks(SKP)
             ax.set_xticklabels(SKPoints)
             ax.set_xlabel(r"$k$-path")
-            ax.set_ylabel(r"$E-E_F$ [eV]")
+            ax.set_ylabel(r"$E-E_F$ (eV)")
             ax.axhline(y=0, color="black", ls="--")
 
             fig.tight_layout()
