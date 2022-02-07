@@ -116,7 +116,7 @@ class DMFTLauncher:
         self.dmftinitialized = False
         self.dmftcomplete = False
 
-        print("Initializing ...\n")
+        print("Initializing ...")
 
         # VASP
         if self.dft == "vasp":
@@ -124,13 +124,16 @@ class DMFTLauncher:
                 fi = open("OUTCAR", "r")
                 outcarlines = fi.readlines()
                 fi.close()
-                if outcarlines[-1].split()[0] == "Voluntary":
-                    print("Existing VASP calculation is complete.\n")
-                    self.dftcomplete = True
+                try:
+                    if outcarlines[-1].split()[0] == "Voluntary":
+                        print("Existing VASP calculation is complete.")
+                        self.dftcomplete = True
+                except IndexError:
+                    pass
 
             # Check if wannier90 calculation is complete
             if os.path.isfile("wannier90.chk"):
-                print("Existing wannier90 calculation complete.\n")
+                print("Existing wannier90 calculation complete.")
                 self.wanniercomplete = True
 
         # Siesta
@@ -141,9 +144,12 @@ class DMFTLauncher:
                 done_word = fi.readlines()[-1]
                 fi.close()
 
-                if done_word.split()[0] == "Job" or done_word.split()[1] == "End":
-                    print("Existing Siesta calculations is complete.\n")
-                    self.dftcomplete = True
+                try:
+                    if done_word.split()[0] == "Job" or done_word.split()[1] == "End":
+                        print("Existing Siesta calculations is complete.")
+                        self.dftcomplete = True
+                except IndexError:
+                    pass
 
             if os.path.isfile(self.structurename + ".chk"):
                 print("Existing wannier90 calculation is complete.")
@@ -159,7 +165,7 @@ class DMFTLauncher:
                 fi.close()
 
                 if done_word:
-                    print("Existing Quantum Espresso calculation is complete.\n")
+                    print("Existing Quantum Espresso calculation is complete.")
                     self.dftcomplete = True
 
             if os.path.isfile(self.structurename + ".chk"):
@@ -175,14 +181,14 @@ class DMFTLauncher:
             self.dmftinitialized = True
 
             if done_word.split()[0] == "Calculation":
-                print("Existing " + self.type + " calculation is complete.\n")
+                print("Existing " + self.type + " calculation is complete.")
                 self.dmftcomplete = True
             else:
-                print("Existing " + self.type + " calculation is incomplete!\n")
+                print("Existing " + self.type + " calculation is incomplete!")
 
         # Initialize or resume calculation
         if self.restart:
-            print("Restarting calculation...\n")
+            print("Restarting calculation ...")
             self.dftcomplete = False
             self.wanniercomplete = False
             self.dmftinitialized = False
@@ -199,7 +205,7 @@ class DMFTLauncher:
                 os.remove("./DMFT/iterations.log")
 
         else:
-            print("Attempting resume...")
+            print("Attempting resume ...")
 
             # Checking if previous DMFT calculation exists
             if self.dmftinitialized:
