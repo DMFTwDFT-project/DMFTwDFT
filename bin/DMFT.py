@@ -34,7 +34,7 @@ class DMFTLauncher:
     -dft <vasp,siesta,qe>
     -dmft : This flag performs dmft calculation
     -hf : This flag performs Hartree-Fock calcualtion
-    -force : This flag forces a dmft or hf calculation even if it has been completed
+    -restart : This flag restarts the calculation from the beginning
     -kmeshtol : k-mesh tolerance for wannier90
     -aiida : Flag for aiida calculations
     -nowin : Flag to disable automatic generation of .win file
@@ -49,13 +49,12 @@ class DMFTLauncher:
         """
 
         self.kmeshtol = args.kmeshtol  # kmesh tolerence for wannier mesh
-        self.force = args.force  # force dmft calculation True of False
+        self.restart = args.restart  # force restart calculation True of False
         self.v = args.v  # Verbosity
         self.dft = args.dft  # DFT type
         self.aiida = args.aiida  # Flag for aiida calculation
         self.lowdin = args.lowdin  # Flag for Siesta Lowdin
         self.nowin = args.nowin  # Flag for .win generation
-        self.resume = args.resume  # Flag to resume existing calculation
 
         ####### DFT and wannier90 initialization #######
 
@@ -111,8 +110,83 @@ class DMFTLauncher:
         elif args.hf:
             self.type = "HF"
 
-        if not self.resume:
-            print("Initializing calculation...\n")
+        # Checking for DFT+DMFT calculation status
+        self.dftcomplete = False
+        self.wanniercomplete = False
+        self.dmftinitialized = False
+        self.dmftcomplete = False
+
+        print("Initializing ...\n")
+
+        # VASP
+        if self.dft == "vasp":
+            if os.path.isfile("OUTCAR"):
+                fi = open("OUTCAR", "r")
+                outcarlines = fi.readlines()
+                fi.close()
+                if outcarlines[-1].split()[0] == "Voluntary":
+                    print("Existing VASP calculation is complete.\n")
+                    self.dftcomplete = True
+
+            # Check if wannier90 calculation is complete
+            if os.path.isfile("wannier90.chk"):
+                print("Existing wannier90 calculation complete.\n")
+                self.wanniercomplete = True
+
+        # Siesta
+        elif self.dft == "siesta":
+            if os.path.exists(self.structurename + ".out"):
+
+                fi = open(self.structurename + ".out", "r")
+                done_word = fi.readlines()[-1]
+                fi.close()
+
+                if done_word.split()[0] == "Job" or done_word.split()[1] == "End":
+                    print("Existing Siesta calculations is complete.\n")
+                    self.dftcomplete = True
+
+            if os.path.isfile(self.structurename + ".chk"):
+                print("Existing wannier90 calculation is complete.")
+                self.wanniercomplete = True
+
+        # Quantum Espresso
+        elif self.dft == "qe":
+            foutname = self.structurename + ".pw2wannier90.out"
+            if os.path.exists(foutname):
+
+                fi = open(foutname, "r")
+                done_word = re.search(r"JOB\s*DONE.", fi.read())
+                fi.close()
+
+                if done_word:
+                    print("Existing Quantum Espresso calculation is complete.\n")
+                    self.dftcomplete = True
+
+            if os.path.isfile(self.structurename + ".chk"):
+                print("Existing wannier90 calculation is complete.")
+                self.wanniercomplete = True
+
+        # Check if DMFT calculation is complete
+        pathstr = self.type + os.sep + "INFO_TIME"
+        if os.path.exists(pathstr):
+            fi = open(pathstr, "r")
+            done_word = fi.readlines()[-1]
+            fi.close()
+            self.dmftinitialized = True
+
+            if done_word.split()[0] == "Calculation":
+                print("Existing " + self.type + " calculation is complete.\n")
+                self.dmftcomplete = True
+            else:
+                print("Existing " + self.type + " calculation is incomplete!\n")
+
+        # Initialize or resume calculation
+        if self.restart:
+            print("Restarting calculation...\n")
+            self.dftcomplete = False
+            self.wanniercomplete = False
+            self.dmftinitialized = False
+            self.dmftcomplete = False
 
             # initial chemical potential
             self.create_DFTmu()
@@ -125,12 +199,10 @@ class DMFTLauncher:
                 os.remove("./DMFT/iterations.log")
 
         else:
-            print("Resuming calculation...\n")
+            print("Attempting resume...")
 
             # Checking if previous DMFT calculation exists
-            pathstr = self.type + os.sep + "INFO_TIME"
-
-            if os.path.exists(pathstr):
+            if self.dmftinitialized:
 
                 # cleaning DMFT directory to prepare for resumed calculation
                 for chgcar in glob.glob("./DMFT/CHGCAR.*"):
@@ -148,10 +220,7 @@ class DMFTLauncher:
                     shutil.copy("para_com_dft.dat", "./DMFT/para_com_dft.dat")
 
             else:
-                print("No previous DMFT calculation has been initialized!")
-                print("Running from scratch...")
-                self.resume = False
-
+                # Preparing to start from scratch
                 # initial chemical potential
                 self.create_DFTmu()
 
@@ -721,128 +790,150 @@ class DMFTLauncher:
 
         # VASP
         if self.dft == "vasp":
-            if not self.nowin:
-                self.gen_win()  # Generating .win file
-            else:
-                self.updatewanbands = False
-            self.vasp_run(self.dir)
-            self.update_win()
-            self.run_wan90()
-            self.copy_files()
+            if not self.dftcomplete:
+                if not self.nowin:
+                    self.gen_win()  # Generating .win file
+                else:
+                    self.updatewanbands = False
+                self.vasp_run(self.dir)
+
+            # Wannier90 completion
+            if not self.wanniercomplete:
+                self.update_win()
+                self.run_wan90()
+
+            # DMFT initialization
+            if not self.dmftinitialized:
+                self.copy_files()
 
         # Siesta
         elif self.dft == "siesta":
-            if not self.lowdin:  # Generate .win file. Lowdin does this internally.
+            if not self.dftcomplete:
+                if not self.lowdin:  # Generate .win file. Lowdin does this internally.
+                    if not self.nowin:
+                        self.gen_win()
+                        shutil.copy("wannier90.win", self.structurename + ".win")
+                    else:
+                        self.updatewanbands = False
+
+                # Running Siesta
+                self.siesta_run(self.dir)
+
+            # Wannier90 completion
+            if not self.wanniercomplete:
+                # need to rename .eigW to .eig to run wannier90
+                shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
+
+                if not self.lowdin:
+                    if not self.nowin:
+                        self.update_win()
+                        shutil.copy("wannier90.win", self.structurename + ".win")
+                    self.run_wan90(self.structurename)
+
+                # renaming files
+                # shutil.copy(self.structurename + ".eig", "wannier90.eig")
+                # shutil.copy(self.structurename + ".chk", "wannier90.chk")
+                # shutil.copy(self.structurename + ".win", "wannier90.win")
+                # shutil.copy(self.structurename + ".amn", "wannier90.amn")
+
+            # DMFT initialization
+            if not self.dmftinitialized:
+                self.copy_files()
+
+        # Quantum Espresso (Without aiida)
+        elif self.dft == "qe" and self.aiida is False:
+            if not self.dftcomplete:
                 if not self.nowin:
-                    self.gen_win()
+                    self.gen_win()  # Assume POSCAR is present.
                     shutil.copy("wannier90.win", self.structurename + ".win")
                 else:
                     self.updatewanbands = False
 
-            # Running Siesta
-            self.siesta_run(self.dir)
+                # Running Quantum Espresso for SCF
+                self.qe_run(cal_type="scf", dir=self.dir)
 
-            # need to rename .eigW to .eig to run wannier90
-            shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
+                # Setting up NSCF run.
+                shutil.copy(
+                    self.structurename + ".scf.in", self.structurename + ".nscf.in"
+                )
 
-            if not self.lowdin:
+                # replacing calculation = 'scf' with calculation = 'nscf' in the .nscf.in file.
+                fi = open(self.structurename + ".nscf.in", "r")
+                data = fi.read()
+                fi.close()
+                data = data.replace("'scf'", "'nscf'")
+                fi = open(self.structurename + ".nscf.in", "w")
+                fi.write(data)
+                fi.close()
+
+                # Removing the last two lines:
+                # K_POINTS automatic
+                # <grid>
+                fi = open(self.structurename + ".nscf.in", "r")
+                data = fi.readlines()
+                fi.close()
+
+                fi = open(self.structurename + ".nscf.in", "w")
+                for i in data[0:-2]:
+                    fi.write(i)
+                fi.close()
+
+                # Appending the K_POINTS crystal grid using
+                # kmesh.pl.
+                f = open(self.structurename + ".nscf.in", "a")
+                cmd = (
+                    "kmesh.pl "
+                    + str(self.grid[0])
+                    + " "
+                    + str(self.grid[1])
+                    + " "
+                    + str(self.grid[2])
+                )
+                out, err = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                ).communicate()
+                f.write(out.decode("utf-8"))
+                if err:
+                    print(err.decode("utf-8"))
+                f.close()
+
+                # Save the Total energy from the SCF calculation.
+                # Number of bands and fermi energy are updated when
+                # update_win() is called.
+                # UPDATE: Not needed. I don't know why I put this here in
+                # the first place! Required only in RUNDMFT.py.
+                # self.DFT.Read_OSZICAR()
+
+                # Updating .win file.
                 if not self.nowin:
                     self.update_win()
                     shutil.copy("wannier90.win", self.structurename + ".win")
+
+                # Running Quantum Espresso for NSCF calculation.
+                self.qe_run(cal_type="nscf", dir=self.dir)
+
+            # Wannier90 completion
+            if not self.wanniercomplete:
+
+                # Run wannier90 pre-processing.
+                self.run_wan90_pp()
+
+                # Run Quantum Espresso - wannier90 interface.
+                self.gen_pw2wannier90()
+                self.qe_run(cal_type="pw2wannier90", dir=self.dir)
+
+                # Running wannier90.x
                 self.run_wan90(self.structurename)
 
-            # renaming files
-            # shutil.copy(self.structurename + ".eig", "wannier90.eig")
-            # shutil.copy(self.structurename + ".chk", "wannier90.chk")
-            # shutil.copy(self.structurename + ".win", "wannier90.win")
-            # shutil.copy(self.structurename + ".amn", "wannier90.amn")
-            self.copy_files()
+                # renaming files
+                # shutil.copy(self.structurename + ".eig", "wannier90.eig")
+                # shutil.copy(self.structurename + ".chk", "wannier90.chk")
+                # shutil.copy(self.structurename + ".win", "wannier90.win")
+                # shutil.copy(self.structurename + ".amn", "wannier90.amn")
 
-        # Quantum Espresso (Without aiida)
-        elif self.dft == "qe" and self.aiida is False:
-            if not self.nowin:
-                self.gen_win()  # Assume POSCAR is present.
-                shutil.copy("wannier90.win", self.structurename + ".win")
-            else:
-                self.updatewanbands = False
-
-            # Running Quantum Espresso for SCF
-            self.qe_run(cal_type="scf", dir=self.dir)
-
-            # Setting up NSCF run.
-            shutil.copy(self.structurename + ".scf.in", self.structurename + ".nscf.in")
-
-            # replacing calculation = 'scf' with calculation = 'nscf' in the .nscf.in file.
-            fi = open(self.structurename + ".nscf.in", "r")
-            data = fi.read()
-            fi.close()
-            data = data.replace("'scf'", "'nscf'")
-            fi = open(self.structurename + ".nscf.in", "w")
-            fi.write(data)
-            fi.close()
-
-            # Removing the last two lines:
-            # K_POINTS automatic
-            # <grid>
-            fi = open(self.structurename + ".nscf.in", "r")
-            data = fi.readlines()
-            fi.close()
-
-            fi = open(self.structurename + ".nscf.in", "w")
-            for i in data[0:-2]:
-                fi.write(i)
-            fi.close()
-
-            # Appending the K_POINTS crystal grid using
-            # kmesh.pl.
-            f = open(self.structurename + ".nscf.in", "a")
-            cmd = (
-                "kmesh.pl "
-                + str(self.grid[0])
-                + " "
-                + str(self.grid[1])
-                + " "
-                + str(self.grid[2])
-            )
-            out, err = subprocess.Popen(
-                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-            ).communicate()
-            f.write(out.decode("utf-8"))
-            if err:
-                print(err.decode("utf-8"))
-            f.close()
-
-            # Save the Total energy from the SCF calculation.
-            # Number of bands and fermi energy are updated when
-            # update_win() is called.
-            # UPDATE: Not needed. I don't know why I put this here in
-            # the first place! Required only in RUNDMFT.py.
-            # self.DFT.Read_OSZICAR()
-
-            # Updating .win file.
-            if not self.nowin:
-                self.update_win()
-                shutil.copy("wannier90.win", self.structurename + ".win")
-
-            # Running Quantum Espresso for NSCF calculation.
-            self.qe_run(cal_type="nscf", dir=self.dir)
-
-            # Run wannier90 pre-processing.
-            self.run_wan90_pp()
-
-            # Run Quantum Espresso - wannier90 interface.
-            self.gen_pw2wannier90()
-            self.qe_run(cal_type="pw2wannier90", dir=self.dir)
-
-            # Running wannier90.x
-            self.run_wan90(self.structurename)
-
-            # renaming files
-            # shutil.copy(self.structurename + ".eig", "wannier90.eig")
-            # shutil.copy(self.structurename + ".chk", "wannier90.chk")
-            # shutil.copy(self.structurename + ".win", "wannier90.win")
-            # shutil.copy(self.structurename + ".amn", "wannier90.amn")
-            self.copy_files()
+            # DMFT initialization
+            if not self.dmftinitialized:
+                self.copy_files()
 
         # aiida
         elif self.aiida:
@@ -851,7 +942,10 @@ class DMFTLauncher:
             shutil.copy("aiida.chk", "wannier90.chk")
             shutil.copy("aiida.win", "wannier90.win")
             shutil.copy("aiida.amn", "wannier90.amn")
-            self.copy_files()
+
+            # DMFT initialization
+            if not self.dmftinitialized:
+                self.copy_files()
 
     def vasp_run(self, dir):
         """
@@ -874,7 +968,7 @@ class DMFTLauncher:
             fi.close()
 
             if outcarlines[-1].split()[0] == "Voluntary":
-                print("DFT calculation complete.\n")
+                print("VASP calculation complete.\n")
                 outdir = dir + os.sep + "dft.out"
                 f = open(outdir, "wb")
                 f.write(out)
@@ -886,7 +980,7 @@ class DMFTLauncher:
                 f.close()
                 sys.exit()
         else:
-            print("DFT calculation failed! Check dft.error for details.\n")
+            print("VASP calculation failed! Check dft.error for details.\n")
             errdir = dir + os.sep + "dft.error"
             f = open(errdir, "wb")
             f.write(err)
@@ -927,14 +1021,14 @@ class DMFTLauncher:
             fi.close()
 
             if done_word.split()[0] == "Job" or done_word.split()[1] == "End":
-                print("DFT calculation complete.\n")
+                print("Siesta calculation complete.\n")
 
             else:
-                print("DFT calculation failed!\n")
+                print("Siesta calculation failed!\n")
                 sys.exit()
 
         else:
-            print("DFT calculation failed!\n")
+            print("Siesta calculation failed!\n")
             sys.exit()
 
     def qe_run(self, cal_type="scf", dir=None):
@@ -1041,303 +1135,104 @@ class DMFTLauncher:
 
     def run_dmft(self):
         """
-        This first checks if there is a previous DMFT or HF calculation and runs
-        only if that run is incomplete unless forced.
+        This first checks if there is a previous calculation and resumes or
+        restarts from the beginning.
         """
 
         separator_art = """
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
         """
 
-        # Checking for previous DMFT run in the directory
-        pathstr = self.type + os.sep + "INFO_TIME"
+        self.run_dft()
+        print(separator_art)
+        print("*-*-*-*-*- Starting " + self.type + " calculation -*-*-*-*-* \n")
 
-        if os.path.exists(pathstr):
-            fi = open(pathstr, "r")
-            done_word = fi.readlines()[-1]
-            fi.close()
-
-            if done_word.split()[0] == "Calculation":
-                print("Existing " + self.type + " calculation is complete.")
-                if self.force:
-                    # forcing DMFT calculation
-                    print("-force flag enabled. Restarting " + self.type + "...")
-                    if not self.resume:
-                        self.run_dft()
-                    print(separator_art)
-                    print(
-                        "*-*-*-*-*- Starting "
-                        + self.type
-                        + " calculation -*-*-*-*-* \n"
-                    )
-
-                    if self.dft != None and self.structurename != None:
-                        if self.type == "HF":
-                            cmd = (
-                                "cd "
-                                + self.type
-                                + " && "
-                                + "RUNDMFT.py -hf -dft "
-                                + self.dft
-                                + " -structurename "
-                                + self.structurename
-                                + " -aiida "
-                                + str(self.aiida)
-                            )
-                        else:
-                            cmd = (
-                                "cd "
-                                + self.type
-                                + " && "
-                                + "RUNDMFT.py -dft "
-                                + self.dft
-                                + " -structurename "
-                                + self.structurename
-                                + " -aiida "
-                                + str(self.aiida)
-                            )
-
-                    elif self.dft != None:
-                        if self.type == "HF":
-                            cmd = (
-                                "cd "
-                                + self.type
-                                + " && "
-                                + "RUNDMFT.py -hf -dft "
-                                + self.dft
-                                + " -aiida "
-                                + str(self.aiida)
-                            )
-                        else:
-                            cmd = (
-                                "cd "
-                                + self.type
-                                + " && "
-                                + "RUNDMFT.py -dft "
-                                + self.dft
-                                + " -aiida "
-                                + str(self.aiida)
-                            )
-
-                    else:
-                        if self.type == "HF":
-                            cmd = "cd " + self.type + " && " + "RUNDMFT.py -hf"
-                        else:
-                            cmd = "cd " + self.type + " && " + "RUNDMFT.py "
-
-                    if self.v:
-                        subprocess.Popen(
-                            cmd,
-                            shell=True,
-                        ).communicate()
-
-                    else:
-                        out, err = subprocess.Popen(
-                            cmd,
-                            shell=True,
-                            stdout=subprocess.PIPE,
-                            stderr=subprocess.PIPE,
-                        ).communicate()
-
-                        if err:
-                            print(
-                                self.type
-                                + " calculation failed! Check "
-                                + self.type
-                                + ".error for details.\n"
-                            )
-                            errdir = self.type + os.sep + self.type + ".error"
-                            f = open(errdir, "wb")
-                            f.write(err)
-                            f.close()
-                            sys.exit()
-                        else:
-                            print(self.type + " calculation complete.\n")
-                            outdir = self.type + os.sep + self.type + ".out"
-                            f = open(outdir, "wb")
-                            f.write(out)
-                            f.close()
-
-                else:
-                    # exit when exiting DMFT calculation is complete.
-                    print("-force flag disabled. Exiting. ")
-                    sys.exit()
-
+        if self.dft is not None and self.structurename is not None:
+            if self.type == "HF":
+                cmd = (
+                    "cd "
+                    + self.type
+                    + " && "
+                    + "RUNDMFT.py -hf -dft "
+                    + self.dft
+                    + " -structurename "
+                    + self.structurename
+                    + " -aiida "
+                    + str(self.aiida)
+                )
             else:
-                # Incomplete DMFT calculation.
-                print("Incomplete " + self.type + " calculation found.")
-                if not self.resume:
-                    self.run_dft()
-                print(separator_art)
-                print("*-*-*-*-*- Starting " + self.type + " calculation -*-*-*-*-* \n")
-                if self.dft != None and self.structurename != None:
-                    if self.type == "HF":
-                        cmd = (
-                            "cd "
-                            + self.type
-                            + " && "
-                            + "RUNDMFT.py -hf -dft "
-                            + self.dft
-                            + " -structurename "
-                            + self.structurename
-                        )
-                    else:
-                        cmd = (
-                            "cd "
-                            + self.type
-                            + " && "
-                            + "RUNDMFT.py -dft "
-                            + self.dft
-                            + " -structurename "
-                            + self.structurename
-                        )
-                elif self.dft != None:
-                    if self.type == "HF":
-                        cmd = (
-                            "cd "
-                            + self.type
-                            + " && "
-                            + "RUNDMFT.py -hf -dft "
-                            + self.dft
-                            + " -aiida "
-                            + str(self.aiida)
-                        )
-                    else:
-                        cmd = (
-                            "cd "
-                            + self.type
-                            + " && "
-                            + "RUNDMFT.py -dft "
-                            + self.dft
-                            + " -aiida "
-                            + str(self.aiida)
-                        )
+                cmd = (
+                    "cd "
+                    + self.type
+                    + " && "
+                    + "RUNDMFT.py -dft "
+                    + self.dft
+                    + " -structurename "
+                    + self.structurename
+                    + " -aiida "
+                    + str(self.aiida)
+                )
 
-                else:
-                    if self.type == "HF":
-                        cmd = "cd " + self.type + " && " + "RUNDMFT.py -hf"
-                    else:
-                        cmd = "cd " + self.type + " && " + "RUNDMFT.py "
+        elif self.dft is not None:
+            if self.type == "HF":
+                cmd = (
+                    "cd "
+                    + self.type
+                    + " && "
+                    + "RUNDMFT.py -hf -dft "
+                    + self.dft
+                    + " -aiida "
+                    + str(self.aiida)
+                )
+            else:
+                cmd = (
+                    "cd "
+                    + self.type
+                    + " && "
+                    + "RUNDMFT.py -dft "
+                    + self.dft
+                    + " -aiida "
+                    + str(self.aiida)
+                )
 
-                if self.v:
-                    subprocess.Popen(
-                        cmd,
-                        shell=True,
-                    ).communicate()
-
-                else:
-                    out, err = subprocess.Popen(
-                        cmd,
-                        shell=True,
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                    ).communicate()
-
-                    if err:
-                        print(
-                            self.type
-                            + " calculation failed! Check "
-                            + self.type
-                            + ".error for details.\n"
-                        )
-                        errdir = self.type + os.sep + self.type + ".error"
-                        f = open(errdir, "wb")
-                        f.write(err)
-                        f.close()
-                        sys.exit()
-                    else:
-                        print(self.type + " calculation complete.\n")
-                        outdir = self.type + os.sep + self.type + ".out"
-                        f = open(outdir, "wb")
-                        f.write(out)
-                        f.close()
         else:
-            # no DMFT/INFO_TIME found
-            self.run_dft()
-            print(separator_art)
-            print("*-*-*-*-*- Starting " + self.type + " calculation -*-*-*-*-* \n")
-            if self.dft != None and self.structurename != None:
-                if self.type == "HF":
-                    cmd = (
-                        "cd "
-                        + self.type
-                        + " && "
-                        + "RUNDMFT.py -hf -dft "
-                        + self.dft
-                        + " -structurename "
-                        + self.structurename
-                    )
-                else:
-                    cmd = (
-                        "cd "
-                        + self.type
-                        + " && "
-                        + "RUNDMFT.py -dft "
-                        + self.dft
-                        + " -structurename "
-                        + self.structurename
-                    )
-
-            elif self.dft != None:
-                if self.type == "HF":
-                    cmd = (
-                        "cd "
-                        + self.type
-                        + " && "
-                        + "RUNDMFT.py -hf -dft "
-                        + self.dft
-                        + " -aiida "
-                        + str(self.aiida)
-                    )
-                else:
-                    cmd = (
-                        "cd "
-                        + self.type
-                        + " && "
-                        + "RUNDMFT.py -dft "
-                        + self.dft
-                        + " -aiida "
-                        + str(self.aiida)
-                    )
-
+            if self.type == "HF":
+                cmd = "cd " + self.type + " && " + "RUNDMFT.py -hf"
             else:
-                if self.type == "HF":
-                    cmd = "cd " + self.type + " && " + "RUNDMFT.py -hf"
-                else:
-                    cmd = "cd " + self.type + " && " + "RUNDMFT.py "
+                cmd = "cd " + self.type + " && " + "RUNDMFT.py "
 
-            if self.v:
-                subprocess.Popen(
-                    cmd,
-                    shell=True,
-                ).communicate()
+        if self.v:
+            subprocess.Popen(
+                cmd,
+                shell=True,
+            ).communicate()
 
+        else:
+            out, err = subprocess.Popen(
+                cmd,
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            ).communicate()
+
+            if err:
+                print(
+                    self.type
+                    + " calculation failed! Check "
+                    + self.type
+                    + ".error for details.\n"
+                )
+                errdir = self.type + os.sep + self.type + ".error"
+                f = open(errdir, "wb")
+                f.write(err)
+                f.close()
+                sys.exit()
             else:
-                out, err = subprocess.Popen(
-                    cmd,
-                    shell=True,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                ).communicate()
-
-                if err:
-                    print(
-                        self.type
-                        + " calculation failed! Check "
-                        + self.type
-                        + ".error for details.\n"
-                    )
-                    errdir = self.type + os.sep + self.type + ".error"
-                    f = open(errdir, "wb")
-                    f.write(err)
-                    f.close()
-                    sys.exit()
-                else:
-                    print(self.type + " calculation complete.\n")
-                    outdir = self.type + os.sep + self.type + ".out"
-                    f = open(outdir, "wb")
-                    f.write(out)
-                    f.close()
+                print(self.type + " calculation complete.\n")
+                outdir = self.type + os.sep + self.type + ".out"
+                f = open(outdir, "wb")
+                f.write(out)
+                f.close()
 
 
 if __name__ == "__main__":
@@ -1361,17 +1256,17 @@ if __name__ == "__main__":
         type_parser.add_argument(
             "-dmft",
             action="store_true",
-            help="Flag to run DMFT. Checks for a previous DMFT calculation and runs only if it is incomplete.",
+            help="Flag to run DMFT. Attempts to resume if previous calculation exists.",
         )
         type_parser.add_argument(
             "-hf",
             action="store_true",
-            help="Flag to perform Hartree-Fock calculation to the correlated orbitals.",
+            help="Flag to perform Hartree-Fock calculation to the correlated orbitals. Attempts to resume if previous calculation exists.",
         )
         parser.add_argument(
-            "-force",
+            "-restart",
             action="store_true",
-            help="Flag to force DMFT or HF calculation even if a previous calculation has been completed.",
+            help="Flag to restart calculation from the beginning.",
         )
         parser.add_argument(
             "-structurename",
@@ -1398,12 +1293,6 @@ if __name__ == "__main__":
             "-nowin",
             action="store_true",
             help="Flag to disable automatic generation of .win file.",
-        )
-
-        parser.add_argument(
-            "-resume",
-            action="store_true",
-            help="Flag to resume incomplete DMFT calculation.",
         )
 
         parser.add_argument(

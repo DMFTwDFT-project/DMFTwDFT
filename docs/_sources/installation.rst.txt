@@ -1,30 +1,30 @@
 Installation
 ============
 
-DMFTwDFT is currently supported by Python 2.x. It will be transitioned to Python 3.x in the future. 
-The Python 2.x version does not support ionic relaxation, therefore use an already relaxed structure as input. 
+DMFTwDFT is currently supported by Python 2.x. It will be transitioned to Python 3.x in the future.
+The Python 2.x version does not support ionic relaxation, therefore use an already relaxed structure as input.
 
 Please install the following dependencies prior to installing DMFTwDFT.
 
 Python:
 
-* matplotlib 
-* numpy 
+* matplotlib
+* numpy
 * scipy
 * weave
 * mpi4py
-* pyprocar
-* pychemia
+* pyprocar (optional)
+* pychemia (optional)
 
 To install execute::
 
-	pip install matplotlib numpy scipy weave mpi4py pyprocar pychemia
+	pip install matplotlib numpy scipy weave mpi4py requests
 
 NOTE:
 
 PyProcar is used as a support package to find the wannier window of the correlated orbitals. It's not necessary to be installed for DMFTwDFT.
-PyChemia is required for the Python 3 version of the code which is still under development. 
-For the Python 2 version this is not required. 
+PyChemia is required for the Python 3 version of the code which is still under development.
+For the Python 2 version this is not required.
 
 Libraries:
 
@@ -41,10 +41,10 @@ The structure of the directories is as follows. ::
 
 	DMFTwDFT
 		├── bin
-		├── config 
+		├── config
 		├── docs
 		├── examples
-		├── manuals 
+		├── manuals
 		├── scripts
 		├── sphinx
 		├── support_packages
@@ -63,16 +63,16 @@ First copy a desired ``Makefile.in`` version in the **config** directory to the 
 
 To compile, execute::
 
-	python setup.py <compiler> 
+	python setup.py <compiler>
 
 where compiler = {intel, gfortran}
 
 This should compile the follwing executables and libraries and copy them to the ``bin`` directory.
 
 * dmft.x - This module is for achieving DMFT self-consistency. It performs the :math:`k`-point sum and and computes the local Green's function (G_loc.out) and hybridization function (Delta.inp).
-* dmft_dos.x - Performs DOS calculation. 
-* dmft_ksum_band - Performs band structure calculation. 
-* dmft_ksum_partial_band - Performs projected band structure calculation. 
+* dmft_dos.x - Performs DOS calculation.
+* dmft_ksum_band - Performs band structure calculation.
+* dmft_ksum_partial_band - Performs projected band structure calculation.
 * fort_kpt_tools.so - Fortran based k-points calculation module.
 
 If you want to install them manually, you may do so inside the **sources** directory by modifying gfortran.make.inc or intel.make.inc and renaming it as make.inc.
@@ -88,7 +88,7 @@ DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Pr
 * skrams
 * maxent_routines.so
 
-If the automated compilation with setup.py is successful, these are found in ``bin`` directory. 
+If the automated compilation with setup.py is successful, these are found in ``bin`` directory.
 
 Wannier90 library
 -----------------
@@ -106,7 +106,7 @@ Compiling library mode for full charge-self conistent DFT+DMFT calculations (OPT
 
 The above compilation also generates ``libdmft.a`` which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. Otherwise, the calculations can only be run for self-consistency within DMFT. In the case of VASP please follow the below steps to compile for self-consistency.
 
-1. Generate libdmft.a by the Compiling sources code that will  be needed to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. 
+1. Generate libdmft.a by the Compiling sources code that will  be needed to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations.
 
 2. Change the VASP makefile.include file. Specify libraries and/or objects to be linked against, in the usual ways::
 
@@ -122,4 +122,3 @@ The above compilation also generates ``libdmft.a`` which can be used to link DMF
 6. Finally, recompile VASP. Then rename this vasp executable to vaspDMFT and copy it to teh DMFTwDFT/bin directory.
 
 More information on the library mode can be found in the :ref:`labellibrary` section.
-

@@ -1,68 +1,35 @@
-
-
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Installation &mdash; DMFTwDFT 1.0 documentation</title>
-  
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-  
-  
-
-  
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <!--[if lt IE 9]>
     <script src="_static/js/html5shiv.min.js"></script>
   <![endif]-->
   
-    
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script async="async" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
+        <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Tutorials" href="tutorials.html" />
     <link rel="prev" title="DMFTwDFT documentation" href="index.html" /> 
 </head>
 
-<body class="wy-body-for-nav">
-
-   
+<body class="wy-body-for-nav"> 
   <div class="wy-grid-for-nav">
-    
     <nav data-toggle="wy-nav-shift" class="wy-nav-side">
       <div class="wy-side-scroll">
         <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> DMFTwDFT
-          
-
-          
+            <a href="index.html" class="icon icon-home"> DMFTwDFT
           </a>
-
-          
-            
-            
-          
-
-          
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
     <input type="text" name="q" placeholder="Search docs" />
@@ -70,18 +37,7 @@
     <input type="hidden" name="area" value="default" />
   </form>
 </div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#compiling-sources">Compiling sources</a></li>
@@ -97,71 +53,32 @@
 <li class="toctree-l1"><a class="reference internal" href="cite.html">How to cite</a></li>
 </ul>
 
-            
-          
         </div>
-        
       </div>
     </nav>
 
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
-
-      
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
           <a href="index.html">DMFTwDFT</a>
-        
       </nav>
 
-
       <div class="wy-nav-content">
-        
         <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
+          <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
-    
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
       <li>Installation</li>
-    
-    
       <li class="wy-breadcrumbs-aside">
-        
-            
             <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
-          
-        
       </li>
-    
   </ul>
-
-  
   <hr/>
 </div>
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
-            
-  <div class="section" id="installation">
-<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+             
+  <section id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline"></a></h1>
 <p>DMFTwDFT is currently supported by Python 2.x. It will be transitioned to Python 3.x in the future.
 The Python 2.x version does not support ionic relaxation, therefore use an already relaxed structure as input.</p>
 <p>Please install the following dependencies prior to installing DMFTwDFT.</p>
@@ -172,11 +89,11 @@ The Python 2.x version does not support ionic relaxation, therefore use an alrea
 <li><p>scipy</p></li>
 <li><p>weave</p></li>
 <li><p>mpi4py</p></li>
-<li><p>pyprocar</p></li>
-<li><p>pychemia</p></li>
+<li><p>pyprocar (optional)</p></li>
+<li><p>pychemia (optional)</p></li>
 </ul>
 <p>To install execute:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">matplotlib</span> <span class="n">numpy</span> <span class="n">scipy</span> <span class="n">weave</span> <span class="n">mpi4py</span> <span class="n">pyprocar</span> <span class="n">pychemia</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">pip</span> <span class="n">install</span> <span class="n">matplotlib</span> <span class="n">numpy</span> <span class="n">scipy</span> <span class="n">weave</span> <span class="n">mpi4py</span> <span class="n">requests</span>
 </pre></div>
 </div>
 <p>NOTE:</p>
@@ -211,8 +128,8 @@ For the Python 2 version this is not required.</p>
 </pre></div>
 </div>
 <p>The following section describes the procedure to compile the different componenets required to run DMFTwDFT. Once the executables and libraries have been compiled, they should be inside the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory.</p>
-<div class="section" id="compiling-sources">
-<h2>Compiling sources<a class="headerlink" href="#compiling-sources" title="Permalink to this headline">¶</a></h2>
+<section id="compiling-sources">
+<h2>Compiling sources<a class="headerlink" href="#compiling-sources" title="Permalink to this headline"></a></h2>
 <p>First copy a desired <code class="docutils literal notranslate"><span class="pre">Makefile.in</span></code> version in the <strong>config</strong> directory to the root directory based on the compiler you wish to use. You may have to specify the locations of the gsl, lapack etc. libraries (default: /usr/local/lib).</p>
 <p>To compile, execute:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">setup</span><span class="o">.</span><span class="n">py</span> <span class="o">&lt;</span><span class="n">compiler</span><span class="o">&gt;</span>
@@ -228,9 +145,9 @@ For the Python 2 version this is not required.</p>
 <li><p>fort_kpt_tools.so - Fortran based k-points calculation module.</p></li>
 </ul>
 <p>If you want to install them manually, you may do so inside the <strong>sources</strong> directory by modifying gfortran.make.inc or intel.make.inc and renaming it as make.inc.</p>
-</div>
-<div class="section" id="external-libraries-and-executables">
-<h2>External libraries and executables<a class="headerlink" href="#external-libraries-and-executables" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="external-libraries-and-executables">
+<h2>External libraries and executables<a class="headerlink" href="#external-libraries-and-executables" title="Permalink to this headline"></a></h2>
 <p>DMFTwDFT uses the CTQMC impurity solver and Max-entropy routines developed by Professor Kristjan Haule at Rutgers University available with the <a class="reference external" href="http://hauleweb.rutgers.edu/tutorials/index.html">EDMFTF</a> package. The following libraries and programs are used:</p>
 <ul class="simple">
 <li><p>ctqmc</p></li>
@@ -240,18 +157,18 @@ For the Python 2 version this is not required.</p>
 <li><p>maxent_routines.so</p></li>
 </ul>
 <p>If the automated compilation with setup.py is successful, these are found in <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory.</p>
-</div>
-<div class="section" id="wannier90-library">
-<h2>Wannier90 library<a class="headerlink" href="#wannier90-library" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="wannier90-library">
+<h2>Wannier90 library<a class="headerlink" href="#wannier90-library" title="Permalink to this headline"></a></h2>
 <p>DMFTwDFT requires <code class="docutils literal notranslate"><span class="pre">wannier90.x</span></code> and <code class="docutils literal notranslate"><span class="pre">w90chk2chk.x</span></code> to be in the <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory. You can get them from <a class="reference external" href="http://www.wannier.org/">http://www.wannier.org/</a>. VASP should be recompiled with the Wannier90 library.
 NOTE: w90chk2chk.x seems to be problematic with wannier90 v 3.0+. Tested successfully with v 2.1.0.</p>
-</div>
-<div class="section" id="path-variables">
-<h2>PATH variables<a class="headerlink" href="#path-variables" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="path-variables">
+<h2>PATH variables<a class="headerlink" href="#path-variables" title="Permalink to this headline"></a></h2>
 <p>Finally, the location of the DMFTwDFT <code class="docutils literal notranslate"><span class="pre">bin</span></code> directory should be added to the <code class="docutils literal notranslate"><span class="pre">$PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">$PYTHONPATH</span></code> environmental variables in your <code class="docutils literal notranslate"><span class="pre">.bashrc</span></code>.</p>
-</div>
-<div class="section" id="compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional">
-<h2>Compiling library mode for full charge-self conistent DFT+DMFT calculations (OPTIONAL)<a class="headerlink" href="#compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional">
+<h2>Compiling library mode for full charge-self conistent DFT+DMFT calculations (OPTIONAL)<a class="headerlink" href="#compiling-library-mode-for-full-charge-self-conistent-dft-dmft-calculations-optional" title="Permalink to this headline"></a></h2>
 <p>The above compilation also generates <code class="docutils literal notranslate"><span class="pre">libdmft.a</span></code> which can be used to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations. Otherwise, the calculations can only be run for self-consistency within DMFT. In the case of VASP please follow the below steps to compile for self-consistency.</p>
 <ol class="arabic">
 <li><p>Generate libdmft.a by the Compiling sources code that will  be needed to link DMFTwDFT to DFT codes to enable full charge self-consistent DFT+DMFT calculations.</p></li>
@@ -267,63 +184,38 @@ NOTE: w90chk2chk.x seems to be problematic with wannier90 v 3.0+. Tested success
 <li><p>Finally, recompile VASP. Then rename this vasp executable to vaspDMFT and copy it to teh DMFTwDFT/bin directory.</p></li>
 </ol>
 <p>More information on the library mode can be found in the <a class="reference internal" href="library.html#labellibrary"><span class="std std-ref">Library mode</span></a> section.</p>
-</div>
-</div>
+</section>
+</section>
 
 
            </div>
-           
           </div>
-          <footer>
-  
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="index.html" class="btn btn-neutral float-left" title="DMFTwDFT documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="DMFTwDFT documentation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
-    <p>
-        
-        &copy; Copyright 2020, The DMFTwDFT Project
-
-    </p>
+    <p>&#169; Copyright 2020, The DMFTwDFT Project.</p>
   </div>
-    
-    
-    
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
 
 </footer>
-
         </div>
       </div>
-
     </section>
-
   </div>
-  
-
-  <script type="text/javascript">
+  <script>
       jQuery(function () {
           SphinxRtdTheme.Navigation.enable(true);
       });
-  </script>
-
-  
-  
-    
-   
+  </script> 
 
 </body>
 </html>
