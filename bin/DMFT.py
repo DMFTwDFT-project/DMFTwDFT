@@ -188,7 +188,7 @@ class DMFTLauncher:
 
         # Initialize or resume calculation
         if self.restart:
-            print("Restarting calculation ...")
+            print("Restarting calculation ...\n")
             self.dftcomplete = False
             self.wanniercomplete = False
             self.dmftinitialized = False
@@ -205,7 +205,7 @@ class DMFTLauncher:
                 os.remove("./DMFT/iterations.log")
 
         else:
-            print("Attempting resume ...")
+            print("Attempting resume ...\n")
 
             # Checking if previous DMFT calculation exists
             if self.dmftinitialized:
