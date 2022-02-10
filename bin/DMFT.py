@@ -126,15 +126,21 @@ class DMFTLauncher:
                 fi.close()
                 try:
                     if outcarlines[-1].split()[0] == "Voluntary":
-                        print("Existing VASP calculation is complete.")
+                        print("VASP calculation is complete.")
                         self.dftcomplete = True
+                    else:
+                        print("VASP calculation is incomplete!")
                 except IndexError:
-                    pass
+                    print("VASP calculation is incomplete!")
+            else:
+                print("VASP calculation is incomplete!")
 
             # Check if wannier90 calculation is complete
             if os.path.isfile("wannier90.chk"):
-                print("Existing wannier90 calculation complete.")
+                print("wannier90 calculation is complete.")
                 self.wanniercomplete = True
+            else:
+                print("wannier90 calculation is incomplete!")
 
         # Siesta
         elif self.dft == "siesta":
@@ -146,14 +152,20 @@ class DMFTLauncher:
 
                 try:
                     if done_word.split()[0] == "Job" or done_word.split()[1] == "End":
-                        print("Existing Siesta calculations is complete.")
+                        print("Siesta calculations is complete.")
                         self.dftcomplete = True
+                    else:
+                        print("Siesta calculations is incomplete!")
                 except IndexError:
-                    pass
+                    print("Siesta calculations is incomplete!")
+            else:
+                print("Siesta calculations is incomplete!")
 
             if os.path.isfile(self.structurename + ".chk"):
-                print("Existing wannier90 calculation is complete.")
+                print("wannier90 calculation is complete.")
                 self.wanniercomplete = True
+            else:
+                print("wannier90 calculation is incomplete!")
 
         # Quantum Espresso
         elif self.dft == "qe":
@@ -165,12 +177,18 @@ class DMFTLauncher:
                 fi.close()
 
                 if done_word:
-                    print("Existing Quantum Espresso calculation is complete.")
+                    print("Quantum Espresso calculation is complete.")
                     self.dftcomplete = True
+                else:
+                    print("Quantum Espresso calculation is incomplete!")
+            else:
+                print("Quantum Espresso calculation is incomplete!")
 
             if os.path.isfile(self.structurename + ".chk"):
-                print("Existing wannier90 calculation is complete.")
+                print("wannier90 calculation is complete.")
                 self.wanniercomplete = True
+            else:
+                print("wannier90 calculation is incomplete!")
 
         # Check if DMFT calculation is complete
         pathstr = self.type + os.sep + "INFO_TIME"
@@ -185,6 +203,8 @@ class DMFTLauncher:
                 self.dmftcomplete = True
             else:
                 print("Existing " + self.type + " calculation is incomplete!")
+        else:
+            print(self.type + " calculation is incomplete!")
 
         # Initialize or resume calculation
         if self.restart:
@@ -237,7 +257,11 @@ class DMFTLauncher:
                 if os.path.exists("./DMFT/iterations.log"):
                     os.remove("./DMFT/iterations.log")
 
-        # import the VASP class. This can be used for other DFT codes as well.
+        # Import the VASP class. This can be used for other DFT codes as well.
+        # Create DFT_mu.out if it doesn't already exist as VASP class requires it.
+        if not os.path.exists("DFT_mu.out"):
+            self.create_DFTmu()
+
         self.DFT = VASP.VASP_class(
             dft=args.dft, aiida=args.aiida, structurename=args.structurename
         )
@@ -804,12 +828,16 @@ class DMFTLauncher:
                 self.vasp_run(self.dir)
 
             # Wannier90 completion
-            if not self.wanniercomplete:
+            if not self.wanniercomplete or not self.dftcomplete:
                 self.update_win()
                 self.run_wan90()
 
             # DMFT initialization
-            if not self.dmftinitialized:
+            if (
+                not self.dmftinitialized
+                or not self.dftcomplete
+                or not self.wanniercomplete
+            ):
                 self.copy_files()
 
         # Siesta
@@ -826,7 +854,7 @@ class DMFTLauncher:
                 self.siesta_run(self.dir)
 
             # Wannier90 completion
-            if not self.wanniercomplete:
+            if not self.wanniercomplete or not self.dftcomplete:
                 # need to rename .eigW to .eig to run wannier90
                 shutil.copy(self.structurename + ".eigW", self.structurename + ".eig")
 
@@ -843,7 +871,11 @@ class DMFTLauncher:
                 # shutil.copy(self.structurename + ".amn", "wannier90.amn")
 
             # DMFT initialization
-            if not self.dmftinitialized:
+            if (
+                not self.dmftinitialized
+                or not self.dftcomplete
+                or not self.wanniercomplete
+            ):
                 self.copy_files()
 
         # Quantum Espresso (Without aiida)
@@ -919,7 +951,7 @@ class DMFTLauncher:
                 self.qe_run(cal_type="nscf", dir=self.dir)
 
             # Wannier90 completion
-            if not self.wanniercomplete:
+            if not self.wanniercomplete or not self.dftcomplete:
 
                 # Run wannier90 pre-processing.
                 self.run_wan90_pp()
@@ -938,7 +970,11 @@ class DMFTLauncher:
                 # shutil.copy(self.structurename + ".amn", "wannier90.amn")
 
             # DMFT initialization
-            if not self.dmftinitialized:
+            if (
+                not self.dmftinitialized
+                or not self.dftcomplete
+                or not self.wanniercomplete
+            ):
                 self.copy_files()
 
         # aiida
@@ -1285,7 +1321,7 @@ if __name__ == "__main__":
         )
         parser.add_argument(
             "-kmeshtol",
-            default=0.00001,
+            default=1e-07,
             type=float,
             help="The tolerance to control if two k-points belong to the same shell in wannier90.",
         )
