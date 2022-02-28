@@ -1408,10 +1408,14 @@ class PostProcess:
             if len(i.split()) == 3:
                 bands[kpointscounter - 1, int(i.split()[0]) - 1] = float(i.split()[1])
 
-        ##### Reading DFT_mu.out to get Fermi energy #####
-        fi = open("DFT_mu.out", "r")
-        fermi = float(fi.readline())
-        fi.close
+        # Reading OUTCAR from initial DFT calculation to get Fermi energy
+        fi = open(args.outcar, "r")
+        for line in fi:
+            if re.search("Fermi energy", line) or re.search("E-fermi", line):
+                line_fermi = line
+        val = re.search(r"(\-?\d+\.?\d*)", line_fermi)
+        fermi = float(val.group(1))
+        fi.close()
 
         # get knames and kticks from readKPOINTS()
         ticksNames, ticks, discontinuities, kplist = self.readKPOINTS(args)
@@ -1654,6 +1658,12 @@ if __name__ == "__main__":
             "-compare",
             action="store_true",
             help="Compare with DFT band structure (requires KPOINTS and EIGENVAL).",
+        )
+        parser_bands.add_argument(
+            "-outcar",
+            type=str,
+            help="SCF OUTCAR file for DFT vs. DMFT band structure comparison.",
+            default="OUTCAR",
         )
 
         parser_bands.add_argument(
