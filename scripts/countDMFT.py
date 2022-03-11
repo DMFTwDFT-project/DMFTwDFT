@@ -39,7 +39,12 @@ def count_complete(args):
     incomplete_list_post = []
 
     try:
-        pathlist = sorted(
+        if args.pattern:
+            pathlist = sorted(
+            [d for d in os.listdir(".") if os.path.isdir(d) and d.startswith(args.pattern)]
+            )
+        else:
+            pathlist = sorted(
             [int(d) for d in os.listdir(".") if os.path.isdir(d) and d.isnumeric()]
         )
         print(pathlist)
@@ -145,7 +150,10 @@ if __name__ == "__main__":
         "-type", type=str, default="dmft", help="DMFT or HF", choices=["dmft", "hf"]
     )
     parser.add_argument(
-        "-post",
+        "-p","--pattern", type=str, help="Regex to match folder names containing DMFT calculations."
+    )
+    parser.add_argument(
+        "-po","--post",
         type=str,
         default=None,
         help="Check for post-processing completeness.",
