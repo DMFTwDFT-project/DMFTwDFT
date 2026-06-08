@@ -10,9 +10,14 @@ vasp
 wannier90.x
 w90chk2chk.x
 dmft.x
-dmft_dos.x
-dmft_ksum_band
-dmft_ksum_partial_band
+sources/dmft_ksum/dmft_dos.x
+sources/dmft_ksum/dmft_ksum_band
+sources/dmft_ksum/dmft_ksum_partial_band
+sources/dmft_ksum/dmft_ksum_sp
+sources/dmft_dos.x
+bin/dmft_dos.x
+bin/dmft_ksum_band
+bin/dmft_ksum_partial_band
 fort_kpt_tools.so
 ctqmc
 skrams
