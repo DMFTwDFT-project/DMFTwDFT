@@ -57,8 +57,8 @@ LLIBS = $(LALIB)
 PLIBS = $(LLIBS) $(GSLLIB)
 
 #
-CMP = f2py --opt='-O2' --fcompiler=gnu95   # fortran to python converter
-CMPLIBS  = --f90flags='-openmp ' --link-lapack_opt
+CMP = env NPY_DISTUTILS_APPEND_FLAGS=1 f2py --opt='-O2' --fcompiler=gnu95   # fortran to python converter
+CMPLIBS  = --f90flags='-fopenmp ' --opt='-Ofast' --link-lapack_opt
 CMPLIBS2 = --f90flags=' $(OPENMP) ' $(CMPLIBS)
 #
 

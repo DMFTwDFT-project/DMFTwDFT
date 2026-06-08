@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-""" DMFTwDFT setup.
+"""DMFTwDFT setup.
 
 Please copy Makefile.in from config directory.
 Then run setup.py <compiler>.
@@ -11,6 +11,7 @@ Don't forget to install wannier90 and recompile VASP with wannier90.
 Also copy wannier90.x and w90chk2chk.x to the bin directory.
 
 """
+
 import sys
 import os
 import shutil
@@ -26,8 +27,19 @@ sys.path.insert(1, "./bin")
 import splash
 
 
-def main(args):
+def replace_text(file_path, old, new):
+    """Replace text in a file if present."""
+    fp = open(file_path, "r")
+    data = fp.read()
+    fp.close()
 
+    if old in data:
+        fo = open(file_path, "w")
+        fo.write(data.replace(old, new))
+        fo.close()
+
+
+def main(args):
     """Installation main function."""
 
     # call cleanup
@@ -39,11 +51,13 @@ def main(args):
     # --------------- COMPILING INTERNAL SOURCES -----------------------------
 
     compiler = str(args.compiler)
+    python_cxx = "g++"
 
     # Running the Makefile to compile internal sources.
     if compiler == "intel":
         print("Compiler : intel\n")
         shutil.copy("./sources/intel.make.inc", "./sources/make.inc")
+        python_cxx = "icpx"
     elif compiler == "gfortran":
         print("Compiler : gfortran\n")
         shutil.copy("./sources/gfortran.make.inc", "./sources/make.inc")
@@ -151,6 +165,17 @@ def main(args):
 
     # Compiling atomd (gaunt.so, gutils.so)
     atomd_dir = EDMFTF_folder + "/src/impurity/atomd/"
+    replace_text(
+        atomd_dir + "Makefile",
+        "python setup.py build_ext --inplace",
+        "env CC={0} CXX={0} python setup.py build_ext --inplace".format(python_cxx),
+    )
+    replace_text(
+        atomd_dir + "setup.py",
+        '                  extra_compile_args=["-I."]',
+        '                  extra_compile_args=["-I.", "-std=gnu++11"],\n'
+        '                  language="c++"',
+    )
     print("Compiling atomd : gaunt.so, gutils.so...")
     cmd = "cd " + atomd_dir + "; make clean; make all > atomd.log 2>&1 "
     out, err = subprocess.Popen(
@@ -216,7 +241,7 @@ def main(args):
 
 
 def cleanup():
-    """ Cleanup. """
+    """Cleanup."""
     if os.path.exists("./sources/internal.log"):
         os.remove("./sources/internal.log")
     if os.path.exists("./sources/EDMFTF.tgz"):

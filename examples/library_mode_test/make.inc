@@ -5,7 +5,8 @@
 F90 = ifort
 COMMS=mpi
 MPIF90=mpiifort
-CMP = f2py --fcompiler=intelem # fortran to python converter
+# Preserve f2py shared-library linker flags under conda/numpy.distutils.
+CMP = env NPY_DISTUTILS_APPEND_FLAGS=1 f2py --fcompiler=gnu95 # fortran to python converter
 
 
 FCOPTS=-O2 #-check 
@@ -26,4 +27,3 @@ LIBS   =  -L$(LIBDIR) -lmkl_core -lmkl_intel_lp64 -lmkl_sequential -lpthread
 #=======================
 #LIBDIR = /usr/local/lib
 #LIBS = -L$(LIBDIR)  -llapack -lf77blas -lcblas -latlas
-

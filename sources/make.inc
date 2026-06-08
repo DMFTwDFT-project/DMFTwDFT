@@ -1,13 +1,14 @@
 #=====================================================
 # For Linux with intel version 11/12 on 64bit machines
 #=====================================================
-F90 = ifort
+F90 =ifx
 COMMS=mpi
-MPIF90=mpiifort
-CMP = f2py --fcompiler=intelem # fortran to python converter
+MPIF90=mpiifx
+# Legacy numpy.distutils/f2py in this Python 2 stack does not support oneAPI ifx.
+CMP = env NPY_DISTUTILS_APPEND_FLAGS=1 f2py --fcompiler=gnu95 # fortran to python converter
 
-FCOPTS=-O2 #-check 
-LDOPTS=-O2 
+FCOPTS=-O2 #-check
+LDOPTS=-O2
 
 #========================================================
 # Intel mkl libraries. Set LIBPATH if not in default path
@@ -15,4 +16,3 @@ LDOPTS=-O2
 
 LIBDIR = $(MKLROOT)/lib/intel64
 LIBS   =  -L$(LIBDIR) -lmkl_core -lmkl_intel_lp64 -lmkl_sequential -lpthread
-
