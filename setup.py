@@ -92,7 +92,7 @@ def main(args):
             "label": "macos",
             "makefile": "./config/Makefile.in.macos",
             "source_makefile": "./sources/macos.make.inc",
-            "python_cc": "/usr/bin/clang",
+            "python_cc": "/usr/bin/clang++",
             "python_cxx": "/usr/bin/clang++",
             "append_makefile_values": True,
         },
