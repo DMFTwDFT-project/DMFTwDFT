@@ -1,0 +1,66 @@
+#----------- DMFTwDFT external libraries setup ------------------------------
+#
+# COMPILER : MACOS
+#
+# This Makefile compiles the required libraries from Professor Kristjan
+# Haule's EDMFTF code to run DMFTwDFT.
+#
+# Libraries used from EDMFTF:
+#
+# - ctqmc
+# - atomd
+# - skrams
+# - maxent_routines
+
+# Set Fortran, C++ & gsl libraries in this file.
+#
+# This template is for an x86_64 conda Python environment on macOS, including
+# Apple Silicon hosts running the conda environment under Rosetta.
+#
+#===========================================================================
+
+CONDA_PREFIX ?= /Users/ukh/miniforge3/envs/dmft
+SDKROOT = $(shell xcrun --show-sdk-path)
+
+#------------- SERIAL VERSION ----------------------------------------------
+F90 = gfortran
+F77 = gfortran
+C++ = /usr/bin/clang++ -arch x86_64 -isysroot $(SDKROOT)
+CC  = /usr/bin/clang -arch x86_64 -isysroot $(SDKROOT)
+
+OPENMP = -fopenmp
+FFLAGSEXTRA = # -fallow-argument-mismatch
+FFLAGS = -O2  -ffree-form -ffree-line-length-none $(OPENMP) $(FFLAGSEXTRA)
+OFLAGS = -O2
+
+LALIB  =  -L$(CONDA_PREFIX)/lib -lblas -llapack
+FFTLIB =  -L$(CONDA_PREFIX)/lib -lfftw3_omp -lfftw3
+FFTINC =  -I$(CONDA_PREFIX)/include
+GSLLIB =  -L$(CONDA_PREFIX)/lib -lgsl -lgslcblas
+GSLINC =  -I$(CONDA_PREFIX)/include
+PIC    =  -fPIC
+WFOPT  = -O2  -ffree-form -ffree-line-length-none $(OPENMP)  $(FFTINC)
+WLIBS   = $(FFTLIB)  $(LALIB)
+F2PL =
+
+F2PY_LAPACK = --link-lapack_opt
+
+#------------- PARALLEL VERSION --------------------------------------------
+Fmpi_define =  -D_MPI
+
+PF90 = mpif90
+PC++ = /usr/bin/clang++ -arch x86_64 -isysroot $(SDKROOT) -I$(CONDA_PREFIX)/include -L$(CONDA_PREFIX)/lib -Wl,-rpath,$(CONDA_PREFIX)/lib -Wl,-syslibroot,$(SDKROOT) -Wl,-flat_namespace -Wl,-commons,use_dylibs
+PCC  = /usr/bin/clang -arch x86_64 -isysroot $(SDKROOT) -I$(CONDA_PREFIX)/include -L$(CONDA_PREFIX)/lib -Wl,-rpath,$(CONDA_PREFIX)/lib -Wl,-syslibroot,$(SDKROOT) -Wl,-flat_namespace -Wl,-commons,use_dylibs
+
+PFLAGS   = -D_MPI -DMPICH_IGNORE_CXX_SEEK -O3 #-restrict -ipo -no-prec-div
+
+LLIBS = $(LALIB) -framework Accelerate
+PLIBS = $(LLIBS) $(GSLLIB) -L$(CONDA_PREFIX)/lib -lmpicxx -lmpi -lpmpi
+
+#
+CMP = env SDKROOT=$(shell xcrun --show-sdk-path) CC=/usr/bin/clang CXX=/usr/bin/clang++ F77=gfortran F90=gfortran FC=gfortran FFLAGS="-arch x86_64 -fPIC -O3 -funroll-loops" CFLAGS="-arch x86_64 -isysroot $(shell xcrun --show-sdk-path)" LDFLAGS="-undefined dynamic_lookup -bundle -arch x86_64 -Wl,-syslibroot,$(shell xcrun --show-sdk-path)" f2py --opt='-O2' --fcompiler=gnu95   # fortran to python converter
+CMPLIBS  = --f90flags='-fopenmp ' --opt='-Ofast' --link-lapack_opt
+CMPLIBS2 = --f90flags=' $(OPENMP) ' $(CMPLIBS)
+#
+
+#============================================================================

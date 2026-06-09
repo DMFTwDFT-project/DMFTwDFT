@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 """DMFTwDFT setup.
 
-Please copy Makefile.in from config directory.
-Then run setup.py <compiler>.
+Run setup.py <compiler> to select a bundled compiler profile.
 
 E.g. - setup.py intel
 
@@ -39,6 +38,27 @@ def replace_text(file_path, old, new):
         fo.close()
 
 
+def append_makefile_values(makefile_path, source_makefile_path):
+    """Append BLAS/LAPACK and extra Fortran flags to sources/make.inc."""
+    fp = open(makefile_path, "r")
+    data = fp.read()
+    fp.close()
+
+    lalib = findall(r"LALIB\s*=\s*([^\n#]*)(?:\n|#)", data)
+    fflags = findall(r"FFLAGSEXTRA\s*=\s*([^\n#]*)(?:\n|#)", data)
+
+    lines = []
+    if len(lalib) > 0:
+        lines.append("LIBS += " + str(lalib[0]))
+    if len(fflags) > 0:
+        lines.append("FCOPTS += " + str(fflags[0]))
+
+    if lines:
+        fo = open(source_makefile_path, "a")
+        fo.write("\n" + "\n".join(lines))
+        fo.close()
+
+
 def main(args):
     """Installation main function."""
 
@@ -51,39 +71,42 @@ def main(args):
     # --------------- COMPILING INTERNAL SOURCES -----------------------------
 
     compiler = str(args.compiler)
-    python_cc = "gcc"
-    python_cxx = "g++"
+    profiles = {
+        "intel": {
+            "label": "intel",
+            "makefile": "./config/Makefile.in.intel",
+            "source_makefile": "./sources/intel.make.inc",
+            "python_cc": "gcc",
+            "python_cxx": "g++",
+            "append_makefile_values": False,
+        },
+        "gfortran": {
+            "label": "gfortran",
+            "makefile": "./config/Makefile.in.gfortran",
+            "source_makefile": "./sources/gfortran.make.inc",
+            "python_cc": "gcc",
+            "python_cxx": "g++",
+            "append_makefile_values": True,
+        },
+        "macos": {
+            "label": "macos",
+            "makefile": "./config/Makefile.in.macos",
+            "source_makefile": "./sources/macos.make.inc",
+            "python_cc": "/usr/bin/clang",
+            "python_cxx": "/usr/bin/clang++",
+            "append_makefile_values": True,
+        },
+    }
+    profile = profiles[compiler]
+    python_cc = profile["python_cc"]
+    python_cxx = profile["python_cxx"]
 
-    # Running the Makefile to compile internal sources.
-    if compiler == "intel":
-        print("Compiler : intel\n")
-        shutil.copy("./sources/intel.make.inc", "./sources/make.inc")
-    elif compiler == "gfortran":
-        print("Compiler : gfortran\n")
-        shutil.copy("./sources/gfortran.make.inc", "./sources/make.inc")
+    print("Compiler : %s\n" % profile["label"])
+    shutil.copy(profile["makefile"], "./Makefile.in")
+    shutil.copy(profile["source_makefile"], "./sources/make.inc")
 
-        # Read LALIB from Makefile.in for lapack and blas library location
-        # and append it to LIBS in make.inc.
-        # Repeat for FFLAGS and append to FCOPTS in make.inc.
-
-        fp = open("Makefile.in", "r")
-        data = fp.read()
-        fp.close()
-
-        # Appending LALIBS as LIBS in make.inc
-        lalib = findall(r"LALIB\s*=\s*([-_.a-zA-Z0-9\s\/]*)(?:\n|#)", data)
-        libs = "LIBS += " + str(lalib[0])
-
-        fflags = findall(r"FFLAGSEXTRA\s*=\s*([-_.a-zA-Z0-9\s\/]*)(?:\n|#)", data)
-        if len(fflags) > 0:
-            fcopts = "FCOPTS += " + str(fflags[0])
-        else:
-            fcopts = ""
-
-        fo = open("./sources/make.inc", "a")
-        fo.write(libs + "\n")
-        fo.write(fcopts)
-        fo.close()
+    if profile["append_makefile_values"]:
+        append_makefile_values("./Makefile.in", "./sources/make.inc")
 
     print("Compiling internal sources...\n")
     cmd = "cd sources; make clean; make all > internal.log 2>&1 "
@@ -278,14 +301,14 @@ if "__main__" == __name__:
     if args:
         # top level parser
         parser = argparse.ArgumentParser(
-            description="DMFTwDFT setup. \n Please copy Makefile.in from config directory.",
+            description="DMFTwDFT setup.\nSelect one of the bundled compiler profiles.",
             formatter_class=RawTextHelpFormatter,
         )
         parser.add_argument(
             "compiler",
             type=str,
             help="Compiler.",
-            choices=["intel", "gfortran"],
+            choices=["intel", "gfortran", "macos"],
             default="intel",
         )
         parser.add_argument(
@@ -297,6 +320,6 @@ if "__main__" == __name__:
         main(args)
     else:
         print(
-            "Usage: setup.py <compiler> \n Please copy Makefile.in from config directory."
+            "Usage: setup.py <compiler> \n Select one of the bundled compiler profiles."
         )
-        print("OPTIONS : {intel, gfortran}")
+        print("OPTIONS : {intel, gfortran, macos}")

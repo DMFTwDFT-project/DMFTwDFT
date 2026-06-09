@@ -15,22 +15,22 @@ FFLAGS = -O2 #-xhost
 all : dmft_ksum_band dmft_ksum_dos dmft_ksum_sp dmft_ksum dmft_ksum_partial_band
 
 cmp_mu : cmp_mu.f
-	$(F77) $(FFLAGS) -o $@ cmp_mu.f $(LIBS)
+	$(F77) $(FFLAGS) $(LDOPTS) -o $@ cmp_mu.f $(LIBS)
 
 dmft_ksum_dos : dmft_ksum_dos.f
-	$(F77) $(FFLAGS) -o $@ dmft_ksum_dos.f $(LIBS)
+	$(F77) $(FFLAGS) $(LDOPTS) -o $@ dmft_ksum_dos.f $(LIBS)
 
 dmft_ksum_band : dmft_ksum_band.f
-	$(F77) $(FFLAGS) -o $@ dmft_ksum_band.f $(LIBS)
+	$(F77) $(FFLAGS) $(LDOPTS) -o $@ dmft_ksum_band.f $(LIBS)
 
 dmft_ksum_partial_band : dmft_ksum_partial_band.f
-	$(F77) $(FFLAGS) -o $@ dmft_ksum_partial_band.f $(LIBS)
+	$(F77) $(FFLAGS) $(LDOPTS) -o $@ dmft_ksum_partial_band.f $(LIBS)
 
 dmft_ksum_sp : dmft_ksum_sp.f
-	$(F77) $(FFLAGS) -o $@ dmft_ksum_sp.f $(LIBS)
+	$(F77) $(FFLAGS) $(LDOPTS) -o $@ dmft_ksum_sp.f $(LIBS)
 
 dmft_ksum : dmft_ksum.f
-	$(F77) $(FFLAGS) -o $@ dmft_ksum.f $(LIBS)
+	$(F77) $(FFLAGS) $(LDOPTS) -o $@ dmft_ksum.f $(LIBS)
 
 clean :
 	rm -f cmp_mu dmft_ksum_band dmft_ksum_dos dmft_ksum_sp dmft_ksum dmft_ksum_partial_band

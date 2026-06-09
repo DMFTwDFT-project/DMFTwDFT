@@ -2,7 +2,7 @@
 Building DMFTwDFT sources
 -------------------------
 
-Copy intel.make.inc or gfortran.make.inc to make.inc and do:
+Copy one of `intel.make.inc`, `gfortran.make.inc`, or `macos.make.inc` to `make.inc` and do:
 
 $ make all
 
@@ -12,4 +12,4 @@ $ make lib
 
 The executables will automatically be copied to the /bin directory.
 
-For the gfortran version, LAPACK and BLAS libraries are required.
+For the gfortran and macOS versions, LAPACK and BLAS libraries are required.
