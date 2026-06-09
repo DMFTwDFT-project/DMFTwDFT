@@ -1,18 +1,17 @@
-DMFTwDFT 
-=========
+# DMFTwDFT
 
 DMFTwDFT is an open-source, user-friendly framework to calculate electronic, vibrational and elastic properties in strongly
 correlated materials (SCM) using beyond-DFT methods such as DFT+U, DFT+Hybrids and DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently supports VASP, Siesta and Quantum Espresso.
 
 ### Features <br />
+
 ![](docs/images/welcome.jpg)
 
 ### Workflow <br />
+
 ![](docs/images/steps.png)
 
-
-Installation and usage
-----------------------
+## Installation and usage
 
 Please refer to the documentation.
 
@@ -20,18 +19,37 @@ https://dmftwdft-project.github.io/DMFTwDFT/
 
 **Quick Install:**
 
-Copy Makefile.in from the ``config`` directory for the desired compiler to the DMFTwDFT root directory and do:
+Copy `Makefile.in` from the `config` directory for the desired compiler to the DMFTwDFT root directory and run:
 
 ```bash
- python setup.py {gfortran, intel}
+python setup.py {gfortran, intel, macos}
 ```
 
-Note:
+Available setup profiles:
 
-For gnu compilers, it is assumed that liblapack.a, libblas.a and gsl libraries are installed in the ``/usr/local/lib/`` directory. If not, modify ``LALIB`` and ``GSLLIB`` in Makefile.in to point to the correct location. Additionally, set compiler flags in ``FFLAGSEXTRA``.
+- `gfortran`: GNU compilers on Linux-style systems.
+- `intel`: Intel oneAPI compilers.
+- `macos`: macOS x86_64 conda/Python 2 environment, including Apple Silicon hosts running the conda environment under Rosetta.
 
-Developers
------------
+Notes:
+
+For GNU compilers, it is assumed that `liblapack.a`, `libblas.a` and GSL libraries are installed in the `/usr/local/lib/` directory. If not, modify `LALIB` and `GSLLIB` in `Makefile.in` to point to the correct location. Additionally, set compiler flags in `FFLAGSEXTRA`.
+
+For macOS, use:
+
+```bash
+python setup.py macos
+```
+
+The macOS profile uses `config/Makefile.in.macos` and `sources/macos.make.inc`. It is intended for an `osx-64` conda environment with Python 2 and matching x86_64 dependencies. Install the required compiler and libraries into the same conda environment, for example:
+
+```bash
+conda install -n dmft -c conda-forge/label/cf202003 gfortran_osx-64 gsl fftw
+```
+
+On Apple Silicon, avoid mixing `/opt/homebrew` ARM libraries with an `osx-64` conda Python environment. Use conda-provided x86_64 libraries for GSL, FFTW, BLAS and LAPACK. Runtime `atom_d.py` compilation on macOS uses Apple `clang`/`clang++` with the active macOS SDK to avoid incompatibilities between legacy Python 2 weave code and newer SDK headers.
+
+## Developers
 
 Hyowon Park <br />
 Aldo Romero <br />
@@ -40,13 +58,12 @@ Vijay Singh <br />
 Benny Wah <br />
 Xingyu Liao <br />
 
-Contributors
-------------
+## Contributors
+
 Kristjan Haule <br />
 Chris Marianetti <br />
 
-How to cite
------------
+## How to cite
 
 If you have used DMFTwDFT in your work, please cite:
 
@@ -67,50 +84,49 @@ BibTex:
     keywords = "DFT, DMFT, Strongly correlated materials, Python, Condensed matter physics, Many-body physics",
     }
 
-Thank you. 
+Thank you.
 
-Mailing list
--------------
+## Mailing list
+
 Please post your questions on our forum.
 
 https://groups.google.com/d/forum/dmftwdft
 
-Support packages
-----------------
+## Support packages
+
 We acknowledge the use of the following packages:
 
--   [PyProcar](https://github.com/uthpalah/PyProcar)<br />
+- [PyProcar](https://github.com/uthpalah/PyProcar)<br />
 
 Uthpala Herath, Pedram Tavadze, Xu He, Eric Bousquet, Sobhit Singh, Francisco Muñoz, and Aldo H. Romero. "PyProcar: A Python library for electronic structure pre/post-processing". Computer Physics Communications 251 (2020): 107080.
 
--   [PyChemia](https://github.com/MaterialsDiscovery/PyChemia)
+- [PyChemia](https://github.com/MaterialsDiscovery/PyChemia)
 
--   [Continuous time Quantum Monte Carlo (ctqmc)](http://hauleweb.rutgers.edu/tutorials/Tutorial0.html)<br>
+- [Continuous time Quantum Monte Carlo (ctqmc)](http://hauleweb.rutgers.edu/tutorials/Tutorial0.html)<br>
 
-  [1] Kristjan Haule, Phys. Rev. B 75, 155113 (2007).
+[1] Kristjan Haule, Phys. Rev. B 75, 155113 (2007).
 
 Free energy implementation :
-  [2] Kristjan Haule, Turan Birol, Phys. Rev. Lett. 115, 256402 (2015).
+[2] Kristjan Haule, Turan Birol, Phys. Rev. Lett. 115, 256402 (2015).
 
--   [Wannier90](http://www.wannier.org/)<br>
-    Wannier90 as a community code: new features and applications, G. Pizzi et al., J. Phys. Cond. Matt. 32, 165902 (2020) 
+- [Wannier90](http://www.wannier.org/)<br>
+  Wannier90 as a community code: new features and applications, G. Pizzi et al., J. Phys. Cond. Matt. 32, 165902 (2020)
 
 **Note:**
 
-Users can download these external programs, as explained in the README file of each supported package folder (see folder DMFTwDFT-master/support-packages). For installation, we suggest users refer to this link: https://dmftwdft-project.github.io/DMFTwDFT/installation.html for more details. 
+Users can download these external programs, as explained in the README file of each supported package folder (see folder DMFTwDFT-master/support-packages). For installation, we suggest users refer to this link: https://dmftwdft-project.github.io/DMFTwDFT/installation.html for more details.
 OR Users can run the python script "setup.py" which will automatically download and install the internal as well as external programs.
 
 PyProcar is used as a support package to find the wannier window of the correlated orbitals. It's not necessary to be installed for DMFTwDFT.
-PyChemia is required for the Python 3 version of the code which is still under development. 
-For the Python 2 version this is not required. 
+PyChemia is required for the Python 3 version of the code which is still under development.
+For the Python 2 version this is not required.
 
-Changes
--------
+## Changes
+
+v2.0 June 8, 2026 - Updated code to support modern compute architectures including Intel oneAPI LLVM compilers and MacOS.
 v1.2 Jan 13th, 2020 - Fixed bug with exponentially large numbers in UNI_mat.dat for SCF calculations. <br />
 v1.1 May 11th, 2020 - Added support for Quantum Espresso through Aiida. <br />
 v1.0 April 23, 2020 - Cleaned repository. Defaulted to Python 2.x version. <br />
 v0.3 November 25, 2019 - Added DMFT.py and postDMFT.py scripts <br />
 v0.2 July 10, 2019 - DMFTwDFT library version <br />
 v0.1 July 31, 2018 - Initial release (Command line version)
-
-
