@@ -51,13 +51,13 @@ def main(args):
     # --------------- COMPILING INTERNAL SOURCES -----------------------------
 
     compiler = str(args.compiler)
+    python_cc = "gcc"
     python_cxx = "g++"
 
     # Running the Makefile to compile internal sources.
     if compiler == "intel":
         print("Compiler : intel\n")
         shutil.copy("./sources/intel.make.inc", "./sources/make.inc")
-        python_cxx = "icpx"
     elif compiler == "gfortran":
         print("Compiler : gfortran\n")
         shutil.copy("./sources/gfortran.make.inc", "./sources/make.inc")
@@ -168,7 +168,9 @@ def main(args):
     replace_text(
         atomd_dir + "Makefile",
         "python setup.py build_ext --inplace",
-        "env CC={0} CXX={0} python setup.py build_ext --inplace".format(python_cxx),
+        "env CC={0} CXX={1} python setup.py build_ext --inplace".format(
+            python_cc, python_cxx
+        ),
     )
     replace_text(
         atomd_dir + "setup.py",

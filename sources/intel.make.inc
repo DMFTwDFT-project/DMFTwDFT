@@ -5,7 +5,7 @@ F90 =ifx
 COMMS=mpi
 MPIF90=mpiifx
 # Legacy numpy.distutils/f2py in this Python 2 stack does not support oneAPI ifx.
-CMP = env NPY_DISTUTILS_APPEND_FLAGS=1 f2py --fcompiler=gnu95 # fortran to python converter
+CMP = env CC=gcc CXX=g++ NPY_DISTUTILS_APPEND_FLAGS=1 f2py --fcompiler=gnu95 # fortran to python converter
 
 FCOPTS=-O2 #-check
 LDOPTS=-O2
