@@ -16,5 +16,3 @@ LDOPTS=-O2 -Wl,-syslibroot,$(shell xcrun --show-sdk-path)
 
 LIBDIR = /usr/local/lib/
 LIBS = -L$(LIBDIR)  -llapack -lblas
-LIBS += -L$(CONDA_PREFIX)/lib -lblas -llapack
-FCOPTS += 

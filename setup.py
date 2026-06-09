@@ -71,10 +71,38 @@ def main(args):
         fp.close()
 
         # Appending LALIBS as LIBS in make.inc
-        lalib = findall(r"LALIB\s*=\s*([-_.a-zA-Z0-9\s\/]*)(?:\n|#)", data)
+        lalib = findall(r"LALIB\s*=\s*([^\n#]*)(?:\n|#)", data)
         libs = "LIBS += " + str(lalib[0])
 
-        fflags = findall(r"FFLAGSEXTRA\s*=\s*([-_.a-zA-Z0-9\s\/]*)(?:\n|#)", data)
+        fflags = findall(r"FFLAGSEXTRA\s*=\s*([^\n#]*)(?:\n|#)", data)
+        if len(fflags) > 0:
+            fcopts = "FCOPTS += " + str(fflags[0])
+        else:
+            fcopts = ""
+
+        fo = open("./sources/make.inc", "a")
+        fo.write(libs + "\n")
+        fo.write(fcopts)
+        fo.close()
+
+    elif compiler == "macos":
+        print("Compiler : macos\n")
+        shutil.copy("./config/Makefile.in.macos", "./Makefile.in")
+        shutil.copy("./sources/macos.make.inc", "./sources/make.inc")
+
+        # Read LALIB from Makefile.in for lapack and blas library location
+        # and append it to LIBS in make.inc.
+        # Repeat for FFLAGS and append to FCOPTS in make.inc.
+
+        fp = open("Makefile.in", "r")
+        data = fp.read()
+        fp.close()
+
+        # Appending LALIBS as LIBS in make.inc
+        lalib = findall(r"LALIB\s*=\s*([^\n#]*)(?:\n|#)", data)
+        libs = "LIBS += " + str(lalib[0])
+
+        fflags = findall(r"FFLAGSEXTRA\s*=\s*([^\n#]*)(?:\n|#)", data)
         if len(fflags) > 0:
             fcopts = "FCOPTS += " + str(fflags[0])
         else:
@@ -283,7 +311,7 @@ if "__main__" == __name__:
             "compiler",
             type=str,
             help="Compiler.",
-            choices=["intel", "gfortran"],
+            choices=["intel", "gfortran", "macos"],
             default="intel",
         )
         parser.add_argument(
@@ -297,4 +325,4 @@ if "__main__" == __name__:
         print(
             "Usage: setup.py <compiler> \n Please copy Makefile.in from config directory."
         )
-        print("OPTIONS : {intel, gfortran}")
+        print("OPTIONS : {intel, gfortran, macos}")

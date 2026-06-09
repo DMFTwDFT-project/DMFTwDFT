@@ -6,10 +6,23 @@ symeig_available=False
 
 from scipy import *
 import sys, re, os
+import platform
 import copy
 import getopt
 import pickle
 import glob
+
+if sys.platform == 'darwin':
+    sdkroot = os.popen('xcrun --show-sdk-path 2>/dev/null').read().strip()
+    if sdkroot:
+        arch = platform.machine() or 'x86_64'
+        os.environ['SDKROOT'] = sdkroot
+        os.environ['CC'] = '/usr/bin/clang'
+        os.environ['CXX'] = '/usr/bin/clang++'
+        os.environ['CFLAGS'] = '-arch %s -isysroot %s -O2 -fPIC' % (arch, sdkroot)
+        os.environ['CPPFLAGS'] = '-I%s/include' % sys.prefix
+        os.environ['LDFLAGS'] = '-undefined dynamic_lookup -bundle -arch %s -Wl,-syslibroot,%s' % (arch, sdkroot)
+
 import weave
 #import scipy.weave as weave
 from numpy import linalg
