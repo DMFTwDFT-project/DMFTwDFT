@@ -1,0 +1,25 @@
+name: dmft
+channels:
+  - conda-forge
+dependencies:
+  - python=2.7.15
+  - pip=20.1.1
+  - setuptools=44.0.0
+  - numpy=1.16.5
+  - scipy=1.2.0
+  - gcc_linux-64=7.5
+  - gxx_linux-64=7.5
+  - sysroot_linux-64=2.34
+  - libgfortran=3.0.0
+  - libgfortran-ng
+  - libgfortran5
+  - libxcrypt
+  - mpich
+  - mpi
+  - libblas
+  - liblapack
+  - openblas
+  - gsl
+  - fftw
+  - pip:
+      - requests==2.27.1
