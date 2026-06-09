@@ -123,7 +123,7 @@ For the Python 2 version this is not required.
 
 ## Changes
 
-v2.0 June 8, 2026 - Updated code to support modern compute architectures including Intel oneAPI LLVM compilers and MacOS.
+v2.0 June 8, 2026 - Updated code to support modern compute architectures including Intel oneAPI LLVM compilers and MacOS.<br />
 v1.2 Jan 13th, 2020 - Fixed bug with exponentially large numbers in UNI_mat.dat for SCF calculations. <br />
 v1.1 May 11th, 2020 - Added support for Quantum Espresso through Aiida. <br />
 v1.0 April 23, 2020 - Cleaned repository. Defaulted to Python 2.x version. <br />
