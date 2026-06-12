@@ -1,6 +1,11 @@
 # DMFTwDFT
 
-> **Deprecated:** This repository is deprecated and no longer recommended for new installations. Please use the Python 3 version instead: <https://github.com/dmftwdft/DMFTwDFT3>
+> [!WARNING]
+> **This repository is deprecated.**
+>
+> This legacy Python 2 version is no longer recommended for new installations.
+> Please use the maintained Python 3 version instead:
+> <https://github.com/dmftwdft/DMFTwDFT3>
 
 DMFTwDFT is an open-source, user-friendly framework to calculate properties of strongly correlated materials (SCM) using DFT+DMFT (Dynamical Mean Field Theory) with a variety of different DFT codes. Currently supports VASP, Siesta and Quantum Espresso.
 
